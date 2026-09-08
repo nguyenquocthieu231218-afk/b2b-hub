@@ -35,7 +35,6 @@ export default function ComparisonLayout({
   recommendationA,
   recommendationB,
 }: ComparisonProps) {
-  // Structured Data / Schema Markup for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
@@ -68,7 +67,7 @@ export default function ComparisonLayout({
       
       <p className="lead text-gray-300">{lead}</p>
 
-      {/* Reusable Verdict Box */}
+      {/* Quick Summary / Verdict */}
       <div className="my-8 p-6 bg-gray-900 border-l-4 border-blue-500 rounded-r-xl not-prose">
         <h3 className="text-lg font-bold text-white mb-2">⚡ Quick Summary / Verdict</h3>
         <p className="text-sm text-gray-300 mb-4">{verdictText}</p>
@@ -76,7 +75,7 @@ export default function ComparisonLayout({
           <a
             href={toolALink}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="sponsored noopener noreferrer"
             className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors no-underline"
           >
             Try {toolAName} Free &rarr;
@@ -84,7 +83,7 @@ export default function ComparisonLayout({
           <a
             href={toolBLink}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="sponsored noopener noreferrer"
             className="inline-block bg-gray-800 hover:bg-gray-700 text-white font-semibold text-sm px-5 py-2.5 rounded-lg border border-gray-700 transition-colors no-underline"
           >
             Try {toolBName} Free &rarr;
@@ -116,7 +115,7 @@ export default function ComparisonLayout({
                 <a
                   href={toolALink}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="sponsored noopener noreferrer"
                   className="inline-block text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold py-1.5 px-3 rounded transition-colors"
                 >
                   Visit {toolAName}
@@ -126,7 +125,7 @@ export default function ComparisonLayout({
                 <a
                   href={toolBLink}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="sponsored noopener noreferrer"
                   className="inline-block text-xs bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 font-bold py-1.5 px-3 rounded transition-colors"
                 >
                   Visit {toolBName}
