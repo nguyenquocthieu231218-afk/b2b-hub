@@ -1,70 +1,104 @@
-import React from 'react';
+import Link from 'next/link';
 
-export default function ClickUpVsMonday() {
+export default function Home() {
+  const comparisons = [
+    {
+      slug: 'clickup-vs-monday',
+      title: 'ClickUp vs Monday.com',
+      desc: 'Which project management tool is best for startups in 2026?',
+      category: 'Project Management',
+    },
+    {
+      slug: 'notion-vs-coda',
+      title: 'Notion vs Coda',
+      desc: 'Comparing all-in-one workspaces, knowledge bases, and team wikis.',
+      category: 'Productivity',
+    },
+    {
+      slug: 'hubspot-vs-salesforce',
+      title: 'HubSpot vs Salesforce',
+      desc: 'Which CRM platform fits your business size and budget?',
+      category: 'CRM & Sales',
+    },
+    {
+      slug: 'asana-vs-trello',
+      title: 'Asana vs Trello',
+      desc: 'Lightweight task management vs complex workflow tracking.',
+      category: 'Project Management',
+    },
+    {
+      slug: 'ahrefs-vs-semrush',
+      title: 'Ahrefs vs SEMrush',
+      desc: 'The ultimate SEO suite showdown for backlinks and keywords.',
+      category: 'SEO & Marketing',
+    },
+    {
+      slug: 'slack-vs-teams',
+      title: 'Slack vs Microsoft Teams',
+      desc: 'Choosing the best team communication and messaging platform.',
+      category: 'Communication',
+    },
+    {
+      slug: 'shopify-vs-woocommerce',
+      title: 'Shopify vs WooCommerce',
+      desc: 'Hosted e-commerce vs self-hosted open-source platform.',
+      category: 'E-commerce',
+    },
+    {
+      slug: 'zapier-vs-make',
+      title: 'Zapier vs Make',
+      desc: 'Comparing visual workflow automation tools and pricing.',
+      category: 'Automation',
+    },
+    {
+      slug: 'webflow-vs-framer',
+      title: 'Webflow vs Framer',
+      desc: 'No-code website builders for modern design and CMS.',
+      category: 'Design & Web',
+    },
+    {
+      slug: 'mailchimp-vs-activecampaign',
+      title: 'Mailchimp vs ActiveCampaign',
+      desc: 'Email newsletters vs advanced automated customer funnels.',
+      category: 'Email Marketing',
+    },
+  ];
+
   return (
-    <article className="max-w-4xl mx-auto px-4 py-8 prose lg:prose-xl">
-      <h1>ClickUp vs Monday.com: Which Project Management Tool is Best for Startups in 2026?</h1>
-      
-      <p>
-        Choosing the right project management platform can make or break an early-stage startup. In 2026, two titans dominate the market for teams looking to streamline workflows, improve team collaboration, and track project deliverables: <strong>ClickUp</strong> and <strong>Monday.com</strong>.
-      </p>
+    <main className="min-h-screen bg-gray-950 text-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <header className="text-center mb-12">
+          <h1 className="text-4xl font-extrabold text-white tracking-tight sm:text-5xl">
+            B2B Software Review Hub
+          </h1>
+          <p className="mt-4 text-lg text-gray-400">
+            Unbiased, data-driven comparisons to help your startup pick the right tech stack in 2026.
+          </p>
+        </header>
 
-      <h2>At a Glance: ClickUp vs Monday.com</h2>
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-200 my-4">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2 text-left">Feature / Metric</th>
-              <th className="border p-2 text-left">ClickUp</th>
-              <th className="border p-2 text-left">Monday.com</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border p-2 font-bold">Best For</td>
-              <td className="border p-2">Feature density & customizable workspaces</td>
-              <td className="border p-2">Intuitive visual workflows & fast team adoption</td>
-            </tr>
-            <tr>
-              <td className="border p-2 font-bold">Free Tier</td>
-              <td className="border p-2">Generous (100MB storage, unlimited tasks)</td>
-              <td className="border p-2">Limited (Up to 2 seats, basic features)</td>
-            </tr>
-            <tr>
-              <td className="border p-2 font-bold">Starting Paid Price</td>
-              <td className="border p-2">~$7 / user / month</td>
-              <td className="border p-2">~$9 / user / month</td>
-            </tr>
-            <tr>
-              <td className="border p-2 font-bold">Learning Curve</td>
-              <td className="border p-2">Moderate to High</td>
-              <td className="border p-2">Low to Moderate</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {comparisons.map((item) => (
+            <Link
+              key={item.slug}
+              href={`/${item.slug}`}
+              className="block p-6 bg-gray-900 rounded-xl border border-gray-800 hover:border-blue-500 transition-colors duration-200"
+            >
+              <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider">
+                {item.category}
+              </span>
+              <h2 className="text-xl font-bold text-white mt-2 mb-2">
+                {item.title}
+              </h2>
+              <p className="text-sm text-gray-400">
+                {item.desc}
+              </p>
+              <div className="mt-4 text-sm font-medium text-blue-400 hover:underline inline-flex items-center">
+                Read Comparison &rarr;
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
-
-      <h2>1. User Interface & Ease of Use</h2>
-      <h3>Monday.com: The Visual Powerhouse</h3>
-      <p>
-        Monday.com is renowned for its vibrant, highly intuitive board-based interface. Color-coded status updates and clean drag-and-drop functionality make onboarding effortless.
-      </p>
-
-      <h3>ClickUp: All-in-One Customizability</h3>
-      <p>
-        ClickUp takes a feature-first approach. The user interface allows granular customization across Workspaces, Folders, and Lists, providing immense flexibility for technical startups.
-      </p>
-
-      <h2>2. Pricing & Value for Money</h2>
-      <p>
-        <strong>ClickUp</strong> delivers significantly higher value per dollar, offering essential features like Gantt charts, native time tracking, and automations at lower entry pricing compared to <strong>Monday.com</strong>.
-      </p>
-
-      <h2>Final Recommendation</h2>
-      <ul>
-        <li><strong>Choose ClickUp if:</strong> You are a tech startup, software development agency, or budget-conscious team looking for maximum features at a lower price point.</li>
-        <li><strong>Choose Monday.com if:</strong> You prioritize an easy learning curve, stunning visual interfaces, and rapid onboarding for non-technical employees.</li>
-      </ul>
-    </article>
+    </main>
   );
 }
