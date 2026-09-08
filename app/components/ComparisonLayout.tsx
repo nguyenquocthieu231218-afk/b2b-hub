@@ -35,8 +35,35 @@ export default function ComparisonLayout({
   recommendationA,
   recommendationB,
 }: ComparisonProps) {
+  // Structured Data / Schema Markup for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    'headline': title,
+    'description': lead,
+    'author': {
+      '@type': 'Organization',
+      'name': 'B2B Software Hub',
+    },
+    'mainEntity': [
+      {
+        '@type': 'Product',
+        'name': toolAName,
+      },
+      {
+        '@type': 'Product',
+        'name': toolBName,
+      },
+    ],
+  };
+
   return (
     <article className="max-w-4xl mx-auto px-4 py-8 prose lg:prose-xl text-gray-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <h1 className="text-white font-extrabold tracking-tight">{title}</h1>
       
       <p className="lead text-gray-300">{lead}</p>
