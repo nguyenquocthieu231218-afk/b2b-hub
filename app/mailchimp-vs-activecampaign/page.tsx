@@ -1,62 +1,42 @@
 import React from 'react';
+import ComparisonLayout from '../../components/ComparisonLayout';
 
 export default function MailchimpVsActiveCampaign() {
   return (
-    <article className="max-w-4xl mx-auto px-4 py-8 prose lg:prose-xl text-gray-100">
-      <h1 className="text-white">Mailchimp vs ActiveCampaign: Which Email Marketing Platform Wins in 2026?</h1>
-      
-      <p>
-        Email marketing remains the highest ROI channel for B2B and e-commerce brands. Deciding between <strong>Mailchimp</strong> and <strong>ActiveCampaign</strong> comes down to whether you need simple newsletter broadcasts or advanced customer journey automation.
-      </p>
-
-      <h2 className="text-white">At a Glance Comparison</h2>
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-700 my-4 text-left">
-          <thead>
-            <tr className="bg-gray-800 text-white">
-              <th className="border border-gray-700 p-2">Feature / Metric</th>
-              <th className="border border-gray-700 p-2">Mailchimp</th>
-              <th className="border border-gray-700 p-2">ActiveCampaign</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-200">
-            <tr className="border-b border-gray-700">
-              <td className="border border-gray-700 p-2 font-bold">Best For</td>
-              <td className="border border-gray-700 p-2">Beginners, simple newsletters & small lists</td>
-              <td className="border border-gray-700 p-2">Advanced marketing automation & CRM integration</td>
-            </tr>
-            <tr className="border-b border-gray-700">
-              <td className="border border-gray-700 p-2 font-bold">Automation Depth</td>
-              <td className="border border-gray-700 p-2">Basic linear autoresponders</td>
-              <td className="border border-gray-700 p-2">Complex multi-branch visual automation builder</td>
-            </tr>
-            <tr className="border-b border-gray-700">
-              <td className="border border-gray-700 p-2 font-bold">Starting Price</td>
-              <td className="border border-gray-700 p-2">~$13 / month</td>
-              <td className="border border-gray-700 p-2">~$29 / month</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-700 p-2 font-bold">Deliverability Rate</td>
-              <td className="border border-gray-700 p-2">Good</td>
-              <td className="border border-gray-700 p-2">Industry-leading high inbox placement</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h2 className="text-white">1. Core Functionality Differences</h2>
-      <p>
-        <strong>Mailchimp</strong> is an entry-level marketing suite known for straightforward email templates, drag-and-drop design, and simple list management.
-      </p>
-      <p>
-        <strong>ActiveCampaign</strong> operates as a full sales and marketing automation powerhouse. It tracks user behavior on your site, scores lead engagement, and triggers targeted email sequences dynamically.
-      </p>
-
-      <h2 className="text-white">Final Recommendation</h2>
-      <ul>
-        <li><strong>Choose Mailchimp if:</strong> You are launching a straightforward newsletter, blog broadcast, or basic promo emails with zero learning curve.</li>
-        <li><strong>Choose ActiveCampaign if:</strong> You run complex funnel workflows, lead scoring systems, or need built-in CRM deal tracking.</li>
-      </ul>
-    </article>
+    <ComparisonLayout
+      title="Mailchimp vs ActiveCampaign: Which Email Platform Wins in 2026?"
+      lead="Email marketing remains a top ROI channel for modern businesses. Deciding between Mailchimp and ActiveCampaign depends on whether you need straightforward broadcasts or sophisticated customer journey automation."
+      toolAName="Mailchimp"
+      toolBName="ActiveCampaign"
+      toolALink="https://mailchimp.com"
+      toolBLink="https://activecampaign.com"
+      verdictText="Choose Mailchimp if you want simple email newsletters, brand templates, and basic audience broadcast lists. Choose ActiveCampaign if you require advanced multi-branch automation, visual funnel tracking, and an integrated CRM."
+      tableData={[
+        {
+          metric: "Best For",
+          toolA: "Beginners, simple newsletters & quick email blasts",
+          toolB: "Advanced marketing automation & sales CRM"
+        },
+        {
+          metric: "Automation Builder",
+          toolA: "Basic linear email autoresponders",
+          toolB: "Complex multi-branch visual workflow builder"
+        },
+        {
+          metric: "Starting Price",
+          toolA: "~$13 / month",
+          toolB: "~$29 / month"
+        },
+        {
+          metric: "Deliverability Rate",
+          toolA: "Good",
+          toolB: "Industry-leading inbox placement"
+        }
+      ]}
+      coreDifferenceTextA="serves as an accessible email suite designed for fast setup. It provides drag-and-drop design tools, pre-built email templates, and simple list segmentation."
+      coreDifferenceTextB="is a complete sales and marketing automation ecosystem. It tracks on-site user behavior, calculates predictive lead scores, and dynamically triggers multi-channel customer journeys."
+      recommendationA="You need an easy-to-use email marketing platform for publishing routine broadcasts, company news, or product promos."
+      recommendationB="You run complex sales funnels, require dynamic behavioral triggers, or want built-in deal tracking for sales reps."
+    />
   );
 }
