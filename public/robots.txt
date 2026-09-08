@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://b2b-hub-orpin.vercel.app/sitemap.xml
