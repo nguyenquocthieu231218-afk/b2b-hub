@@ -3,7 +3,6 @@ import { MetadataRoute } from 'next'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://b2b-hub-orpin.vercel.app'
 
-  // Danh sách các trang so sánh SaaS chính của bạn
   const routes = [
     '',
     '/clickup-vs-asana',
