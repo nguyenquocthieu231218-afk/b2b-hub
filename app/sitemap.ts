@@ -1,13 +1,17 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from 'next'
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://b2b-hub-orpin.vercel.app';
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = 'https://b2b-hub-orpin.vercel.app'
 
+  // Danh sách các trang so sánh SaaS chính của bạn
   const routes = [
     '',
+    '/clickup-vs-asana',
     '/clickup-vs-monday',
+    '/clickup-vs-notion',
     '/notion-vs-coda',
     '/hubspot-vs-salesforce',
+    '/salesforce-vs-hubspot',
     '/asana-vs-trello',
     '/ahrefs-vs-semrush',
     '/slack-vs-teams',
@@ -15,12 +19,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/zapier-vs-make',
     '/webflow-vs-framer',
     '/mailchimp-vs-activecampaign',
-  ];
+    '/wix-vs-squarespace',
+    '/pipedrive-vs-hubspot',
+    '/klaviyo-vs-mailchimp',
+    '/airtable-vs-notion',
+  ]
 
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: route === '' ? 1.0 : 0.8,
-  }));
+  }))
 }
