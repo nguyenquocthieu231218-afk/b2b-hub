@@ -1,5 +1,5 @@
 import React from 'react';
-
+import ComparisonLayout from '@/components/ComparisonLayout';
 export default function ClickUpVsMonday() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8 prose lg:prose-xl text-gray-100">
