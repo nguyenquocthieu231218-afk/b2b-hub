@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "B2B Software Comparisons & Reviews 2026",
   description: "In-depth, data-driven comparisons of top enterprise software, SaaS tools, and business solutions.",
   verification: {
-    google: "5TCD5FLFd8kBGChu1wiqbsm-5p9iKeej7RAMFXZR9Z0",
+    google: "NW5omGCof5QYd-Ibszs5WrgrxsOn1B4iPBqah6w1pkk",
   },
 };
 
