@@ -21,6 +21,10 @@ export const AFFILIATE_LINKS: Record<string, string> = {
   framer: 'https://framer.com',
   mailchimp: 'https://mailchimp.com',
   activecampaign: 'https://activecampaign.com',
+  pipedrive: 'https://pipedrive.com',
+  klaviyo: 'https://klaviyo.com',
+  wix: 'https://wix.com',
+  squarespace: 'https://squarespace.com',
 };
 
 interface ComparisonLayoutProps {
@@ -29,6 +33,17 @@ interface ComparisonLayoutProps {
   tool2?: string;
   title?: string;
   description?: string;
+  lead?: string;
+  toolAName?: string;
+  toolBName?: string;
+  toolALink?: string;
+  toolBLink?: string;
+  verdictText?: string;
+  tableData?: Array<{ metric: string; toolA: string; toolB: string }>;
+  coreDifferenceTextA?: string;
+  coreDifferenceTextB?: string;
+  recommendationA?: string;
+  recommendationB?: string;
 }
 
 export default function ComparisonLayout({
