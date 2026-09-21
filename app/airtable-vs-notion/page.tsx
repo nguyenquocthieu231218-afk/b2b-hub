@@ -1,6 +1,5 @@
 import React from 'react';
-import ComparisonLayout from '@/components/ComparisonLayout';
-
+import ComparisonLayout from '../components/ComparisonLayout';
 export default function AirtableVsNotion() {
   return (
     <ComparisonLayout
