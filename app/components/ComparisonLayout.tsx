@@ -28,7 +28,7 @@ export const AFFILIATE_LINKS: Record<string, string> = {
 };
 
 interface ComparisonLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode;?
   tool1?: string;
   tool2?: string;
   title?: string;
