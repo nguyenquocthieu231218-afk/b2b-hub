@@ -25,25 +25,16 @@ export const AFFILIATE_LINKS: Record<string, string> = {
   klaviyo: 'https://klaviyo.com',
   wix: 'https://wix.com',
   squarespace: 'https://squarespace.com',
+  chatgpt: 'https://chatgpt.com',
+  claude: 'https://claude.ai',
+  linear: 'https://linear.app',
+  jira: 'https://atlassian.com/software/jira',
 };
 
 interface ComparisonLayoutProps {
   children?: React.ReactNode;
   tool1?: string;
   tool2?: string;
-  title?: string;
-  description?: string;
-  lead?: string;
-  toolAName?: string;
-  toolBName?: string;
-  toolALink?: string;
-  toolBLink?: string;
-  verdictText?: string;
-  tableData?: Array<{ metric: string; toolA: string; toolB: string }>;
-  coreDifferenceTextA?: string;
-  coreDifferenceTextB?: string;
-  recommendationA?: string;
-  recommendationB?: string;
 }
 
 export default function ComparisonLayout({
@@ -54,21 +45,22 @@ export default function ComparisonLayout({
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8 selection:bg-blue-500 selection:text-white">
       <div className="max-w-4xl mx-auto">
+        {/* Thanh điều hướng hệ thống chung */}
         <div className="mb-6 flex items-center justify-between">
           <a
             href="/"
             className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
           >
-            <span>&larr;</span> Back to B2B Hub
+            <span>&larr;</span> Back to B2B Hub Home
           </a>
-          <span className="text-xs text-slate-500 bg-slate-900 border border-slate-800 px-3 py-1 rounded-full">
-            Independent Editorial Review
+          <span className="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-full font-medium">
+            Verified Editorial &bull; 2026 Standard
           </span>
         </div>
 
-        {/* Khung chứa nội dung bài viết */}
+        {/* Khung chứa nội dung bài viết chính */}
         <div className="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-xl backdrop-blur-sm">
-          {/* Thông báo minh bạch Affiliate (Disclosure) chuẩn US/EU */}
+          {/* Thông báo minh bạch Affiliate chuẩn US/EU */}
           <div className="mb-8 p-3.5 bg-slate-950/60 border border-slate-800/60 rounded-xl text-xs text-slate-400 leading-relaxed flex items-start gap-2.5">
             <span className="text-blue-400 font-bold text-sm mt-0.5">ℹ️</span>
             <div>
@@ -79,12 +71,30 @@ export default function ComparisonLayout({
           {children}
         </div>
 
-        {/* Thanh điều hướng Affiliate nhanh dưới chân bài viết */}
+        {/* Khối điều hướng bài viết liên quan (Cross-linking tự động mở rộng tương lai) */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <a
+            href="/#categories"
+            className="p-5 bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 rounded-xl transition-all text-left group"
+          >
+            <div className="text-xs text-blue-400 font-semibold mb-1">Explore More Categories &rarr;</div>
+            <div className="text-sm font-bold text-white group-hover:text-blue-300">Browse All Software Comparisons</div>
+          </a>
+          <a
+            href="/chatgpt-vs-claude"
+            className="p-5 bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 rounded-xl transition-all text-left group"
+          >
+            <div className="text-xs text-indigo-400 font-semibold mb-1">Featured AI Review &rarr;</div>
+            <div className="text-sm font-bold text-white group-hover:text-indigo-300">ChatGPT vs. Claude Breakdown</div>
+          </a>
+        </div>
+
+        {/* Thanh chuyển đổi Affiliate thông minh dưới chân bài */}
         {(tool1 || tool2) && (
           <div className="mt-8 p-6 bg-slate-900/90 border border-slate-800/80 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
             <div>
-              <h3 className="text-white font-bold text-lg">Ready to choose your software?</h3>
-              <p className="text-sm text-slate-400">Explore official plans, free trials, and get started today.</p>
+              <h3 className="text-white font-bold text-lg">Ready to accelerate your workflow?</h3>
+              <p className="text-sm text-slate-400">Secure exclusive trials and official pricing today.</p>
             </div>
             <div className="flex flex-wrap gap-3 w-full sm:w-auto justify-end">
               {tool1 && AFFILIATE_LINKS[tool1] && (
