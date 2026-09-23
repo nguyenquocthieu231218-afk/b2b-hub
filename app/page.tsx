@@ -3,9 +3,17 @@ import React from 'react';
 // Danh sách các bài viết so sánh được nhóm theo danh mục chuẩn phong cách SaaS US/EU
 const CATEGORIES = [
   {
-    name: 'Project Management & Collaboration',
-    description: 'Top tools to keep your teams aligned and productive.',
+    name: 'AI & Productivity',
+    description: 'Next-generation intelligence and automation for modern knowledge workers.',
     comparisons: [
+      { slug: 'chatgpt-vs-claude', title: 'ChatGPT vs. Claude', desc: 'Versatility and voice mode vs. long-form context and deep coding.' },
+    ],
+  },
+  {
+    name: 'Project Management & Collaboration',
+    description: 'Top tools to keep your engineering and product teams aligned and productive.',
+    comparisons: [
+      { slug: 'linear-vs-jira', title: 'Linear vs. Jira', desc: 'Blazing-fast startup velocity vs. enterprise agile scale.' },
       { slug: 'clickup-vs-asana', title: 'ClickUp vs. Asana', desc: 'Feature depth vs. simplicity for growing teams.' },
       { slug: 'clickup-vs-monday', title: 'ClickUp vs. Monday.com', desc: 'Customization power compared side-by-side.' },
       { slug: 'clickup-vs-notion', title: 'ClickUp vs. Notion', desc: 'Task execution vs. knowledge management.' },
