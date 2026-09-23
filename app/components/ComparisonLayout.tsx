@@ -35,6 +35,23 @@ interface ComparisonLayoutProps {
   children?: React.ReactNode;
   tool1?: string;
   tool2?: string;
+  // Bổ sung đầy đủ các thuộc tính để tương thích hoàn toàn với tất cả các trang con
+  title?: string;
+  lead?: string;
+  toolAName?: string;
+  toolBName?: string;
+  toolALink?: string;
+  toolBLink?: string;
+  verdictText?: string;
+  tableData?: Array<{
+    metric: string;
+    toolA: string;
+    toolB: string;
+  }>;
+  coreDifferenceTextA?: string;
+  coreDifferenceTextB?: string;
+  recommendationA?: string;
+  recommendationB?: string;
 }
 
 export default function ComparisonLayout({
@@ -71,7 +88,7 @@ export default function ComparisonLayout({
           {children}
         </div>
 
-        {/* Khối điều hướng bài viết liên quan (Cross-linking tự động mở rộng tương lai) */}
+        {/* Khối điều hướng bài viết liên quan */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <a
             href="/#categories"
