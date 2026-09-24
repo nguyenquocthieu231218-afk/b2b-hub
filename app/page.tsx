@@ -12,7 +12,7 @@ export default function Home() {
       <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black px-3 py-1 rounded-lg text-lg tracking-wider shadow-lg shadow-blue-600/30">SE</span>
+            <img src="/logo.png" alt="StackEvalify Logo" className="w-8 h-8 rounded-lg object-contain shadow-md shadow-blue-500/20" />
             <span className="font-bold text-lg tracking-tight text-white">StackEvalify</span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
@@ -155,7 +155,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <span className="bg-blue-600 text-white font-bold px-2 py-0.5 rounded text-sm">SE</span>
+              <img src="/logo.png" alt="StackEvalify Logo" className="w-6 h-6 rounded object-contain" />
               <span className="font-bold text-white">StackEvalify</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
