@@ -3,6 +3,9 @@ import React from 'react';
 export const metadata = {
   title: 'StackEvalify | Data-Driven SaaS Comparisons & Tech Evaluations',
   description: 'Rigorous, side-by-side technical benchmarks and architectural analyses to help modern enterprises choose the optimal software infrastructure.',
+  other: {
+    'impact-site-verification': '8b40ba0e-e24c-4340-bb46-5f63f9772766',
+  },
 };
 
 export default function Home() {
