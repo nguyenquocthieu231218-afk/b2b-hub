@@ -37,6 +37,7 @@ interface ComparisonLayoutProps {
   tool2?: string;
   // Bổ sung đầy đủ các thuộc tính để tương thích hoàn toàn với tất cả các trang con
   title?: string;
+  description?: string;
   lead?: string;
   toolAName?: string;
   toolBName?: string;
