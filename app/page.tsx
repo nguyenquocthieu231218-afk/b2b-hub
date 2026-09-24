@@ -1,5 +1,10 @@
 import React from 'react';
 
+export const metadata = {
+  title: 'StackEvalify | Data-Driven SaaS Comparisons & Tech Evaluations',
+  description: 'Rigorous, side-by-side technical benchmarks and architectural analyses to help modern enterprises choose the optimal software infrastructure.',
+};
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white font-sans">
@@ -8,7 +13,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black px-3 py-1 rounded-lg text-lg tracking-wider shadow-lg shadow-blue-600/30">SE</span>
-            <span className="font-bold text-lg tracking-tight text-white">StackEvalify <span className="text-blue-500">Enterprise</span></span>
+            <span className="font-bold text-lg tracking-tight text-white">StackEvalify</span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
             <a href="#categories" className="hover:text-blue-400 transition-colors">Categories</a>
