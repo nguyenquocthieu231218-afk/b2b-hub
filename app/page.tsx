@@ -14,7 +14,8 @@ export default function Home() {
       {/* Top Header / Navigation */}
       <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          {/* Đã tinh chỉnh lại cấu trúc flex và gap để logo không bao giờ bị đè chữ */}
+          <div className="flex items-center gap-3 shrink-0">
             <img src="/logo.png" alt="StackEvalify Logo" className="w-8 h-8 rounded-lg object-contain shadow-md shadow-blue-500/20" />
             <span className="font-bold text-lg tracking-tight text-white">StackEvalify</span>
           </div>
