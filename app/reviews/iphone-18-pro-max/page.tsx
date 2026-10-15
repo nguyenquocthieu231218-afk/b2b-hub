@@ -17,10 +17,10 @@ export default function IphoneReviewPage() {
           </div>
         </header>
 
-        {/* 📸 CHÈN ẢNH BÌA (THUMBNAIL) Ở ĐÂY */}
+        {/* 📸 CHÈN ẢNH BÌA TỪ FILE DÀI CỦA BRO */}
         <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-slate-800">
           <Image 
-            src="/images/iphone-18-pro-max.jpg" 
+            src="/images/photo-1759588071814-f960ed8f7ee8.avif" 
             alt="iPhone 18 Pro Max hands-on review" 
             fill
             className="object-cover"
@@ -39,10 +39,10 @@ export default function IphoneReviewPage() {
             After over a week of hands-on testing, the iPhone 18 Pro Max clearly embraces the philosophy of &quot;refining what already works&quot; rather than chasing gimmicks.
           </p>
 
-          {/* 📸 CÓ THỂ CHÈN THÊM ẢNH MINH HỌA NỘI DUNG Ở BẤT CỨ ĐÂU */}
+          {/* 📸 CHÈN ẢNH CAMERA TỪ FILE cam.avif CỦA BRO */}
           <div className="my-6">
             <Image 
-              src="/images/iphone-camera.jpg" 
+              src="/images/cam.avif" 
               alt="iPhone 18 Pro Max camera variable aperture" 
               width={1200} 
               height={800} 
