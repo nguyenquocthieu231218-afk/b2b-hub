@@ -1,198 +1,317 @@
-import React from 'react';
+import Link from 'next/link';
 
-export const metadata = {
-  title: 'StackEvalify | Data-Driven SaaS Comparisons & Tech Evaluations',
-  description: 'Rigorous, side-by-side technical benchmarks and architectural analyses to help modern enterprises choose the optimal software infrastructure.',
-  other: {
-    'impact-site-verification': '8b40ba0e-e24c-4340-bb46-5f63f9772766',
+const focusAreas = [
+  {
+    title: 'B2B SaaS & DevOps',
+    description:
+      'Reviews and comparisons for engineering teams. We examine plan limits, SSO, integrations, and pricing when they are relevant to the evaluation.',
+    href: '/category/saas',
+    linkLabel: 'Explore SaaS reviews',
   },
-};
+  {
+    title: 'Developer Hardware',
+    description:
+      'Hands-on evaluations of machines and gear used for software development and QA, with test conditions stated for each review.',
+    href: '/category/hardware',
+    linkLabel: 'Explore hardware reviews',
+  },
+];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white font-sans">
-      {/* Top Header / Navigation */}
-      <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Đã tinh chỉnh lại cấu trúc flex và gap để logo không bao giờ bị đè chữ */}
-          <div className="flex items-center gap-3 shrink-0">
-            <img src="/logo.png" alt="StackEvalify Logo" className="w-8 h-8 rounded-lg object-contain shadow-md shadow-blue-500/20" />
-            <span className="font-bold text-lg tracking-tight text-white">StackEvalify</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#categories" className="hover:text-blue-400 transition-colors">Categories</a>
-            <a href="/about" className="hover:text-blue-400 transition-colors">About Us</a>
-            <a href="/contact" className="hover:text-blue-400 transition-colors">Contact</a>
+    <>
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded bg-white px-4 py-2 text-slate-950 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Skip to content
+      </a>
+
+      <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <Link
+            href="/"
+            className="rounded p-1 text-xl font-black tracking-tight text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            StackEvalify
+          </Link>
+
+          <nav
+            aria-label="Main navigation"
+            className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-slate-300"
+          >
+            <Link
+              href="#reviews"
+              className="rounded p-1 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              Reviews
+            </Link>
+            <Link
+              href="#focus-areas"
+              className="rounded p-1 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              Categories
+            </Link>
+            <Link
+              href="/methodology"
+              className="rounded p-1 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              Methodology
+            </Link>
+            <Link
+              href="/about"
+              className="rounded p-1 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              About
+            </Link>
           </nav>
-          <div>
-            <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full font-semibold">
-              &bull; Verified Tech Evaluator
-            </span>
-          </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-28 px-4 sm:px-6 lg:px-8 border-b border-slate-900">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08)_0,transparent_70%)] pointer-events-none" />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-6">
-            <span>⚡ Rigorous Tech Stack Evaluations & 2026 Standards</span>
-          </div>
-          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 leading-tight">
-            Data-Driven SaaS Comparisons for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">High-Growth Engineering Teams</span>
-          </h1>
-          <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
-            Objective, side-by-side technical benchmarks and architectural analyses to help modern enterprises choose the optimal software infrastructure.
-          </p>
-        </div>
-      </section>
+      <main id="main-content">
+        <section className="border-b border-slate-800">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">
+              StackEvalify · Technical reviews
+            </p>
 
-      {/* Main Categories Grid */}
-      <main id="categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-white tracking-tight">Verified Software Evaluations</h2>
-          <span className="text-xs text-slate-400">Updated Daily</span>
-        </div>
+            <h1 className="max-w-4xl text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+              B2B SaaS and developer hardware reviews for engineering teams.
+            </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Card 1: AI & Productivity */}
-          <a href="/chatgpt-vs-claude" className="group bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">AI & LLMs</span>
-                <span className="text-xs text-slate-400">Read &rarr;</span>
-              </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">ChatGPT vs. Claude</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">Evaluating context windows, API latency, code synthesis accuracy, and enterprise safety guardrails.</p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Benchmark 2026</span>
-              <span className="text-blue-400 font-medium">View Analysis</span>
-            </div>
-          </a>
+            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">
+              We evaluate software and hardware against practical engineering workflows.
+              Every review identifies whether its findings come from hands-on use,
+              performance testing, or desk research—and explains the limits of that evidence.
+            </p>
 
-          {/* Card 2: Project Management */}
-          <a href="/linear-vs-jira" className="group bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">Engineering Workflow</span>
-                <span className="text-xs text-slate-400">Read &rarr;</span>
-              </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Linear vs. Jira</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">UI responsiveness, issue tracking ergonomics, keyboard shortcut velocity, and scaling limits.</p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="/category/saas"
+                className="rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 focus:ring-offset-slate-950"
+              >
+                Explore SaaS reviews
+              </Link>
+              <Link
+                href="/category/hardware"
+                className="rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 font-semibold text-white transition-colors hover:border-slate-500 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-slate-950"
+              >
+                Explore hardware reviews
+              </Link>
             </div>
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Benchmark 2026</span>
-              <span className="text-blue-400 font-medium">View Analysis</span>
-            </div>
-          </a>
 
-          {/* Card 3: SEO Tools */}
-          <a href="/ahrefs-vs-semrush" className="group bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">Growth & SEO</span>
-                <span className="text-xs text-slate-400">Read &rarr;</span>
-              </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Ahrefs vs. SEMrush</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">Backlink crawler freshness, keyword database depth, and organic traffic estimation metrics.</p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Benchmark 2026</span>
-              <span className="text-blue-400 font-medium">View Analysis</span>
-            </div>
-          </a>
-
-          {/* Card 4: CRM & Sales */}
-          <a href="/hubspot-vs-salesforce" className="group bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">CRM Stack</span>
-                <span className="text-xs text-slate-400">Read &rarr;</span>
-              </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">HubSpot vs. Salesforce</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">Implementation overhead, custom object flexibility, TCO, and sales pipeline reporting depth.</p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Benchmark 2026</span>
-              <span className="text-blue-400 font-medium">View Analysis</span>
-            </div>
-          </a>
-
-          {/* Card 5: Automation */}
-          <a href="/zapier-vs-make" className="group bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20">Integration</span>
-                <span className="text-xs text-slate-400">Read &rarr;</span>
-              </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Zapier vs. Make</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">Visual scenario debugging, error handling logic, execution limits, and pricing architecture.</p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Benchmark 2026</span>
-              <span className="text-blue-400 font-medium">View Analysis</span>
-            </div>
-          </a>
-
-          {/* Card 6: Web Design */}
-          <a href="/webflow-vs-framer" className="group bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Web Builders</span>
-                <span className="text-xs text-slate-400">Read &rarr;</span>
-              </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-2">Webflow vs. Framer</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">CSS box-model fidelity vs. freeform canvas animation capabilities for high-converting pages.</p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Benchmark 2026</span>
-              <span className="text-blue-400 font-medium">View Analysis</span>
-            </div>
-          </a>
-        </div>
-      </main>
-
-      {/* Professional Footer with Legal Links */}
-      <footer className="border-t border-slate-800 bg-slate-950 mt-20 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <img src="/logo.png" alt="StackEvalify Logo" className="w-6 h-6 rounded object-contain" />
-              <span className="font-bold text-white">StackEvalify</span>
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Providing rigorous technical benchmarks and independent software stack evaluations for engineering leaders worldwide.
+            <p className="mt-8 max-w-3xl rounded-lg border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm leading-relaxed text-slate-300">
+              StackEvalify may earn a commission when you buy through links in our reviews.
+              Commissions do not determine product selection, rankings, or test results.
             </p>
           </div>
-          <div>
-            <h4 className="text-sm font-semibold text-white mb-3">Navigation</h4>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li><a href="#categories" className="hover:text-white transition-colors">Software Categories</a></li>
-              <li><a href="/chatgpt-vs-claude" className="hover:text-white transition-colors">Top AI Reviews</a></li>
-            </ul>
+        </section>
+
+        <section
+          id="reviews"
+          aria-labelledby="reviews-heading"
+          className="scroll-mt-24 mx-auto max-w-6xl px-4 py-16 sm:px-6"
+        >
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">
+                Tested and evaluated
+              </p>
+              <h2
+                id="reviews-heading"
+                className="mt-2 text-3xl font-bold tracking-tight text-white"
+              >
+                Latest review
+              </h2>
+            </div>
           </div>
-          <div>
-            <h4 className="text-sm font-semibold text-white mb-3">Legal & Trust</h4>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li><a href="/about" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="/terms" className="hover:text-white transition-colors">Terms of Service</a></li>
-            </ul>
+
+          <article className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_16rem]">
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="rounded-md bg-blue-500/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-blue-300">
+                    Developer hardware
+                  </span>
+                  <span className="text-sm text-slate-400">
+                    Last tested: October 2026
+                  </span>
+                  <span className="text-sm text-slate-400">
+                    Method: hands-on
+                  </span>
+                </div>
+
+                <h3 className="mt-5 text-2xl font-bold leading-tight text-white sm:text-3xl">
+                  Acer Nitro 5 for web development
+                </h3>
+
+                <p className="mt-4 leading-relaxed text-slate-300">
+                  Tested configuration: Intel Core i7-10750H, GeForce GTX 1650 Ti,
+                  and upgraded 16 GB RAM. In the stated Next.js 14 and Node.js 20
+                  setup, Fast Refresh completed in under 1.5 seconds. During sustained
+                  Webpack compilation, CPU temperature reached 92°C in this test setup.
+                </p>
+
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                  These results apply to the tested configuration and workload. See the
+                  full evaluation for test conditions, measurement details, and the
+                  observed effect on sustained performance.
+                </p>
+
+                <Link
+                  href="/reviews/acer-nitro-5-web-dev"
+                  className="mt-6 inline-flex rounded font-semibold text-blue-300 transition-colors hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  Read the full evaluation
+                  <span aria-hidden="true" className="ml-2">→</span>
+                </Link>
+              </div>
+
+              <aside className="flex flex-col justify-between gap-6 border-t border-slate-800 pt-6 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                    Best suited to
+                  </h4>
+                  <p className="mt-2 leading-relaxed text-slate-200">
+                    Budget-conscious web developers who mainly work at a desk.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                    Main trade-off
+                  </h4>
+                  <p className="mt-2 leading-relaxed text-slate-200">
+                    High CPU temperature during sustained compilation in our test setup.
+                  </p>
+                </div>
+
+                <div className="border-t border-slate-800 pt-5">
+                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                    Reviewed by
+                  </p>
+                  <Link
+                    href="/author/thieu-nguyen"
+                    className="mt-2 inline-block rounded text-sm font-medium text-blue-300 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    Thieu Nguyen
+                  </Link>
+                </div>
+              </aside>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="focus-areas"
+          aria-labelledby="focus-heading"
+          className="scroll-mt-24 border-t border-slate-800"
+        >
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">
+              Browse by category
+            </p>
+            <h2 id="focus-heading" className="mt-2 text-3xl font-bold text-white">
+              What we cover
+            </h2>
+
+            <div className="mt-8 grid gap-5 md:grid-cols-2">
+              {focusAreas.map((area) => (
+                <Link
+                  key={area.href}
+                  href={area.href}
+                  className="group rounded-xl border border-slate-800 bg-slate-900 p-6 transition-colors hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <h3 className="text-xl font-bold text-white">
+                    {area.title}
+                  </h3>
+                  <p className="mt-3 leading-relaxed text-slate-300">
+                    {area.description}
+                  </p>
+                  <span className="mt-5 inline-flex font-semibold text-blue-300 group-hover:text-blue-200">
+                    {area.linkLabel}
+                    <span aria-hidden="true" className="ml-2">→</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
-          <div>
-            <h4 className="text-sm font-semibold text-white mb-3">Support & Contact</h4>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li><a href="/contact" className="hover:text-white transition-colors">Editorial Contact</a></li>
-              <li><span className="text-emerald-400">Verified Affiliate Publisher</span></li>
-            </ul>
+        </section>
+
+        <section
+          id="methodology"
+          aria-labelledby="methodology-heading"
+          className="scroll-mt-24 border-t border-slate-800"
+        >
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">
+                How to read our reviews
+              </p>
+              <h2
+                id="methodology-heading"
+                className="mt-2 text-3xl font-bold text-white"
+              >
+                Evidence comes first
+              </h2>
+              <p className="mt-4 leading-relaxed text-slate-300">
+                We label the method used so readers can judge what each conclusion
+                is based on. A hands-on review, a benchmark, and a documentation-based
+                assessment provide different kinds of evidence.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-5 md:grid-cols-3">
+              <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                <h3 className="font-bold text-white">Hands-on testing</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                  We use the product in a stated workflow and identify the tested
+                  configuration, duration, and relevant limitations.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                <h3 className="font-bold text-white">Performance testing</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                  We describe the setup, workload, measurements, repetitions, and
+                  limits of the results. API tests also identify the service tier
+                  and execution region.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                <h3 className="font-bold text-white">Desk research</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                  We assess vendor documentation, specifications, or product demos
+                  and label the work as desk research when direct testing was not done.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/methodology"
+              className="mt-7 inline-flex rounded font-semibold text-blue-300 transition-colors hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              Read our full methodology
+              <span aria-hidden="true" className="ml-2">→</span>
+            </Link>
           </div>
-        </div>
-        <div className="max-w-7xl mx-auto pt-8 border-t border-slate-900 text-center text-xs text-slate-400">
-          &copy; 2026 StackEvalify Inc. All rights reserved. Advertiser Disclosure: We may receive compensation through partner affiliate links.
+        </section>
+      </main>
+
+      <footer className="border-t border-slate-800">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-slate-400 sm:px-6">
+          <p>© {new Date().getFullYear()} StackEvalify</p>
+          <nav aria-label="Footer navigation" className="flex flex-wrap gap-5">
+            <Link href="/about" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+              About
+            </Link>
+            <Link href="/methodology" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+              Methodology
+            </Link>
+          </nav>
         </div>
       </footer>
-    </div>
+    </>
   );
 }
