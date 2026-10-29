@@ -1,68 +1,32 @@
-import Image from 'next/image';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import SiteFooter from '../../../components/SiteFooter';
+import SiteHeader from '../../../components/SiteHeader';
+
+export const metadata: Metadata = {
+  title: 'iPhone Review in Progress',
+  description: 'This product review is being held while product details and testing evidence are verified.',
+  alternates: { canonical: '/reviews/iphone-18-pro-max' },
+  robots: { index: false, follow: true },
+};
 
 export default function IphoneReviewPage() {
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 py-16 px-4">
-      <article className="max-w-3xl mx-auto space-y-8">
-        
-        {/* Tiêu đề bài viết */}
-        <header className="space-y-4">
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
-            iPhone 18 Pro Max Review: Subtle Upgrades and Irresistible Appeal
-          </h1>
-          <div className="text-sm text-slate-400 flex items-center gap-4">
-            <span>By StackEvalify Engineering Team</span>
-            <span>•</span>
-            <time dateTime="2026-09-29">Updated: September 29, 2026</time>
-          </div>
-        </header>
-
-        {/* 📸 CHÈN ẢNH BÌA TỪ FILE DÀI CỦA BRO */}
-        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-slate-800">
-          <Image 
-            src="/images/photo-1759588071814-f960ed8f7ee8.avif" 
-            alt="iPhone 18 Pro Max hands-on review" 
-            fill
-            className="object-cover"
-            priority
-          />
+    <>
+      <SiteHeader />
+      <main id="main-content" className="mx-auto min-h-[65vh] max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6 sm:p-8">
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-amber-200">Review on hold</p>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">This evaluation is not ready to publish</h1>
+          <p className="mt-5 leading-relaxed text-slate-200">
+            Product availability, specifications, images, and hands-on testing records need verification before this page can make review claims. The draft is withheld until those sources are available.
+          </p>
+          <Link href="/" className="mt-6 inline-flex rounded-lg bg-slate-100 px-4 py-2.5 font-semibold text-slate-900 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-300">
+            Return to StackEvalify
+          </Link>
         </div>
-
-        {/* Nội dung bài viết */}
-        <section className="space-y-6 text-slate-300 leading-relaxed">
-          <p className="text-lg">
-            Apple continues to cement its flagship dominance not through radical overhauls, but through a steady and pragmatic upgrade cycle. The <strong>iPhone 18 Pro Max</strong> packs a powerful punch, featuring the cutting-edge <strong>Apple A20 Pro</strong> chip and the Pro Max lineup&apos;s first-ever variable physical aperture main camera.
-          </p>
-
-          <h2 className="text-2xl font-bold text-white pt-4">1. Performance & Real-World Experience</h2>
-          <p>
-            After over a week of hands-on testing, the iPhone 18 Pro Max clearly embraces the philosophy of &quot;refining what already works&quot; rather than chasing gimmicks.
-          </p>
-
-          {/* 📸 CHÈN ẢNH CAMERA TỪ FILE cam.avif CỦA BRO */}
-          <div className="my-6">
-            <Image 
-              src="/images/cam.avif" 
-              alt="iPhone 18 Pro Max camera variable aperture" 
-              width={1200} 
-              height={800} 
-              className="rounded-xl border border-slate-800"
-            />
-            <p className="text-center text-sm text-slate-500 mt-2">The new variable physical aperture camera system in action.</p>
-          </div>
-
-          <h2 className="text-2xl font-bold text-white pt-4">2. Is it Worth the Upgrade?</h2>
-          <p>
-            If you are currently using a recent predecessor like the iPhone 17 Series, upgrading might not feel strictly necessary. However, for users holding onto older devices such as the <strong>iPhone 14 Series or 15 Series and below</strong>, the cumulative leap in raw performance makes it a brilliant investment.
-          </p>
-        </section>
-
-        {/* Nút quay về */}
-        <div className="pt-8 border-t border-slate-800">
-          <a href="/" className="text-blue-400 hover:underline">&larr; Back to Home</a>
-        </div>
-
-      </article>
-    </main>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

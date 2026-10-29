@@ -1,41 +1,48 @@
-import React from 'react';
+import Link from 'next/link';
+import type { ReactNode } from 'react';
+import SiteFooter from '../../components/SiteFooter';
+import SiteHeader from '../../components/SiteHeader';
 
-export const AFFILIATE_LINKS: Record<string, string> = {
-  clickup: 'https://clickup.com',
-  monday: 'https://monday.com',
-  notion: 'https://notion.so',
-  coda: 'https://coda.io',
-  hubspot: 'https://hubspot.com',
-  salesforce: 'https://salesforce.com',
-  asana: 'https://asana.com',
-  trello: 'https://trello.com',
-  ahrefs: 'https://ahrefs.com',
-  semrush: 'https://semrush.com',
-  slack: 'https://slack.com',
-  teams: 'https://teams.microsoft.com',
-  shopify: 'https://shopify.com',
-  woocommerce: 'https://woocommerce.com',
-  zapier: 'https://zapier.com',
-  make: 'https://make.com',
-  webflow: 'https://webflow.com',
-  framer: 'https://framer.com',
-  mailchimp: 'https://mailchimp.com',
-  activecampaign: 'https://activecampaign.com',
-  pipedrive: 'https://pipedrive.com',
-  klaviyo: 'https://klaviyo.com',
-  wix: 'https://wix.com',
-  squarespace: 'https://squarespace.com',
-  chatgpt: 'https://chatgpt.com',
-  claude: 'https://claude.ai',
-  linear: 'https://linear.app',
-  jira: 'https://atlassian.com/software/jira',
+type ProductLink = {
+  name: string;
+  href: string;
+};
+
+const PRODUCT_LINKS: Record<string, ProductLink> = {
+  clickup: { name: 'ClickUp', href: 'https://clickup.com' },
+  monday: { name: 'Monday.com', href: 'https://monday.com' },
+  notion: { name: 'Notion', href: 'https://notion.so' },
+  coda: { name: 'Superhuman Docs (formerly Coda)', href: 'https://docs.superhuman.com' },
+  hubspot: { name: 'HubSpot', href: 'https://hubspot.com' },
+  salesforce: { name: 'Salesforce', href: 'https://salesforce.com' },
+  asana: { name: 'Asana', href: 'https://asana.com' },
+  trello: { name: 'Trello', href: 'https://trello.com' },
+  ahrefs: { name: 'Ahrefs', href: 'https://ahrefs.com' },
+  semrush: { name: 'Semrush', href: 'https://semrush.com' },
+  slack: { name: 'Slack', href: 'https://slack.com' },
+  teams: { name: 'Microsoft Teams', href: 'https://teams.microsoft.com' },
+  shopify: { name: 'Shopify', href: 'https://shopify.com' },
+  woocommerce: { name: 'WooCommerce', href: 'https://woocommerce.com' },
+  zapier: { name: 'Zapier', href: 'https://zapier.com' },
+  make: { name: 'Make', href: 'https://make.com' },
+  webflow: { name: 'Webflow', href: 'https://webflow.com' },
+  framer: { name: 'Framer', href: 'https://framer.com' },
+  mailchimp: { name: 'Mailchimp', href: 'https://mailchimp.com' },
+  activecampaign: { name: 'ActiveCampaign', href: 'https://activecampaign.com' },
+  pipedrive: { name: 'Pipedrive', href: 'https://pipedrive.com' },
+  klaviyo: { name: 'Klaviyo', href: 'https://klaviyo.com' },
+  wix: { name: 'Wix', href: 'https://wix.com' },
+  squarespace: { name: 'Squarespace', href: 'https://squarespace.com' },
+  chatgpt: { name: 'ChatGPT', href: 'https://chatgpt.com' },
+  claude: { name: 'Claude', href: 'https://claude.ai' },
+  linear: { name: 'Linear', href: 'https://linear.app' },
+  jira: { name: 'Jira', href: 'https://atlassian.com/software/jira' },
 };
 
 interface ComparisonLayoutProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   tool1?: string;
   tool2?: string;
-  // Bổ sung đầy đủ các thuộc tính để tương thích hoàn toàn với tất cả các trang con
   title?: string;
   description?: string;
   lead?: string;
@@ -53,92 +60,185 @@ interface ComparisonLayoutProps {
   coreDifferenceTextB?: string;
   recommendationA?: string;
   recommendationB?: string;
+  showDraftNotice?: boolean;
 }
 
 export default function ComparisonLayout({
   children,
   tool1,
   tool2,
+  title,
+  description,
+  lead,
+  toolAName,
+  toolBName,
+  toolALink,
+  toolBLink,
+  verdictText,
+  tableData = [],
+  coreDifferenceTextA,
+  coreDifferenceTextB,
+  recommendationA,
+  recommendationB,
+  showDraftNotice = true,
 }: ComparisonLayoutProps) {
+  const productA = toolAName
+    ? { name: toolAName, href: toolALink ?? PRODUCT_LINKS[tool1 ?? '']?.href }
+    : PRODUCT_LINKS[tool1 ?? ''];
+  const productB = toolBName
+    ? { name: toolBName, href: toolBLink ?? PRODUCT_LINKS[tool2 ?? '']?.href }
+    : PRODUCT_LINKS[tool2 ?? ''];
+  const hasChildren = children !== undefined && children !== null;
+  const pageTitle = title ?? `${productA?.name ?? 'Product A'} vs ${productB?.name ?? 'Product B'}`;
+
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8 selection:bg-blue-500 selection:text-white">
-      <div className="max-w-4xl mx-auto">
-        {/* Thanh điều hướng hệ thống chung */}
-        <div className="mb-6 flex items-center justify-between">
-          <a
-            href="/"
-            className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
-          >
-            <span>&larr;</span> Back to B2B Hub Home
-          </a>
-          <span className="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-full font-medium">
-            Verified Editorial &bull; 2026 Standard
-          </span>
+    <>
+      <SiteHeader />
+      <main id="main-content" className="mx-auto min-h-screen max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+        <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-400">
+          <Link href="/" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Home
+          </Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/category/saas" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Software comparisons
+          </Link>
         </div>
 
-        {/* Khung chứa nội dung bài viết chính */}
-        <div className="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-xl backdrop-blur-sm">
-          {/* Thông báo minh bạch Affiliate chuẩn US/EU */}
-          <div className="mb-8 p-3.5 bg-slate-950/60 border border-slate-800/60 rounded-xl text-xs text-slate-400 leading-relaxed flex items-start gap-2.5">
-            <span className="text-blue-400 font-bold text-sm mt-0.5">ℹ️</span>
-            <div>
-              <span className="font-semibold text-slate-300">Advertiser Disclosure:</span> We may earn an affiliate commission from links on this page at no extra cost to you. Our reviews remain independent, rigorous, and data-driven.
-            </div>
-          </div>
-
-          {children}
-        </div>
-
-        {/* Khối điều hướng bài viết liên quan */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <a
-            href="/#categories"
-            className="p-5 bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 rounded-xl transition-all text-left group"
-          >
-            <div className="text-xs text-blue-400 font-semibold mb-1">Explore More Categories &rarr;</div>
-            <div className="text-sm font-bold text-white group-hover:text-blue-300">Browse All Software Comparisons</div>
-          </a>
-          <a
-            href="/chatgpt-vs-claude"
-            className="p-5 bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 rounded-xl transition-all text-left group"
-          >
-            <div className="text-xs text-indigo-400 font-semibold mb-1">Featured AI Review &rarr;</div>
-            <div className="text-sm font-bold text-white group-hover:text-indigo-300">ChatGPT vs. Claude Breakdown</div>
-          </a>
-        </div>
-
-        {/* Thanh chuyển đổi Affiliate thông minh dưới chân bài */}
-        {(tool1 || tool2) && (
-          <div className="mt-8 p-6 bg-slate-900/90 border border-slate-800/80 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
-            <div>
-              <h3 className="text-white font-bold text-lg">Ready to accelerate your workflow?</h3>
-              <p className="text-sm text-slate-400">Secure exclusive trials and official pricing today.</p>
-            </div>
-            <div className="flex flex-wrap gap-3 w-full sm:w-auto justify-end">
-              {tool1 && AFFILIATE_LINKS[tool1] && (
-                <a
-                  href={AFFILIATE_LINKS[tool1]}
-                  target="_blank"
-                  rel="noopener noreferrer sponsored"
-                  className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20 text-center"
-                >
-                  Try {tool1.charAt(0).toUpperCase() + tool1.slice(1)} &rarr;
-                </a>
-              )}
-              {tool2 && AFFILIATE_LINKS[tool2] && (
-                <a
-                  href={AFFILIATE_LINKS[tool2]}
-                  target="_blank"
-                  rel="noopener noreferrer sponsored"
-                  className="bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all text-center"
-                >
-                  Try {tool2.charAt(0).toUpperCase() + tool2.slice(1)} &rarr;
-                </a>
-              )}
-            </div>
-          </div>
+        {showDraftNotice && (
+          <aside role="note" className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm leading-relaxed text-amber-100">
+            <strong>Editorial draft · not ready to publish:</strong> Product features, plan limits, and prices need dated primary-source checks. The page stays out of search results until its evidence is reviewed. Product links currently point to official sites; any future affiliate relationship must be disclosed beside the link.
+          </aside>
         )}
-      </div>
-    </main>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl sm:p-8 lg:p-10">
+          {hasChildren ? (
+            children
+          ) : (
+            <article>
+              <header className="border-b border-slate-800 pb-7">
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">Product comparison</p>
+                <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">{pageTitle}</h1>
+                {(description || lead) && (
+                  <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">{description ?? lead}</p>
+                )}
+              </header>
+
+              {tableData.length > 0 && (
+                <section aria-labelledby="at-a-glance" className="border-b border-slate-800 py-8">
+                  <h2 id="at-a-glance" className="text-2xl font-bold text-white">At a glance</h2>
+                  <div className="mt-5 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
+                    <table className="w-full min-w-[38rem] border-collapse text-left text-sm">
+                      <caption className="sr-only">Comparison of {productA?.name ?? 'Product A'} and {productB?.name ?? 'Product B'}</caption>
+                      <thead className="bg-slate-950 text-slate-200">
+                        <tr>
+                          <th scope="col" className="p-4">Criteria</th>
+                          <th scope="col" className="p-4">{productA?.name ?? 'Product A'}</th>
+                          <th scope="col" className="p-4">{productB?.name ?? 'Product B'}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        {tableData.map((row) => (
+                          <tr key={row.metric}>
+                            <th scope="row" className="bg-slate-950/60 p-4 font-semibold text-white">{row.metric}</th>
+                            <td className="p-4 align-top">{row.toolA}</td>
+                            <td className="p-4 align-top">{row.toolB}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:hidden">
+                    {tableData.map((row) => (
+                      <article key={row.metric} className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
+                        <h3 className="font-bold text-white">{row.metric}</h3>
+                        <dl className="mt-3 grid gap-3 text-sm">
+                          <div>
+                            <dt className="font-semibold text-blue-200">{productA?.name ?? 'Product A'}</dt>
+                            <dd className="mt-1 leading-relaxed text-slate-300">{row.toolA}</dd>
+                          </div>
+                          <div>
+                            <dt className="font-semibold text-blue-200">{productB?.name ?? 'Product B'}</dt>
+                            <dd className="mt-1 leading-relaxed text-slate-300">{row.toolB}</dd>
+                          </div>
+                        </dl>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {(coreDifferenceTextA || coreDifferenceTextB) && (
+                <section aria-labelledby="core-differences" className="border-b border-slate-800 py-8">
+                  <h2 id="core-differences" className="text-2xl font-bold text-white">Core differences</h2>
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                    {coreDifferenceTextA && (
+                      <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
+                        <h3 className="font-bold text-white">{productA?.name ?? 'Product A'}</h3>
+                        <p className="mt-3 leading-relaxed text-slate-300">{coreDifferenceTextA}</p>
+                      </article>
+                    )}
+                    {coreDifferenceTextB && (
+                      <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
+                        <h3 className="font-bold text-white">{productB?.name ?? 'Product B'}</h3>
+                        <p className="mt-3 leading-relaxed text-slate-300">{coreDifferenceTextB}</p>
+                      </article>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {(recommendationA || recommendationB) && (
+                <section aria-labelledby="recommendations" className="border-b border-slate-800 py-8">
+                  <h2 id="recommendations" className="text-2xl font-bold text-white">Who may prefer each option</h2>
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                    {recommendationA && (
+                      <p className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 leading-relaxed text-slate-300">
+                        <strong className="text-white">{productA?.name ?? 'Product A'}:</strong> {recommendationA}
+                      </p>
+                    )}
+                    {recommendationB && (
+                      <p className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 leading-relaxed text-slate-300">
+                        <strong className="text-white">{productB?.name ?? 'Product B'}:</strong> {recommendationB}
+                      </p>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {verdictText && (
+                <section aria-labelledby="verdict" className="pt-8">
+                  <h2 id="verdict" className="text-2xl font-bold text-white">Summary</h2>
+                  <p className="mt-4 leading-relaxed text-slate-300">{verdictText}</p>
+                </section>
+              )}
+            </article>
+          )}
+
+          <div className="mt-8 grid gap-3 border-t border-slate-800 pt-6 sm:flex sm:flex-wrap">
+            {productA?.href && (
+              <a href={productA.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                Visit {productA.name} official site
+              </a>
+            )}
+            {productB?.href && (
+              <a href={productB.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                Visit {productB.name} official site
+              </a>
+            )}
+          </div>
+        </div>
+
+        <nav aria-label="More StackEvalify resources" className="mt-6 grid gap-4 sm:grid-cols-2">
+          <Link href="/category/saas" className="rounded-xl border border-slate-800 bg-slate-900 p-5 text-sm font-semibold text-blue-300 hover:border-slate-600 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Browse all software comparisons <span aria-hidden="true">→</span>
+          </Link>
+          <Link href="/methodology" className="rounded-xl border border-slate-800 bg-slate-900 p-5 text-sm font-semibold text-blue-300 hover:border-slate-600 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Read the evaluation methodology <span aria-hidden="true">→</span>
+          </Link>
+        </nav>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

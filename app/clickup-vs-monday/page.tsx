@@ -1,117 +1,131 @@
-import React from 'react';
-import ComparisonLayout from '../components/ComparisonLayout';
+import { sourceCheckedComparisonMetadata } from '@/lib/seo';
+import ComparisonLayout from '@/app/components/ComparisonLayout';
 
-export default function ClickUpVsMonday() {
+export const metadata = sourceCheckedComparisonMetadata({
+  title: 'ClickUp vs monday.com (2026): Plans, Limits and Fit',
+  description: 'A dated desk-research comparison of ClickUp and monday.com plan limits, annual seat pricing, and published automation allowances.',
+  path: '/clickup-vs-monday',
+});
+
+const comparisonRows = [
+  {
+    label: 'Free plan',
+    clickup: 'Unlimited tasks and unlimited free members, with 60 MB storage, up to 5 Spaces, and 1 form.',
+    monday: 'Up to 2 seats, 3 boards, and 3 Docs. The plan page also lists 200+ templates.',
+  },
+  {
+    label: 'First paid tier',
+    clickup: 'Core is $9 per user/month billed yearly. It adds unlimited storage and Spaces, custom fields, and 1,000 automations/month.',
+    monday: 'Basic is listed at $9 per seat/month billed annually in the 10-seat pricing view. It adds unlimited items and unlimited free viewers.',
+  },
+  {
+    label: 'More planning and automation',
+    clickup: 'Business is $17 per user/month billed yearly. The pricing page lists advanced dashboards, webhooks, and 10,000 automations/month.',
+    monday: 'Standard is $12 per seat/month billed annually and lists 250 automation actions/month and 250 integration actions/month, plus timeline, Gantt, and calendar views. Pro is listed at $19 and 25,000 monthly automation/integration actions.',
+  },
+  {
+    label: 'Published product structure',
+    clickup: 'The plan page lists tasks, Docs, list/table/calendar views, Kanban boards, sprint management, and time tracking.',
+    monday: 'The plan page describes boards for organizing work and data, with columns, templates, and plan-specific views and workflows.',
+  },
+] as const;
+
+export default function ClickUpVsMondayPage() {
   return (
-    <article className="max-w-4xl mx-auto px-4 py-8 prose lg:prose-xl text-gray-100">
-      <h1 className="text-white font-extrabold tracking-tight">
-        ClickUp vs Monday.com: Which Project Management Tool is Best for Startups in 2026?
-      </h1>
-      
-      <p className="lead text-gray-300">
-        Choosing the right project management platform can make or break an early-stage startup. In 2026, two titans dominate the market for teams looking to streamline workflows, improve collaboration, and track project deliverables: <strong>ClickUp</strong> and <strong>Monday.com</strong>.
-      </p>
+    <ComparisonLayout tool1="clickup" tool2="monday" showDraftNotice={false}>
+      <article>
+        <header className="border-b border-slate-800 pb-7">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">Project management · Desk research</p>
+          <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
+            ClickUp vs monday.com: plans, limits, and team fit
+          </h1>
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
+            Both products organize team work, but the free plans and automation allowances have different limits. Compare the number of seats, work items, storage, and recurring automations your team expects to use.
+          </p>
+          <p className="mt-4 text-sm text-slate-400">
+            Source check: <time dateTime="2026-10-29">29 October 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
+          </p>
+        </header>
 
-      {/* Quick Verdict Box */}
-      <div className="my-8 p-6 bg-gray-900 border-l-4 border-blue-500 rounded-r-xl not-prose">
-        <h3 className="text-lg font-bold text-white mb-2">⚡ Quick Summary / Verdict</h3>
-        <p className="text-sm text-gray-300 mb-4">
-          <strong>Choose ClickUp</strong> if you want maximum feature density, built-in docs, and native time tracking at a lower price. <strong>Choose Monday.com</strong> if your team prioritizes clean visual boards and an extremely short learning curve.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <a
-            href="https://clickup.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors no-underline"
-          >
-            Try ClickUp Free &rarr;
-          </a>
-          <a
-            href="https://monday.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-gray-800 hover:bg-gray-700 text-white font-semibold text-sm px-5 py-2.5 rounded-lg border border-gray-700 transition-colors no-underline"
-          >
-            Try Monday.com &rarr;
-          </a>
-        </div>
-      </div>
+        <section aria-labelledby="quick-take" className="border-b border-slate-800 py-8">
+          <h2 id="quick-take" className="text-2xl font-bold text-white">Quick take</h2>
+          <p className="mt-4 leading-relaxed text-slate-300">
+            Shortlist <strong className="text-white">ClickUp</strong> if its free allowance for members and tasks, or its published sprint and time-tracking features, fit your team. Shortlist <strong className="text-white">monday.com</strong> if your workflow maps cleanly to its boards and the seat-based plan includes the views and monthly automation actions you need. These are plan-fit criteria, not a universal product ranking.
+          </p>
+        </section>
 
-      <h2 className="text-white">At a Glance Comparison</h2>
-      <div className="overflow-x-auto not-prose my-6">
-        <table className="table-auto w-full border-collapse border border-gray-800 text-left">
-          <thead>
-            <tr className="bg-gray-900 text-white">
-              <th className="border border-gray-800 p-3">Feature / Metric</th>
-              <th className="border border-gray-800 p-3">ClickUp</th>
-              <th className="border border-gray-800 p-3">Monday.com</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-300 text-sm">
-            <tr className="border-b border-gray-800">
-              <td className="border border-gray-800 p-3 font-bold text-white">Best For</td>
-              <td className="border border-gray-800 p-3">Feature density & customizable workspaces</td>
-              <td className="border border-gray-800 p-3">Intuitive visual workflows & fast team adoption</td>
-            </tr>
-            <tr className="border-b border-gray-800">
-              <td className="border border-gray-800 p-3 font-bold text-white">Free Tier</td>
-              <td className="border border-gray-800 p-3">Generous (100MB storage, unlimited tasks)</td>
-              <td className="border border-gray-800 p-3">Limited (Up to 2 seats, basic features)</td>
-            </tr>
-            <tr className="border-b border-gray-800">
-              <td className="border border-gray-800 p-3 font-bold text-white">Starting Price</td>
-              <td className="border border-gray-800 p-3">~$7 / user / month</td>
-              <td className="border border-gray-800 p-3">~$9 / user / month</td>
-            </tr>
-            <tr className="border-b border-gray-800">
-              <td className="border border-gray-800 p-3 font-bold text-white">Learning Curve</td>
-              <td className="border border-gray-800 p-3">Moderate to High</td>
-              <td className="border border-gray-800 p-3">Low to Moderate</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-800 p-3 font-bold text-white">Direct Action</td>
-              <td className="border border-gray-800 p-3">
-                <a
-                  href="https://clickup.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold py-1.5 px-3 rounded transition-colors"
-                >
-                  Visit ClickUp
-                </a>
-              </td>
-              <td className="border border-gray-800 p-3">
-                <a
-                  href="https://monday.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block text-xs bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 font-bold py-1.5 px-3 rounded transition-colors"
-                >
-                  Visit Monday
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <section aria-labelledby="plan-details" className="border-b border-slate-800 py-8">
+          <h2 id="plan-details" className="text-2xl font-bold text-white">Plans and documented limits</h2>
+          <div className="mt-5 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
+            <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
+              <caption className="sr-only">Published ClickUp and monday.com plan details checked on 29 October 2026</caption>
+              <thead className="bg-slate-950 text-slate-200">
+                <tr>
+                  <th scope="col" className="p-4">Criteria</th>
+                  <th scope="col" className="p-4">ClickUp</th>
+                  <th scope="col" className="p-4">monday.com</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800 text-slate-300">
+                {comparisonRows.map((row) => (
+                  <tr key={row.label}>
+                    <th scope="row" className="bg-slate-950/60 p-4 font-semibold text-white">{row.label}</th>
+                    <td className="p-4 align-top leading-relaxed">{row.clickup}</td>
+                    <td className="p-4 align-top leading-relaxed">{row.monday}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 grid gap-3 sm:hidden">
+            {comparisonRows.map((row) => (
+              <article key={row.label} className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
+                <h3 className="font-bold text-white">{row.label}</h3>
+                <dl className="mt-3 grid gap-3 text-sm">
+                  <div>
+                    <dt className="font-semibold text-blue-200">ClickUp</dt>
+                    <dd className="mt-1 leading-relaxed text-slate-300">{row.clickup}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-blue-200">monday.com</dt>
+                    <dd className="mt-1 leading-relaxed text-slate-300">{row.monday}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-slate-400">
+            ClickUp’s listed Core and Business prices are per user/month billed yearly. monday.com’s page showed a 10-seat selector when checked; its displayed per-seat rates are billed annually. Final totals depend on seat count, billing selection, taxes, and current offers. Verify the quote before purchase.
+          </p>
+        </section>
 
-      <h2 className="text-white">1. User Interface & Ease of Use</h2>
-      <h3 className="text-gray-200">Monday.com: The Visual Powerhouse</h3>
-      <p>
-        Monday.com is renowned for its vibrant, highly intuitive board-based interface. Color-coded status updates and clean drag-and-drop functionality make onboarding effortless for non-technical users.
-      </p>
+        <section aria-labelledby="automation" className="border-b border-slate-800 py-8">
+          <h2 id="automation" className="text-2xl font-bold text-white">Compare automation allowances carefully</h2>
+          <p className="mt-4 leading-relaxed text-slate-300">
+            The vendors describe these limits differently: ClickUp lists automations per month, while monday.com lists monthly automation and integration actions. The numbers should not be treated as equivalent units without checking how each product counts the actions in your workflow. Test a representative process and review the plan’s usage counter before upgrading.
+          </p>
+        </section>
 
-      <h3 className="text-gray-200">ClickUp: All-in-One Customizability</h3>
-      <p>
-        ClickUp takes a feature-first approach. The user interface allows granular customization across Workspaces, Folders, and Lists, providing immense flexibility for development and technical teams.
-      </p>
+        <section aria-labelledby="decision" className="border-b border-slate-800 py-8">
+          <h2 id="decision" className="text-2xl font-bold text-white">A practical way to decide</h2>
+          <ul className="mt-4 grid gap-3 text-slate-300">
+            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">Shortlist ClickUp</strong> if your team needs many free members and tasks, or specifically wants the sprint management and time tracking shown on its plan page.</li>
+            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">Shortlist monday.com</strong> if the board-based structure suits your work and Standard or Pro includes the views, guests, and monthly action limits you expect to use.</li>
+            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">Before migrating</strong>, test one real project in both products and compare permissions, reporting, recurring work, storage, integrations, and the total price for your actual seat count.</li>
+          </ul>
+        </section>
 
-      <h2 className="text-white">Final Recommendation</h2>
-      <ul>
-        <li><strong>Choose ClickUp if:</strong> You are a tech startup, software agency, or budget-conscious team looking for maximum functionality at a lower price point.</li>
-        <li><strong>Choose Monday.com if:</strong> You prioritize an easy learning curve, clean visual interfaces, and rapid onboarding across non-technical departments.</li>
-      </ul>
-    </article>
+        <section aria-labelledby="sources" className="pt-8">
+          <h2 id="sources" className="text-2xl font-bold text-white">Sources and method</h2>
+          <p className="mt-3 leading-relaxed text-slate-300">
+            This comparison summarizes the vendors’ plan and pricing pages checked on 29 October 2026. It is desk research, not independent usability or performance testing. Features, limits, seat minimums, promotional offers, and prices can change.
+          </p>
+          <ul className="mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed text-blue-200">
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://clickup.com/pricing" target="_blank" rel="noopener noreferrer">ClickUp plans and pricing</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://monday.com/pricing" target="_blank" rel="noopener noreferrer">monday.com pricing and plan comparison</a></li>
+          </ul>
+        </section>
+      </article>
+    </ComparisonLayout>
   );
 }

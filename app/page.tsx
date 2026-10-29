@@ -1,21 +1,24 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import SiteFooter from '../components/SiteFooter';
+import SiteHeader from '../components/SiteHeader';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://stackevalify.com'),
-  title: 'StackEvalify | B2B SaaS & Developer Hardware Reviews',
+
+  title: { absolute: 'StackEvalify | Technical Evaluations for Engineering Teams' },
   description:
     'Technical evaluations of B2B SaaS and developer hardware for engineering teams. See what was tested, how it was tested, and where the evidence has limits.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'StackEvalify | B2B SaaS & Developer Hardware Reviews',
+    title: 'StackEvalify | Technical Evaluations for Engineering Teams',
     description:
       'Technical evaluations of B2B SaaS and developer hardware for engineering teams.',
     url: '/',
     siteName: 'StackEvalify',
     type: 'website',
+    images: [{ url: '/logo.png', width: 2000, height: 2000, alt: 'StackEvalify logo' }],
   },
 };
 
@@ -41,54 +44,7 @@ const focusAreas = [
 export default function Home() {
   return (
     <>
-      <a
-        href="#main-content"
-        className="sr-only z-50 rounded-md bg-white px-4 py-3 font-semibold text-slate-950 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-      >
-        Skip to content
-      </a>
-
-      <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link
-            href="/"
-            aria-label="StackEvalify home"
-            className="rounded text-xl font-black tracking-tight text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            StackEvalify
-          </Link>
-
-          <nav
-            aria-label="Main navigation"
-            className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-slate-300"
-          >
-            <Link
-              href="/#reviews"
-              className="rounded py-1 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              Reviews
-            </Link>
-            <Link
-              href="/#categories"
-              className="rounded py-1 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              Categories
-            </Link>
-            <Link
-              href="/methodology"
-              className="rounded py-1 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              Methodology
-            </Link>
-            <Link
-              href="/about"
-              className="rounded py-1 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              About
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main id="main-content">
         <section className="border-b border-slate-800">
@@ -145,13 +101,10 @@ export default function Home() {
               </div>
             </div>
 
-            <p
-              id="affiliate-disclosure"
-              className="mt-8 max-w-3xl scroll-mt-24 text-sm leading-relaxed text-slate-400"
-            >
-              StackEvalify may earn a commission when you buy through affiliate
-              links. Any commercial relationship should be disclosed alongside
-              the relevant recommendation.
+            <p className="mt-8 max-w-3xl text-sm leading-relaxed text-slate-400">
+              Product links on comparison pages currently point to official
+              product websites. If affiliate links are introduced, the relevant
+              commercial relationship will be disclosed beside each link.
             </p>
           </div>
         </section>
@@ -185,7 +138,7 @@ export default function Home() {
                     Developer hardware
                   </span>
                   <span className="text-sm text-slate-400">
-                    Hands-on notes
+                    Field notes · preliminary
                   </span>
                 </div>
 
@@ -372,32 +325,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-800">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-slate-400 sm:px-6">
-          <p>© {new Date().getFullYear()} StackEvalify</p>
-
-          <nav aria-label="Footer navigation" className="flex flex-wrap gap-5">
-            <Link
-              href="/about"
-              className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              About
-            </Link>
-            <Link
-              href="/methodology"
-              className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              Methodology
-            </Link>
-            <Link
-              href="/#affiliate-disclosure"
-              className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              Affiliate disclosure
-            </Link>
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
