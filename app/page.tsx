@@ -147,7 +147,11 @@ export default function Home() {
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {comparisons.slice(0, 6).map((comparison) => (
               <li key={comparison.href}>
-                <Link href={comparison.href} className="block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <Link
+                  href={comparison.href}
+                  prefetch={false}
+                  className="block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
                   <p className="text-xs font-bold uppercase tracking-wider text-blue-300">{comparison.category}</p>
                   <h3 className="mt-3 text-xl font-bold text-white">{comparison.title}</h3>
                   <p className="mt-3 text-sm text-slate-400">{comparison.status}</p>
