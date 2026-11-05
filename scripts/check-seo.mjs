@@ -25,6 +25,24 @@ function jsonLd(html) {
     .flatMap((data) => data['@graph'] ?? [data]);
 }
 
+function plainText(html) {
+  return html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+}
+
+function checkArticle(html, path) {
+  const article = jsonLd(html).find((data) => data['@type'] === 'Article');
+  assert(article, `${path}: Article schema missing`);
+  const heading = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1];
+  assert.equal(article.headline, plainText(heading), `${path}: schema headline differs from visible heading`);
+  assert.equal(article.mainEntityOfPage['@id'], `${canonicalOrigin}${path}`);
+  assert(!('aggregateRating' in article) && !('reviewRating' in article), 'Do not fabricate ratings');
+  const contents = html.match(/<nav aria-label="On this page"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
+  assert(contents, `${path}: table of contents missing`);
+  const anchors = [...contents.matchAll(/href="#([^"]+)"/g)].map(([, id]) => decodeURIComponent(id));
+  assert(anchors.length >= 3, `${path}: table of contents needs real sections`);
+  for (const id of anchors) assert(html.includes(`id="${id}"`), `${path}: broken section anchor #${id}`);
+}
+
 function checkBreadcrumb(html, path) {
   const breadcrumb = jsonLd(html).find((data) => data['@type'] === 'BreadcrumbList');
   assert(breadcrumb, `${path}: breadcrumb JSON-LD missing`);
@@ -79,7 +97,17 @@ for (const url of urls) {
     checkBreadcrumb(html, url.pathname);
     assert.equal(meta(html, 'og:site_name'), 'StackEvalify');
     assert(meta(html, 'twitter:title')?.startsWith(title.split(' | ')[0]), `${url.pathname}: inherited homepage social title`);
+    checkArticle(html, url.pathname);
+    const related = html.match(/<section aria-labelledby="related-comparisons"[^>]*>([\s\S]*?)<\/section>/)?.[1];
+    assert(related, `${url.pathname}: related comparisons missing`);
+    const relatedPaths = [...related.matchAll(/href="(\/[^"]+)"/g)].map(([, path]) => path);
+    assert.equal(relatedPaths.length, 3);
+    assert(!relatedPaths.includes(url.pathname), `${url.pathname}: article links to itself as related content`);
   }
+  if (url.pathname.startsWith('/guides/')) checkArticle(html, url.pathname);
+  const parameterResponse = await request(`${url.pathname}?utm_source=seo-check`);
+  const parameterHtml = await parameterResponse.text();
+  assert(parameterHtml.includes(`href="${canonical}"`), `${url.pathname}: query parameters must not change the canonical`);
 }
 
 const home = pages.get('/');
@@ -97,6 +125,13 @@ assert(comparisonPaths.filter((path) => home.includes(`href="${path}"`)).length 
 const directory = pages.get('/category/saas');
 checkBreadcrumb(directory, '/category/saas');
 for (const path of comparisonPaths) assert(directory.includes(`href="${path}"`), `${path}: missing from directory`);
+assert.match(directory, /type="search"/);
+assert.match(directory, /id="comparison-category"/);
+assert(plainText(directory).includes('Showing 17 of 17 comparisons'), 'All comparisons must be present before JavaScript runs');
+for (const path of ['/guides', '/guides/choose-b2b-software', '/guides/saas-total-cost', '/privacy', '/terms']) {
+  assert(pages.has(path), `${path}: new guide or trust page missing from sitemap`);
+}
+assert.match(home, /alt="StackEvalify logo"/, 'Header must visibly use the original logo');
 
 for (const path of ['/category/hardware', '/author/thieu-nguyen', '/reviews/acer-nitro-5-web-dev', '/reviews/iphone-18-pro-max']) {
   assert(!urls.some((url) => url.pathname === path), `${path}: held content must stay out of sitemap`);
@@ -117,4 +152,4 @@ assert.equal((await request('/missing-seo-check-page')).status, 404, 'Missing pa
 const logoResponse = await request('/logo.png');
 assert.equal(logoResponse.status, 200);
 assert.deepEqual(Buffer.from(await logoResponse.arrayBuffer()), await readFile(new URL('../public/logo.png', import.meta.url)), 'Preview must serve the original logo bytes');
-console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} comparisons, 4 held pages, 2 permanent redirects, brand schema and original logo.`);
+console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} comparisons, guide/article schema and TOC anchors, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);

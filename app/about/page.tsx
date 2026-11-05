@@ -36,6 +36,11 @@ export default function AboutPage() {
             </p>
           </div>
         </section>
+        <section aria-labelledby="editorial-accountability" className="mt-12 border-t border-slate-800 pt-8">
+          <h2 id="editorial-accountability" className="text-2xl font-bold text-white">Editorial accountability</h2>
+          <p className="mt-4 leading-relaxed text-slate-300">The <Link href="/author/thieu-nguyen" className="rounded text-blue-300 underline underline-offset-4">contributor profile</Link> links to the current hardware field note. Software comparisons identify their research method and primary sources on the page; they should not be read as claims of hands-on testing or professional credentials.</p>
+          <p className="mt-4 leading-relaxed text-slate-300">Use the <Link href="/guides" className="text-blue-300 underline underline-offset-4">buying guides</Link> to build your own shortlist and cost estimate. For how information is handled when you browse or contact the site, see the <Link href="/privacy" className="text-blue-300 underline underline-offset-4">privacy notice</Link>.</p>
+        </section>
         <section aria-labelledby="commercial-transparency" className="mt-12 rounded-xl border border-slate-800 bg-slate-900 p-6">
           <h2 id="commercial-transparency" className="text-xl font-bold text-white">Commercial transparency</h2>
           <p className="mt-3 leading-relaxed text-slate-300">

@@ -25,6 +25,7 @@ export default function ContactPage() {
           <a href="mailto:contact@stackevalify.com" className="mt-3 inline-flex rounded font-medium text-blue-300 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
             contact@stackevalify.com
           </a>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-400">This opens your email application. For a correction, include the article URL, the statement to check, and a supporting source. For an evaluation question, include your team size and the workflow you need; do not send credentials or customer data.</p>
         </section>
       </main>
       <SiteFooter />

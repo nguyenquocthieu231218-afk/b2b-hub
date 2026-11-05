@@ -4,6 +4,7 @@ import SiteHeader from '../../../components/SiteHeader';
 import SiteFooter from '../../../components/SiteFooter';
 import { comparisons } from '@/lib/comparisons';
 import Breadcrumbs from '../../../components/Breadcrumbs';
+import ComparisonDirectory from '../../../components/ComparisonDirectory';
 
 export const metadata: Metadata = {
   title: 'B2B SaaS Comparisons and Research',
@@ -41,22 +42,24 @@ export default function SaasCategoryPage() {
           <p className="mt-3 max-w-3xl rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 text-sm leading-relaxed text-blue-100">
             A source-check date records when vendor documentation was reviewed. It does not indicate hands-on testing; check the linked vendors for current prices and terms.
           </p>
-          <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {comparisons.map((comparison) => (
-              <li key={comparison.href}>
-                <Link
-                  href={comparison.href}
-                  className="group block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wider text-blue-300">{comparison.category}</p><span className={comparison.status.startsWith('Source checked') ? 'rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-200' : 'rounded-full bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-slate-300'}>{comparison.status}</span></div>
-                  <h3 className="mt-3 text-lg font-bold text-white group-hover:text-blue-200">{comparison.title}</h3>
-                  <span className="mt-4 inline-flex text-sm font-semibold text-blue-300">
-                    {comparison.status.startsWith('Source checked') ? 'Read source-checked comparison' : 'Read draft'} <span aria-hidden="true" className="ml-2">→</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <ComparisonDirectory comparisons={comparisons} />
+        </section>
+        <section aria-labelledby="comparison-questions" className="mt-12 border-t border-slate-800 pt-8">
+          <h2 id="comparison-questions" className="text-2xl font-bold text-white">Before you choose a tool</h2>
+          <div className="mt-5 space-y-3 text-slate-300">
+            <details className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <summary className="cursor-pointer rounded font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-400">Are these hands-on product reviews?</summary>
+              <p className="mt-3 leading-relaxed">These software comparisons are desk research based on linked vendor sources. The date records a source check, not a hands-on test. Our <Link href="/methodology" className="text-blue-300 underline underline-offset-4">methodology</Link> explains the difference.</p>
+            </details>
+            <details className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <summary className="cursor-pointer rounded font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-400">Are prices and plan limits updated live?</summary>
+              <p className="mt-3 leading-relaxed">No. Each comparison is a dated snapshot. Check the linked official vendor pages and your own quote before a purchase; seat prices alone may omit usage, onboarding, and migration costs.</p>
+            </details>
+            <details className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <summary className="cursor-pointer rounded font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-400">How should I narrow my shortlist?</summary>
+              <p className="mt-3 leading-relaxed">Start with a real workflow and a list of non-negotiable requirements, compare the same tier of service, and run a small pilot. Use the <Link href="/guides/choose-b2b-software" className="text-blue-300 underline underline-offset-4">software selection checklist</Link> and <Link href="/guides/saas-total-cost" className="text-blue-300 underline underline-offset-4">total-cost worksheet</Link> to record the decision.</p>
+            </details>
+          </div>
         </section>
       </main>
       <SiteFooter />

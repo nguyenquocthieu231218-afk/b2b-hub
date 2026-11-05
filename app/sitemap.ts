@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next';
 import { comparisons } from '@/lib/comparisons';
 import { SITE_URL } from '@/lib/site';
+import { guides } from '@/lib/guides';
 
-const informationalRoutes = ['/', '/about', '/contact', '/methodology'] as const;
+const informationalRoutes = ['/', '/about', '/contact', '/methodology', '/privacy', '/terms', '/guides'] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -16,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    ...comparisons.map(({ href }) => ({
+    ...[...comparisons, ...guides].map(({ href }) => ({
       url: `${SITE_URL}${href}`,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
