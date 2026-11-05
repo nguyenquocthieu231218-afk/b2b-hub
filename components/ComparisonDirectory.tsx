@@ -112,12 +112,12 @@ export default function ComparisonDirectory({ comparisons }: {
                 <Link
                   href={comparison.href}
                   prefetch={false}
-                  className="group block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="group block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-1 hover:border-slate-600 hover:shadow-lg hover:shadow-slate-950/30 focus:outline-none focus:ring-2 focus:ring-blue-400 motion-reduce:transform-none"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wider text-blue-300">{comparison.category}</p><span className={comparison.status.startsWith('Source checked') ? 'rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-200' : 'rounded-full bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-slate-300'}>{comparison.status}</span></div>
                   <h3 className="mt-3 text-lg font-bold text-white group-hover:text-blue-200">{comparison.title}</h3>
                   <span className="mt-4 inline-flex text-sm font-semibold text-blue-300">
-                    {comparison.status.startsWith('Source checked') ? 'Read source-checked comparison' : 'Read draft'} <span aria-hidden="true" className="ml-2">→</span>
+                    {comparison.status.startsWith('Source checked') ? 'Read source-checked comparison' : 'Read draft'} <span aria-hidden="true" className="ml-2 transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transform-none">→</span>
                   </span>
                 </Link>
               </li>
