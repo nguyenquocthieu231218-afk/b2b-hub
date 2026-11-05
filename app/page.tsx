@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteFooter from '../components/SiteFooter';
 import SiteHeader from '../components/SiteHeader';
+import JsonLd from '../components/JsonLd';
+import { comparisons } from '@/lib/comparisons';
+import { SITE_LOGO, SITE_NAME, SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
 
@@ -45,6 +48,32 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebSite',
+            '@id': `${SITE_URL}/#website`,
+            url: `${SITE_URL}/`,
+            name: SITE_NAME,
+            inLanguage: 'en',
+            publisher: { '@id': `${SITE_URL}/#organization` },
+          },
+          {
+            '@type': 'Organization',
+            '@id': `${SITE_URL}/#organization`,
+            name: SITE_NAME,
+            url: `${SITE_URL}/`,
+            logo: {
+              '@type': 'ImageObject',
+              url: SITE_LOGO,
+              contentUrl: SITE_LOGO,
+              width: 2000,
+              height: 2000,
+            },
+          },
+        ],
+      }} />
 
       <main id="main-content">
         <section className="border-b border-slate-800">
@@ -107,6 +136,28 @@ export default function Home() {
               commercial relationship will be disclosed beside each link.
             </p>
           </div>
+        </section>
+
+        <section aria-labelledby="software-heading" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-blue-300">Software research</p>
+          <h2 id="software-heading" className="mt-2 text-3xl font-bold tracking-tight text-white">Explore software comparisons</h2>
+          <p className="mt-3 max-w-3xl leading-relaxed text-slate-400">
+            Browse {comparisons.length} comparisons of SaaS plans, published limits, and workflow features. Each article links to vendor sources and explains its research limits.
+          </p>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {comparisons.slice(0, 6).map((comparison) => (
+              <li key={comparison.href}>
+                <Link href={comparison.href} className="block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                  <p className="text-xs font-bold uppercase tracking-wider text-blue-300">{comparison.category}</p>
+                  <h3 className="mt-3 text-xl font-bold text-white">{comparison.title}</h3>
+                  <p className="mt-3 text-sm text-slate-400">{comparison.status}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link href="/category/saas" className="mt-6 inline-flex rounded font-semibold text-blue-300 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Browse all {comparisons.length} software comparisons <span aria-hidden="true" className="ml-2">→</span>
+          </Link>
         </section>
 
         <section

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SITE_LOGO, SITE_NAME } from './site';
 
 type ComparisonDraftMetadataInput = {
   title: string;
@@ -13,6 +14,7 @@ export function comparisonDraftMetadata({ title, description, path }: Comparison
     alternates: { canonical: path },
     robots: { index: false, follow: true },
     openGraph: {
+      siteName: SITE_NAME,
       title,
       description,
       url: path,
@@ -24,6 +26,7 @@ export function comparisonDraftMetadata({ title, description, path }: Comparison
         alt: 'StackEvalify logo',
       }],
     },
+    twitter: { card: 'summary', title, description, images: [SITE_LOGO] },
   };
 }
 
@@ -35,6 +38,7 @@ export function sourceCheckedComparisonMetadata({ title, description, path }: Co
     alternates: { canonical: path },
     robots: { index: true, follow: true },
     openGraph: {
+      siteName: SITE_NAME,
       title,
       description,
       url: path,
@@ -46,5 +50,6 @@ export function sourceCheckedComparisonMetadata({ title, description, path }: Co
         alt: 'StackEvalify logo',
       }],
     },
+    twitter: { card: 'summary', title, description, images: [SITE_LOGO] },
   };
 }

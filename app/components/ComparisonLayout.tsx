@@ -2,6 +2,11 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import SiteFooter from '../../components/SiteFooter';
 import SiteHeader from '../../components/SiteHeader';
+import Breadcrumbs from '../../components/Breadcrumbs';
+import JsonLd from '../../components/JsonLd';
+import TableOfContents from '../../components/TableOfContents';
+import { getArticleContent, getComparisonContext } from '@/lib/article-content';
+import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 type ProductLink = {
   name: string;
@@ -90,20 +95,33 @@ export default function ComparisonLayout({
     : PRODUCT_LINKS[tool2 ?? ''];
   const hasChildren = children !== undefined && children !== null;
   const pageTitle = title ?? `${productA?.name ?? 'Product A'} vs ${productB?.name ?? 'Product B'}`;
+  const articleContent = getArticleContent(children);
+  const { current: comparison, related: relatedComparisons } = getComparisonContext(tool1, tool2);
+  const articleUrl = comparison ? `${SITE_URL}${comparison.href}` : undefined;
 
   return (
     <>
       <SiteHeader />
+      {!showDraftNotice && articleUrl && articleContent.headline && articleContent.description && (
+        <JsonLd data={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          '@id': `${articleUrl}#article`,
+          headline: articleContent.headline,
+          description: articleContent.description,
+          url: articleUrl,
+          mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
+          inLanguage: 'en',
+          publisher: { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: SITE_NAME, url: `${SITE_URL}/` },
+          isPartOf: { '@type': 'WebSite', '@id': `${SITE_URL}/#website` },
+        }} />
+      )}
       <main id="main-content" className="mx-auto min-h-screen max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
-        <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-400">
-          <Link href="/" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-            Home
-          </Link>
-          <span aria-hidden="true">/</span>
-          <Link href="/category/saas" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-            Software comparisons
-          </Link>
-        </div>
+        <Breadcrumbs items={[
+          { name: 'Home', href: '/' },
+          { name: 'Software comparisons', href: '/category/saas' },
+          { name: pageTitle },
+        ]} />
 
         {showDraftNotice && (
           <aside role="note" className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm leading-relaxed text-amber-100">
@@ -111,7 +129,9 @@ export default function ComparisonLayout({
           </aside>
         )}
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl sm:p-8 lg:p-10">
+        <TableOfContents headings={articleContent.headings} />
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl sm:p-8 lg:p-10 [&_h2[id]]:scroll-mt-40">
           {hasChildren ? (
             children
           ) : (
@@ -229,7 +249,28 @@ export default function ComparisonLayout({
           </div>
         </div>
 
-        <nav aria-label="More StackEvalify resources" className="mt-6 grid gap-4 sm:grid-cols-2">
+        {relatedComparisons.length > 0 && (
+          <section aria-labelledby="related-comparisons" className="mt-10">
+            <h2 id="related-comparisons" className="text-2xl font-bold text-white">Continue your research</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-400">Explore comparisons with a shared product or a related workflow.</p>
+            <ul className="mt-5 grid gap-4 sm:grid-cols-3">
+              {relatedComparisons.map((related) => (
+                <li key={related.href}>
+                  <Link href={related.href} className="block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <p className="text-xs font-bold uppercase tracking-wider text-blue-300">{related.category}</p>
+                    <h3 className="mt-3 text-lg font-bold text-white">{related.title}</h3>
+                    <span className="mt-4 inline-flex text-sm font-semibold text-blue-300">Read comparison <span aria-hidden="true" className="ml-2">→</span></span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <nav aria-label="More StackEvalify resources" className="mt-6 grid gap-4 sm:grid-cols-3">
+          <Link href="/guides/choose-b2b-software" className="rounded-xl border border-slate-800 bg-slate-900 p-5 text-sm font-semibold text-blue-300 hover:border-slate-600 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Build your software shortlist <span aria-hidden="true">→</span>
+          </Link>
           <Link href="/category/saas" className="rounded-xl border border-slate-800 bg-slate-900 p-5 text-sm font-semibold text-blue-300 hover:border-slate-600 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
             Browse all software comparisons <span aria-hidden="true">→</span>
           </Link>

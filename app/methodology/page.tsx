@@ -65,6 +65,23 @@ export default function MethodologyPage() {
             <li>Correct a review when a material error is found.</li>
           </ul>
         </section>
+        <section aria-labelledby="sources-and-corrections" className="mt-12 border-t border-slate-800 pt-10">
+          <h2 id="sources-and-corrections" className="text-2xl font-bold text-white">Sources, dates and corrections</h2>
+          <div className="mt-5 space-y-4 leading-relaxed text-slate-300">
+            <p>
+              A source-check date records a review of the cited vendor documentation. It is distinct from a publication date, a page edit, and a hands-on test. Editing a heading or improving navigation does not establish that product prices, plan limits, or features have been checked again.
+            </p>
+            <p>
+              Changing claims should link to the relevant primary source and state the edition, billing period, region, and other conditions needed to interpret them. A later source check should update the affected claim and its date together. Historical dates remain visible until that review is performed.
+            </p>
+            <p>
+              To report a correction, email <a href="mailto:contact@stackevalify.com" className="font-medium text-blue-300 hover:text-blue-200">contact@stackevalify.com</a> with the page URL, the specific claim, and a supporting source or repeatable test. Reports should be checked against that evidence; material corrections should explain what changed and update the relevant source-check or test information. A product preference alone does not establish a factual error.
+            </p>
+            <p>
+              For a practical evaluation process, use our guides to <Link href="/guides/choose-b2b-software" className="font-medium text-blue-300 hover:text-blue-200">choosing B2B software</Link> and <Link href="/guides/saas-total-cost" className="font-medium text-blue-300 hover:text-blue-200">calculating SaaS total cost</Link>. They help turn a comparison into a workflow test and a cost estimate for your own team.
+            </p>
+          </div>
+        </section>
         <section aria-labelledby="affiliate-policy" className="mt-12 rounded-xl border border-slate-800 bg-slate-900 p-6">
           <h2 id="affiliate-policy" className="text-xl font-bold text-white">Affiliate relationships</h2>
           <p className="mt-3 leading-relaxed text-slate-300">

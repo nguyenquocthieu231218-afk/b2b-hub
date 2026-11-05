@@ -13,6 +13,10 @@ npm run dev
 
 Open http://localhost:3000. Use `npm run lint` for ESLint and `npm run build` to create a production build.
 
+To check rendered SEO behavior, build and start a local production preview, then run `npm run check:seo -- http://127.0.0.1:3000`. The check verifies indexable pages, canonical URLs, breadcrumbs, redirects, and the served original logo. See [SEO_REVIEW.md](SEO_REVIEW.md) for the audit scope and publication follow-up.
+
+Use `npm run check:search` for the directory search/category/typo checks. Search runs locally without query storage or server requests; all comparisons are rendered before JavaScript runs. Buyer guides live under `/guides`; `/privacy` and `/terms` describe the current site practices. Content comes from committed files and is statically generated, so deploying an editorial change is what makes it live. Add ISR when a real CMS or API becomes the content source, rather than adding a revalidation timer to unchanged file data.
+
 ## Project structure
 
 - `app/` contains the App Router pages, route metadata, SVG app icon, `robots.txt`, and generated sitemap.
