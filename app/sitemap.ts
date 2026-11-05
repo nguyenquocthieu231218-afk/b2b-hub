@@ -17,7 +17,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    ...[...comparisons, ...guides].map(({ href }) => ({
+    ...comparisons.map(({ href, sourceCheckedAt }) => ({
+      url: `${SITE_URL}${href}`,
+      lastModified: sourceCheckedAt,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
+    ...guides.map(({ href }) => ({
       url: `${SITE_URL}${href}`,
       changeFrequency: 'monthly' as const,
       priority: 0.7,

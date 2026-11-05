@@ -102,7 +102,7 @@ export default function ComparisonLayout({
   return (
     <>
       <SiteHeader />
-      {!showDraftNotice && articleUrl && articleContent.headline && articleContent.description && (
+      {!showDraftNotice && comparison && articleUrl && articleContent.headline && articleContent.description && (
         <JsonLd data={{
           '@context': 'https://schema.org',
           '@type': 'Article',
@@ -112,6 +112,13 @@ export default function ComparisonLayout({
           url: articleUrl,
           mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
           inLanguage: 'en',
+          dateModified: comparison.sourceCheckedAt,
+          author: {
+            '@type': 'Organization',
+            '@id': `${SITE_URL}/#organization`,
+            name: SITE_NAME,
+            url: `${SITE_URL}/about`,
+          },
           publisher: { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: SITE_NAME, url: `${SITE_URL}/` },
           isPartOf: { '@type': 'WebSite', '@id': `${SITE_URL}/#website` },
         }} />

@@ -35,6 +35,12 @@ function checkArticle(html, path) {
   const heading = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1];
   assert.equal(article.headline, plainText(heading), `${path}: schema headline differs from visible heading`);
   assert.equal(article.mainEntityOfPage['@id'], `${canonicalOrigin}${path}`);
+  assert.equal(article.author?.name, 'StackEvalify', `${path}: article author missing`);
+  assert.equal(article.author?.url, `${canonicalOrigin}/about`, `${path}: article author URL missing`);
+  assert.equal(article.publisher?.['@id'], `${canonicalOrigin}/#organization`, `${path}: publisher entity mismatch`);
+  if (/^\/[^/]+-vs-[^/]+$/.test(path)) {
+    assert.equal(article.dateModified, '2026-10-29', `${path}: source-check date missing from article schema`);
+  }
   assert(!('aggregateRating' in article) && !('reviewRating' in article), 'Do not fabricate ratings');
   const contents = html.match(/<nav aria-label="On this page"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
   assert(contents, `${path}: table of contents missing`);
@@ -70,6 +76,13 @@ assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains dupl
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
 assert.equal(comparisonPaths.length, 17, 'Preserve all 17 published comparisons');
+for (const path of comparisonPaths) {
+  assert.match(
+    sitemap,
+    new RegExp(`<loc>${canonicalOrigin}${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>2026-10-29</lastmod>`),
+    `${path}: source-check date missing from sitemap`,
+  );
+}
 
 const titles = new Set();
 const descriptions = new Set();
@@ -118,7 +131,10 @@ assert.equal(website?.name, 'StackEvalify');
 assert.equal(website?.url, `${canonicalOrigin}/`);
 assert.equal(organization?.name, 'StackEvalify');
 assert.equal(organization?.logo?.url, `${canonicalOrigin}/logo.png`);
+assert.equal(organization?.email, 'contact@stackevalify.com');
+assert.equal(organization?.contactPoint?.url, `${canonicalOrigin}/contact`);
 assert.equal(website?.publisher?.['@id'], organization?.['@id']);
+assert.equal(meta(home, 'author'), 'StackEvalify');
 assert.match(home, /href="\/category\/saas"/);
 assert(comparisonPaths.filter((path) => home.includes(`href="${path}"`)).length >= 6, 'Homepage must expose software articles');
 

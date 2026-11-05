@@ -1,14 +1,19 @@
 import type { Metadata } from 'next';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://stackevalify.com'),
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: {
     default: 'StackEvalify | Technical Evaluations for Engineering Teams',
     template: '%s | StackEvalify',
   },
-  description:
-    'Evidence-led reviews and comparisons of B2B software and developer hardware for engineering teams.',
+  description: SITE_DESCRIPTION,
+  authors: [{ name: SITE_NAME, url: `${SITE_URL}/about` }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: 'technology',
   openGraph: {
     siteName: 'StackEvalify',
     type: 'website',
