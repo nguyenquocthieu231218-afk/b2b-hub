@@ -4,7 +4,7 @@ import SiteFooter from '../components/SiteFooter';
 import SiteHeader from '../components/SiteHeader';
 import JsonLd from '../components/JsonLd';
 import { comparisons } from '@/lib/comparisons';
-import { SITE_LOGO, SITE_NAME, SITE_URL } from '@/lib/site';
+import { SITE_DESCRIPTION, SITE_EMAIL, SITE_LOGO, SITE_NAME, SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
 
@@ -64,6 +64,14 @@ export default function Home() {
             '@id': `${SITE_URL}/#organization`,
             name: SITE_NAME,
             url: `${SITE_URL}/`,
+            description: SITE_DESCRIPTION,
+            email: SITE_EMAIL,
+            contactPoint: {
+              '@type': 'ContactPoint',
+              email: SITE_EMAIL,
+              contactType: 'editorial inquiries',
+              url: `${SITE_URL}/contact`,
+            },
             logo: {
               '@type': 'ImageObject',
               url: SITE_LOGO,

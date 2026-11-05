@@ -24,7 +24,10 @@ export default function GuideLayout({ guide, contents, children }: GuideLayoutPr
           '@context': 'https://schema.org', '@type': 'Article',
           headline: guide.title, description: guide.description, url,
           mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-          inLanguage: 'en', publisher: { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: SITE_NAME, url: `${SITE_URL}/` },
+          inLanguage: 'en',
+          author: { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: SITE_NAME, url: `${SITE_URL}/about` },
+          publisher: { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: SITE_NAME, url: `${SITE_URL}/` },
+          isPartOf: { '@type': 'WebSite', '@id': `${SITE_URL}/#website` },
         }} />
         <article>
           <header className="border-b border-slate-800 pb-8">
