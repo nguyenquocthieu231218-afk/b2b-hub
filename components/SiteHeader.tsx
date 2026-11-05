@@ -14,6 +14,7 @@ export default function SiteHeader() {
             StackEvalify
           </Link>
           <nav aria-label="Main navigation" className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-x-6">
+            <Link href="/category/saas" className={linkClass}>Software comparisons</Link>
             <Link href="/#reviews" className={linkClass}>Reviews</Link>
             <Link href="/#categories" className={linkClass}>Categories</Link>
             <Link href="/methodology" className={linkClass}>Methodology</Link>

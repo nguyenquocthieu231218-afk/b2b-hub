@@ -13,6 +13,8 @@ npm run dev
 
 Open http://localhost:3000. Use `npm run lint` for ESLint and `npm run build` to create a production build.
 
+To check rendered SEO behavior, build and start a local production preview, then run `npm run check:seo -- http://127.0.0.1:3000`. The check verifies indexable pages, canonical URLs, breadcrumbs, redirects, and the served original logo. See [SEO_REVIEW.md](SEO_REVIEW.md) for the audit scope and publication follow-up.
+
 ## Project structure
 
 - `app/` contains the App Router pages, route metadata, SVG app icon, `robots.txt`, and generated sitemap.

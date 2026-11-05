@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 export default function DuplicateComparisonRoute() {
-  redirect('/webflow-vs-framer');
+  permanentRedirect('/webflow-vs-framer');
 }

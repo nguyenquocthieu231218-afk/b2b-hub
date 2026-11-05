@@ -2,49 +2,38 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteHeader from '../../../components/SiteHeader';
 import SiteFooter from '../../../components/SiteFooter';
+import { comparisons } from '@/lib/comparisons';
+import Breadcrumbs from '../../../components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'B2B SaaS Comparisons and Research',
   description: 'A directory of StackEvalify software comparisons, including desk research with dated primary-source checks.',
   alternates: { canonical: '/category/saas' },
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: 'B2B SaaS Comparisons and Research',
+    description: 'A directory of StackEvalify software comparisons, including desk research with dated primary-source checks.',
+    url: '/category/saas',
+    siteName: 'StackEvalify',
+    type: 'website',
+    images: [{ url: '/logo.png', width: 2000, height: 2000, alt: 'StackEvalify logo' }],
+  },
 };
-
-const comparisons = [
-  { title: 'Ahrefs vs Semrush', href: '/ahrefs-vs-semrush', category: 'SEO', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Airtable vs Notion', href: '/airtable-vs-notion', category: 'Workspaces', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Asana vs Trello', href: '/asana-vs-trello', category: 'Project management', status: 'Source checked · 29 Oct 2026' },
-  { title: 'ChatGPT vs Claude', href: '/chatgpt-vs-claude', category: 'AI assistants', status: 'Source checked · 29 Oct 2026' },
-  { title: 'ClickUp vs Monday', href: '/clickup-vs-monday', category: 'Project management', status: 'Source checked · 29 Oct 2026' },
-  { title: 'ClickUp vs Notion', href: '/clickup-vs-notion', category: 'Workspaces', status: 'Source checked · 29 Oct 2026' },
-  { title: 'HubSpot vs Salesforce', href: '/hubspot-vs-salesforce', category: 'CRM', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Klaviyo vs Mailchimp', href: '/klaviyo-vs-mailchimp', category: 'Email marketing', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Linear vs Jira', href: '/linear-vs-jira', category: 'Issue tracking', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Mailchimp vs ActiveCampaign', href: '/mailchimp-vs-activecampaign', category: 'Email marketing', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Notion vs Coda (Superhuman Docs)', href: '/notion-vs-coda', category: 'Workspaces', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Pipedrive vs HubSpot', href: '/pipedrive-vs-hubspot', category: 'CRM', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Shopify vs WooCommerce', href: '/shopify-vs-woocommerce', category: 'Commerce platforms', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Slack vs Teams', href: '/slack-vs-teams', category: 'Team communication', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Webflow vs Framer', href: '/webflow-vs-framer', category: 'Website builders', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Wix vs Squarespace', href: '/wix-vs-squarespace', category: 'Website builders', status: 'Source checked · 29 Oct 2026' },
-  { title: 'Zapier vs Make', href: '/zapier-vs-make', category: 'Workflow automation', status: 'Source checked · 29 Oct 2026' },
-];
 
 export default function SaasCategoryPage() {
   return (
     <>
       <SiteHeader />
       <main id="main-content" className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <nav aria-label="Breadcrumb" className="mb-8 text-sm text-slate-400">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span aria-hidden="true" className="mx-2">/</span>
-          <span className="text-slate-300">B2B SaaS & DevOps</span>
-        </nav>
+        <Breadcrumbs items={[
+          { name: 'Home', href: '/' },
+          { name: 'B2B SaaS & DevOps' },
+        ]} />
         <header className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">Category</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-white">B2B SaaS comparisons</h1>
           <p className="mt-5 text-lg leading-relaxed text-slate-300">
-            Browse software comparisons across engineering, collaboration, marketing, and operations. All 17 comparisons have dated source checks. These pages are vendor-source desk research, not hands-on product tests.
+            Browse software comparisons across engineering, collaboration, marketing, and operations. All {comparisons.length} comparisons have dated source checks. These pages are vendor-source desk research, not hands-on product tests.
           </p>
         </header>
         <section aria-labelledby="comparison-list" className="mt-12">

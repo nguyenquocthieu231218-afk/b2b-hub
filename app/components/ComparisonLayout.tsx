@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import SiteFooter from '../../components/SiteFooter';
 import SiteHeader from '../../components/SiteHeader';
+import Breadcrumbs from '../../components/Breadcrumbs';
 
 type ProductLink = {
   name: string;
@@ -95,15 +96,11 @@ export default function ComparisonLayout({
     <>
       <SiteHeader />
       <main id="main-content" className="mx-auto min-h-screen max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
-        <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-400">
-          <Link href="/" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-            Home
-          </Link>
-          <span aria-hidden="true">/</span>
-          <Link href="/category/saas" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-            Software comparisons
-          </Link>
-        </div>
+        <Breadcrumbs items={[
+          { name: 'Home', href: '/' },
+          { name: 'Software comparisons', href: '/category/saas' },
+          { name: pageTitle },
+        ]} />
 
         {showDraftNotice && (
           <aside role="note" className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm leading-relaxed text-amber-100">
