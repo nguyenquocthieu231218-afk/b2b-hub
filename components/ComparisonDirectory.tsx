@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { getSearchSuggestions, searchComparisons, type SearchableComparison } from '@/lib/search';
 
 type ComparisonDirectoryItem = SearchableComparison & {
@@ -15,12 +15,21 @@ export default function ComparisonDirectory({ comparisons }: {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
   const searchInput = useRef<HTMLInputElement>(null);
-  const categories = [...new Set(comparisons.map((comparison) => comparison.category))].sort();
-  const results = searchComparisons(comparisons, query, category);
-  const scopedComparisons = category
-    ? comparisons.filter((comparison) => comparison.category === category)
-    : comparisons;
-  const suggestions = getSearchSuggestions(scopedComparisons, query);
+  const categories = useMemo(
+    () => [...new Set(comparisons.map((comparison) => comparison.category))].sort(),
+    [comparisons],
+  );
+  const results = useMemo(
+    () => searchComparisons(comparisons, query, category),
+    [comparisons, query, category],
+  );
+  const suggestions = useMemo(() => {
+    if (results.length > 0 || query.trim().length < 4) return [];
+    const scopedComparisons = category
+      ? comparisons.filter((comparison) => comparison.category === category)
+      : comparisons;
+    return getSearchSuggestions(scopedComparisons, query);
+  }, [comparisons, query, category, results.length]);
   const hasFilters = query.length > 0 || category.length > 0;
 
   function resetFilters() {
@@ -102,6 +111,7 @@ export default function ComparisonDirectory({ comparisons }: {
               <li key={comparison.href}>
                 <Link
                   href={comparison.href}
+                  prefetch={false}
                   className="group block h-full rounded-xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wider text-blue-300">{comparison.category}</p><span className={comparison.status.startsWith('Source checked') ? 'rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-200' : 'rounded-full bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-slate-300'}>{comparison.status}</span></div>
