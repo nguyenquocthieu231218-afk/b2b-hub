@@ -20,6 +20,8 @@ The Zendesk vs Freshdesk comparison was added from current official pricing, bil
 
 The Jira vs monday.com comparison was added from current official cloud pricing, licensing, and automation documentation. It distinguishes Jira's live rule-run allowance from Atlassian's announced December 2026 step model, compares that unit with monday dev's per-action accounting, and records the permanent-free-plan and paid-seat differences without treating a trial as a free tier.
 
+The Mailchimp vs ConvertKit comparison was added using the current Kit name and official subscriber, contact, send-limit, and overage documentation. It shows how Mailchimp can count one person once per audience while Kit keeps one unique active subscriber record, and separates Mailchimp add-on blocks from Kit's subscriber-tier auto-upgrade instead of calling either a universal penalty fee.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes

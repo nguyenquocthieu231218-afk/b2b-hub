@@ -44,6 +44,7 @@ const PRODUCT_LINKS: Record<string, ProductLink> = {
   jira: { name: 'Jira', href: 'https://atlassian.com/software/jira' },
   zendesk: { name: 'Zendesk', href: 'https://zendesk.com' },
   freshdesk: { name: 'Freshdesk', href: 'https://freshworks.com/freshdesk' },
+  convertkit: { name: 'Kit (formerly ConvertKit)', href: 'https://kit.com' },
 };
 
 interface ComparisonLayoutProps {
