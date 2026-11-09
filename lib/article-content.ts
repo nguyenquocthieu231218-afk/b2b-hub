@@ -84,6 +84,7 @@ const relatedCategories: Record<string, readonly string[]> = {
   'Team communication': ['Project management', 'Workspaces', 'Issue tracking'],
   'Website builders': ['SEO', 'Commerce platforms', 'Email marketing'],
   'Workflow automation': ['Workspaces', 'CRM', 'Project management'],
+  'Customer support': ['CRM', 'Team communication', 'Workflow automation'],
 };
 
 export function getComparisonContext(tool1?: string, tool2?: string) {

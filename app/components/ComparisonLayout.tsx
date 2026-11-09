@@ -42,6 +42,8 @@ const PRODUCT_LINKS: Record<string, ProductLink> = {
   claude: { name: 'Claude', href: 'https://claude.ai' },
   linear: { name: 'Linear', href: 'https://linear.app' },
   jira: { name: 'Jira', href: 'https://atlassian.com/software/jira' },
+  zendesk: { name: 'Zendesk', href: 'https://zendesk.com' },
+  freshdesk: { name: 'Freshdesk', href: 'https://freshworks.com/freshdesk' },
 };
 
 interface ComparisonLayoutProps {
@@ -123,7 +125,7 @@ export default function ComparisonLayout({
           isPartOf: { '@type': 'WebSite', '@id': `${SITE_URL}/#website` },
         }} />
       )}
-      <main id="main-content" className="mx-auto min-h-screen max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+      <main id="main-content" className="mx-auto min-h-screen w-full min-w-0 max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
         <Breadcrumbs items={[
           { name: 'Home', href: '/' },
           { name: 'Software comparisons', href: '/category/saas' },
@@ -138,7 +140,7 @@ export default function ComparisonLayout({
 
         <TableOfContents headings={articleContent.headings} />
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl sm:p-8 lg:p-10 [&_h2[id]]:scroll-mt-40">
+        <div className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl sm:p-8 lg:p-10 [&_h2[id]]:scroll-mt-40">
           {hasChildren ? (
             children
           ) : (
