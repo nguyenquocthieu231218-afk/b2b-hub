@@ -18,6 +18,10 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
   },
+  '/linear-vs-jira': {
+    sourceCheckedAt: '2026-11-09',
+    status: 'Source checked · 9 Nov 2026',
+  },
   '/mailchimp-vs-activecampaign': {
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
