@@ -8,6 +8,8 @@ The ClickUp vs monday.com comparison was also rechecked against current vendor p
 
 The Pipedrive vs HubSpot comparison was rechecked against current vendor pricing and billing documentation. It now covers billed-but-unassigned Pipedrive seats, add-ons and top-ups, plus HubSpot's automatic marketing-contact tier upgrades and delayed non-marketing status changes.
 
+The ClickUp vs Notion comparison was rechecked against current vendor pricing and access documentation. It now limits the 1,000-block warning to Free workspaces with multiple owners, records current annual-billing prices, and explains how permission levels, organization domains, guests, and member changes can affect paid seats.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes

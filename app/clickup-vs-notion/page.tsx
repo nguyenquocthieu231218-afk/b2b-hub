@@ -11,7 +11,7 @@ const comparisonRows = [
   {
     label: 'Free capacity',
     clickup: 'Unlimited tasks and members, with 60 MB of attachment storage per Workspace.',
-    notion: 'Unlimited blocks for a solo Free workspace. A shared Free workspace is limited to 1,000 blocks before it must upgrade or reduce membership.',
+    notion: 'Unlimited blocks when the Free workspace has one owner. A Free workspace with two or more owners is limited to 1,000 blocks, followed by a three-day grace period.',
   },
   {
     label: 'Free automation',
@@ -20,8 +20,8 @@ const comparisonRows = [
   },
   {
     label: 'Paid capacity',
-    clickup: 'The Unlimited plan includes unlimited storage; higher tiers expand automation allowances and add controls. Check your Workspace plan’s specific limits.',
-    notion: 'Paid plans include blocks for workspaces with members and vary in integrations, collaboration, and administration features.',
+    clickup: 'Core is listed at $9 per user per month when billed yearly and includes unlimited storage. Higher tiers expand automation allowances and controls.',
+    notion: 'Plus is listed at $10 per member per month and Business at $20 per member per month when billed yearly; both include unlimited file uploads with a 5 GB per-file limit.',
   },
   {
     label: 'Team billing',
@@ -40,10 +40,10 @@ export default function ClickUpVsNotionPage() {
             ClickUp vs Notion: compare free limits and team costs
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
-            The free plans constrain different things. ClickUp lists storage and monthly automation limits, while Notion limits blocks in shared Free workspaces. Paid bills depend on team membership and role rules. Start by estimating attachments, automations, content growth, and the people who need access.
+            The free plans constrain different things. ClickUp lists storage and monthly automation limits, while Notion limits blocks when a Free workspace has multiple owners. Paid bills depend on team membership and role rules. Start by estimating attachments, automations, content growth, and the people who need access.
           </p>
           <p className="mt-4 text-sm text-slate-400">
-            Source check: <time dateTime="2026-10-29">29 October 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
+            Source check: <time dateTime="2026-11-09">9 November 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
           </p>
         </header>
 
@@ -58,7 +58,7 @@ export default function ClickUpVsNotionPage() {
           <h2 id="plan-comparison" className="text-2xl font-bold text-white">Published plan differences</h2>
           <div className="mt-5 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
             <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
-              <caption className="sr-only">ClickUp and Notion plan limits checked on 29 October 2026</caption>
+              <caption className="sr-only">ClickUp and Notion plan limits checked on 9 November 2026</caption>
               <thead className="bg-slate-950 text-slate-200">
                 <tr>
                   <th scope="col" className="p-4">Criteria</th>
@@ -98,6 +98,24 @@ export default function ClickUpVsNotionPage() {
           </p>
         </section>
 
+        <section aria-labelledby="access-billing" className="border-b border-slate-800 py-8">
+          <h2 id="access-billing" className="text-2xl font-bold text-white">Access permissions can quietly create paid seats</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <article className="rounded-lg border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">ClickUp: permission level matters</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">
+                View-only guests are free. A permission-controlled guest can use a paid guest allowance or cost the same as a member after that allowance is exhausted. People invited with the organization’s email domain or SSO cannot remain guests; ClickUp adds them as paid limited members.
+              </p>
+            </article>
+            <article className="rounded-lg border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">Notion: member and guest are different billing states</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">
+                Members are billed for workspace-wide access, while guests are free and page-scoped within the plan limit. An invite using an allowed organization domain can create a member instead of a guest. New members are prorated; removing a member reduces the bill at the next billing cycle rather than immediately.
+              </p>
+            </article>
+          </div>
+        </section>
+
         <section aria-labelledby="evaluation" className="border-b border-slate-800 py-8">
           <h2 id="evaluation" className="text-2xl font-bold text-white">Evaluate the same work in both tools</h2>
           <ol className="mt-5 grid gap-3 text-slate-300">
@@ -113,15 +131,17 @@ export default function ClickUpVsNotionPage() {
         <section aria-labelledby="sources" className="pt-8">
           <h2 id="sources" className="text-2xl font-bold text-white">Sources and method</h2>
           <p className="mt-3 leading-relaxed text-slate-300">
-            This comparison summarizes official plan and help documentation checked on 29 October 2026. It is desk research, not independent usability or performance testing. Product limits and localized prices can change; confirm current terms before purchasing.
+            This comparison summarizes official plan and help documentation checked on 9 November 2026. It is desk research, not independent usability or performance testing. Product limits and localized prices can change; confirm current terms before purchasing.
           </p>
           <ul className="mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed text-blue-200">
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://clickup.com/pricing" target="_blank" rel="noopener noreferrer">ClickUp pricing and plan comparison</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.clickup.com/hc/en-us/articles/23477062949911-Automations-feature-availability-and-limits" target="_blank" rel="noopener noreferrer">ClickUp Help: automation availability and limits</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.clickup.com/hc/en-us/articles/6310022323991-Guest-type-user-roles" target="_blank" rel="noopener noreferrer">ClickUp Help: guest roles and billing rules</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.clickup.com/hc/en-us/articles/6303244318999-Pricing-per-user-role-and-plan" target="_blank" rel="noopener noreferrer">ClickUp Help: pricing by user role and plan</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.notion.com/pricing" target="_blank" rel="noopener noreferrer">Notion pricing and plan comparison</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.notion.com/help/understanding-block-usage" target="_blank" rel="noopener noreferrer">Notion Help: Free workspace block limits</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.notion.com/help/billing" target="_blank" rel="noopener noreferrer">Notion Help: per-member, per-workspace billing</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.notion.com/help/members-and-billing" target="_blank" rel="noopener noreferrer">Notion Help: members, guests, prorating, and seat changes</a></li>
           </ul>
         </section>
       </article>
