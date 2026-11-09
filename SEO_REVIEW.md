@@ -4,6 +4,8 @@
 
 The HubSpot vs Salesforce comparison was rechecked against the vendors' current US pricing pages. HubSpot's standard Starter seat price and explicitly limited new-customer promotion are now separated, and the comparison directory, Article schema, and sitemap share the same source-check date. No hands-on claim, rating, testimonial, or brand asset was added.
 
+The ClickUp vs monday.com comparison was also rechecked against current vendor pricing and automation documentation. It now explains workspace-level versus separate automation/integration action pools, plan-gated webhook availability, and ten-seat annual-billing examples without presenting desk research as hands-on experience.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes
