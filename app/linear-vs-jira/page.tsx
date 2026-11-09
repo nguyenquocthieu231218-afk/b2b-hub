@@ -10,7 +10,7 @@ export const metadata = sourceCheckedComparisonMetadata({
 const comparisonRows = [
   {
     label: 'Free plan',
-    linear: 'Unlimited members, 2 teams, 250 issues, and 10 MB file uploads.',
+    linear: 'Unlimited members, 2 teams, 250 issues, and 10 MB file uploads. Every user is an admin on the Free plan.',
     jira: 'Up to 10 users, unlimited goals, projects, tasks, and forms; 2 GB storage and 150 automation steps per subscription each month.',
   },
   {
@@ -40,10 +40,10 @@ export default function LinearVsJiraPage() {
             Linear vs Jira: plans, limits, and team fit
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
-            Both products can track team work, but their published plans set different limits and emphasize different planning features. This comparison focuses on what the vendors currently document so you can shortlist the tool against your own workflow.
+            Both products can track engineering work, but the cost model is only part of the decision. Linear gates role control, guest access, and team count by plan; Jira meters automation steps and changes permissions, planning, storage, and support across tiers. Compare the controls your workflow consumes—not only the issue tracker’s surface UI.
           </p>
           <p className="mt-4 text-sm text-slate-400">
-            Source check: <time dateTime="2026-10-29">29 October 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
+            Source check: <time dateTime="2026-11-09">9 November 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
           </p>
         </header>
 
@@ -61,7 +61,7 @@ export default function LinearVsJiraPage() {
           </p>
           <div className="mt-5 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
             <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
-              <caption className="sr-only">Published Linear and Jira plan details checked on 29 October 2026</caption>
+              <caption className="sr-only">Published Linear and Jira plan details checked on 9 November 2026</caption>
               <thead className="bg-slate-950 text-slate-200">
                 <tr>
                   <th scope="col" className="p-4">Criteria</th>
@@ -102,6 +102,37 @@ export default function LinearVsJiraPage() {
           </p>
         </section>
 
+        <section aria-labelledby="access-billing" className="border-b border-slate-800 py-8">
+          <h2 id="access-billing" className="text-2xl font-bold text-white">Unlimited members do not mean unlimited access control</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <article className="rounded-lg border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">Linear: restricted guests still consume paid seats</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">
+                Linear Free allows unlimited members, but all users are admins. Basic adds admin roles; restricted guest accounts require Business or Enterprise and are billed at the same rate as regular members. Linear bills every unsuspended user in the paid Workspace, regardless of role.
+              </p>
+            </article>
+            <article className="rounded-lg border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">Linear: monthly and annual seat changes settle differently</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">
+                On monthly billing, member changes affect the following month without mid-month charges or credits. Annual plans generate prorated charges for additions and prorated credits for suspensions; credits apply to future invoices or renewal rather than being refunded.
+              </p>
+            </article>
+          </div>
+          <p className="mt-5 leading-relaxed text-slate-300">
+            Price contractors, support partners, and client viewers as real Linear seats if they need guest access. Also verify integration visibility: Linear warns that some Workspace integrations may expose data beyond a guest’s invited teams.
+          </p>
+        </section>
+
+        <section aria-labelledby="automation-budget" className="border-b border-slate-800 py-8">
+          <h2 id="automation-budget" className="text-2xl font-bold text-white">Jira automation is now a step budget</h2>
+          <p className="mt-4 leading-relaxed text-slate-300">
+            Jira Cloud measures executed triggers, conditions, actions, branches, and loops as automation steps. A simple trigger plus one condition and one action can consume three steps; a loop consumes the loop step plus the actions executed for each item. Allowances are pooled at the organization level and refresh monthly.
+          </p>
+          <p className="mt-4 leading-relaxed text-slate-300">
+            The published Jira allowances are 150 steps per subscription on Free, 400 per user on Standard, 750 per user on Premium, and 1,000 per user on Enterprise. Runs that perform no action and aborted or throttled runs do not consume steps. Test the highest-volume flows with production-like issue counts before relying on the headline allowance.
+          </p>
+        </section>
+
         <section aria-labelledby="workflows" className="border-b border-slate-800 py-8">
           <h2 id="workflows" className="text-2xl font-bold text-white">How the planning models differ</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -132,13 +163,17 @@ export default function LinearVsJiraPage() {
         <section aria-labelledby="sources" className="pt-8">
           <h2 id="sources" className="text-2xl font-bold text-white">Sources and method</h2>
           <p className="mt-3 leading-relaxed text-slate-300">
-            This is a comparison of vendor-published plan details and documentation, checked on 29 October 2026. It is desk research, not independent usability testing. Plan features, limits, regional availability, and prices may change; verify them with the vendors before making a purchase decision.
+            This is a comparison of vendor-published pricing, billing, role, automation, and workflow documentation checked on 9 November 2026. It is desk research, not independent usability testing. Plan features, limits, regional availability, and prices may change; verify them with the vendors before making a purchase decision.
           </p>
           <ul className="mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed text-blue-200">
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://linear.app/pricing" target="_blank" rel="noopener noreferrer">Linear pricing and plan comparison</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://linear.app/docs/members-roles" target="_blank" rel="noopener noreferrer">Linear documentation: members, admins, and billed guests</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://linear.app/docs/billing-and-plans" target="_blank" rel="noopener noreferrer">Linear documentation: monthly and annual seat billing</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://linear.app/docs/use-cycles" target="_blank" rel="noopener noreferrer">Linear documentation: cycles</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.atlassian.com/en/software/jira/pricing" target="_blank" rel="noopener noreferrer">Atlassian Jira pricing and plan comparison</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.atlassian.com/software/jira/features" target="_blank" rel="noopener noreferrer">Atlassian Jira feature overview</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://support.atlassian.com/cloud-automation/docs/how-is-my-usage-calculated/" target="_blank" rel="noopener noreferrer">Atlassian Support: Jira automation step metering</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://support.atlassian.com/cloud-automation/docs/automation-service-limits/" target="_blank" rel="noopener noreferrer">Atlassian Support: automation service limits</a></li>
           </ul>
         </section>
       </article>
