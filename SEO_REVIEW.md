@@ -12,6 +12,8 @@ The ClickUp vs Notion comparison was rechecked against current vendor pricing an
 
 The Mailchimp vs ActiveCampaign comparison was rechecked against current vendor billing and limit documentation. It now distinguishes which contact states count, explains duplicate-audience billing, and documents the operational difference between Mailchimp add-on charges and ActiveCampaign contact/send-limit behavior.
 
+The Asana vs Trello comparison was rechecked against current vendor pricing, billing, guest, and automation documentation. It now distinguishes Asana organization guests from Workspace collaborators, explains Trello multi-board guest charges, separates Trello automation runs from operation quotas, and records the Workspace-wide effect of the Free collaborator cap.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes
