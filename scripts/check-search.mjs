@@ -12,7 +12,7 @@ async function importTypeScript(path) {
 
 const { comparisons } = await importTypeScript('../lib/comparisons.ts');
 const { normalizeSearch, searchComparisons, getSearchSuggestions } = await importTypeScript('../lib/search.ts');
-assert.equal(searchComparisons(comparisons, '').length, 17);
+assert.equal(searchComparisons(comparisons, '').length, 18);
 assert.equal(searchComparisons(comparisons, 'ClickUp').length, 2);
 assert.equal(searchComparisons(comparisons, 'crm').length, 2);
 assert.equal(searchComparisons(comparisons, 'monday.com').length, 1);

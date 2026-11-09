@@ -30,6 +30,10 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
   },
+  '/zendesk-vs-freshdesk': {
+    sourceCheckedAt: '2026-11-09',
+    status: 'Source checked · 9 Nov 2026',
+  },
 };
 
 const comparisonDirectory = [
@@ -50,6 +54,7 @@ const comparisonDirectory = [
   { title: 'Webflow vs Framer', href: '/webflow-vs-framer', category: 'Website builders' },
   { title: 'Wix vs Squarespace', href: '/wix-vs-squarespace', category: 'Website builders' },
   { title: 'Zapier vs Make', href: '/zapier-vs-make', category: 'Workflow automation' },
+  { title: 'Zendesk vs Freshdesk', href: '/zendesk-vs-freshdesk', category: 'Customer support' },
 ] as const;
 
 export const comparisons = comparisonDirectory.map((comparison) => ({

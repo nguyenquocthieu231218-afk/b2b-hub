@@ -15,7 +15,7 @@ export default function SiteHeader() {
             <Image src="/logo.png" alt="StackEvalify logo" width={32} height={32} sizes="32px" loading="eager" className="h-8 w-8 object-contain" />
             StackEvalify
           </Link>
-          <nav aria-label="Main navigation" className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-x-6">
+          <nav aria-label="Main navigation" className="flex w-full min-w-0 flex-wrap gap-x-4 gap-y-2 sm:w-auto sm:gap-x-6">
             <Link href="/category/saas" className={linkClass}>Software comparisons</Link>
             <Link href="/guides" className={linkClass}>Buyer guides</Link>
             <Link href="/#reviews" className={linkClass}>Featured</Link>

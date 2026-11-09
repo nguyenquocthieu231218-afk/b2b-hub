@@ -16,6 +16,8 @@ The Asana vs Trello comparison was rechecked against current vendor pricing, bil
 
 The Linear vs Jira comparison was rechecked against current vendor pricing, billing, role, and automation documentation. It now records Linear Free admin exposure, paid guest-seat treatment and billing true-ups, and explains Jira's organization-pooled automation step model instead of treating a workflow as one metered execution.
 
+The Zendesk vs Freshdesk comparison was added from current official pricing, billing, role, and add-on documentation. It separates email-first helpdesk prices from omnichannel suites, calculates the public annual-price gaps, and documents full-agent seats, light or occasional-agent edge cases, day passes, and metered AI add-ons without inventing a legacy Starter plan.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes
