@@ -36,6 +36,7 @@ const comparisonSourceDates = new Map([
   ['/hubspot-vs-salesforce', '2026-11-09'],
   ['/linear-vs-jira', '2026-11-09'],
   ['/mailchimp-vs-activecampaign', '2026-11-09'],
+  ['/mailchimp-vs-convertkit', '2026-11-09'],
   ['/pipedrive-vs-hubspot', '2026-11-09'],
   ['/jira-vs-monday', '2026-11-09'],
   ['/zendesk-vs-freshdesk', '2026-11-09'],
@@ -91,7 +92,7 @@ const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => ne
 assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains duplicate URLs');
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
-assert.equal(comparisonPaths.length, 19, 'Preserve all 19 published comparisons');
+assert.equal(comparisonPaths.length, 20, 'Preserve all 20 published comparisons');
 for (const path of comparisonPaths) {
   const sourceDate = expectedComparisonSourceDate(path);
   assert.match(
@@ -160,7 +161,7 @@ checkBreadcrumb(directory, '/category/saas');
 for (const path of comparisonPaths) assert(directory.includes(`href="${path}"`), `${path}: missing from directory`);
 assert.match(directory, /type="search"/);
 assert.match(directory, /id="comparison-category"/);
-assert(plainText(directory).includes('Showing 19 of 19 comparisons'), 'All comparisons must be present before JavaScript runs');
+assert(plainText(directory).includes('Showing 20 of 20 comparisons'), 'All comparisons must be present before JavaScript runs');
 for (const path of ['/guides', '/guides/choose-b2b-software', '/guides/saas-total-cost', '/privacy', '/terms']) {
   assert(pages.has(path), `${path}: new guide or trust page missing from sitemap`);
 }

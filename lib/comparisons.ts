@@ -38,6 +38,10 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
   },
+  '/mailchimp-vs-convertkit': {
+    sourceCheckedAt: '2026-11-09',
+    status: 'Source checked · 9 Nov 2026',
+  },
 };
 
 const comparisonDirectory = [
@@ -52,6 +56,7 @@ const comparisonDirectory = [
   { title: 'Klaviyo vs Mailchimp', href: '/klaviyo-vs-mailchimp', category: 'Email marketing' },
   { title: 'Linear vs Jira', href: '/linear-vs-jira', category: 'Issue tracking' },
   { title: 'Mailchimp vs ActiveCampaign', href: '/mailchimp-vs-activecampaign', category: 'Email marketing' },
+  { title: 'Mailchimp vs ConvertKit (Kit)', href: '/mailchimp-vs-convertkit', category: 'Email marketing' },
   { title: 'Notion vs Coda (Superhuman Docs)', href: '/notion-vs-coda', category: 'Workspaces' },
   { title: 'Pipedrive vs HubSpot', href: '/pipedrive-vs-hubspot', category: 'CRM' },
   { title: 'Shopify vs WooCommerce', href: '/shopify-vs-woocommerce', category: 'Commerce platforms' },
