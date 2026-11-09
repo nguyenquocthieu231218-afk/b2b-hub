@@ -2,6 +2,10 @@ const SOURCE_CHECKED_AT = '2026-10-29';
 const SOURCE_CHECKED_STATUS = 'Source checked · 29 Oct 2026';
 
 const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: string }> = {
+  '/clickup-vs-monday': {
+    sourceCheckedAt: '2026-11-09',
+    status: 'Source checked · 9 Nov 2026',
+  },
   '/hubspot-vs-salesforce': {
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
