@@ -10,6 +10,8 @@ The Pipedrive vs HubSpot comparison was rechecked against current vendor pricing
 
 The ClickUp vs Notion comparison was rechecked against current vendor pricing and access documentation. It now limits the 1,000-block warning to Free workspaces with multiple owners, records current annual-billing prices, and explains how permission levels, organization domains, guests, and member changes can affect paid seats.
 
+The Mailchimp vs ActiveCampaign comparison was rechecked against current vendor billing and limit documentation. It now distinguishes which contact states count, explains duplicate-audience billing, and documents the operational difference between Mailchimp add-on charges and ActiveCampaign contact/send-limit behavior.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes

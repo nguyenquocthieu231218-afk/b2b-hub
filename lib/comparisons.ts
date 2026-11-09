@@ -14,6 +14,10 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
   },
+  '/mailchimp-vs-activecampaign': {
+    sourceCheckedAt: '2026-11-09',
+    status: 'Source checked · 9 Nov 2026',
+  },
   '/pipedrive-vs-hubspot': {
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
