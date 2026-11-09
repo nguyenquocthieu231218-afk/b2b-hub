@@ -32,6 +32,7 @@ function plainText(html) {
 const comparisonSourceDates = new Map([
   ['/clickup-vs-monday', '2026-11-09'],
   ['/hubspot-vs-salesforce', '2026-11-09'],
+  ['/pipedrive-vs-hubspot', '2026-11-09'],
 ]);
 
 function expectedComparisonSourceDate(path) {

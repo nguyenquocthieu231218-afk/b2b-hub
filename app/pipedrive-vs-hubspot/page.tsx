@@ -15,7 +15,7 @@ const comparisonRows = [
   },
   {
     label: 'Paid plan structure',
-    pipedrive: 'Current plans are Lite, Growth, Premium, and Ultimate. Plans are priced per seat, with monthly or annual billing; optional add-ons and top-ups can increase the total.',
+    pipedrive: 'The current US annual-billing view lists Lite at $14, Growth at $39, Premium at $59, and Ultimate at $79 per seat/month. Optional add-ons and usage top-ups can increase the total.',
     hubspot: 'HubSpot sells product Hubs and bundles. Starter Customer Platform combines Starter editions; pricing depends on seats, product selection, and other limits.',
   },
   {
@@ -43,7 +43,7 @@ export default function PipedriveVsHubSpotPage() {
             The old headline comparison—Pipedrive as a simple sales CRM and HubSpot as an all-in-one suite—misses important billing details. Pipedrive has refreshed its plan names and sells marketing email as an add-on. HubSpot has an ongoing free CRM, while paid Marketing Hub bills by marketing-contact tier. Compare your actual seats, contacts, and add-ons before choosing.
           </p>
           <p className="mt-4 text-sm text-slate-400">
-            Source check: <time dateTime="2026-10-29">29 October 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
+            Source check: <time dateTime="2026-11-09">9 November 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
           </p>
         </header>
 
@@ -58,7 +58,7 @@ export default function PipedriveVsHubSpotPage() {
           <h2 id="plan-comparison" className="text-2xl font-bold text-white">Current plan and billing differences</h2>
           <div className="mt-5 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
             <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
-              <caption className="sr-only">Pipedrive and HubSpot plan details checked on 29 October 2026</caption>
+              <caption className="sr-only">Pipedrive and HubSpot plan details checked on 9 November 2026</caption>
               <thead className="bg-slate-950 text-slate-200">
                 <tr>
                   <th scope="col" className="p-4">Criteria</th>
@@ -98,6 +98,21 @@ export default function PipedriveVsHubSpotPage() {
           </p>
         </section>
 
+        <section aria-labelledby="billing-traps" className="border-b border-slate-800 py-8">
+          <h2 id="billing-traps" className="text-2xl font-bold text-white">Model the billing triggers the headline price omits</h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">Pipedrive: seats, add-ons, and top-ups</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">Pipedrive says every seat is billed whether it is assigned to a user or not. Annual subscriptions are paid upfront. LeadBooster, Projects, and Smart Docs are included from Premium; Campaigns and Web Visitors remain separate add-ons. Growth and higher tiers can also buy top-ups for limits such as API tokens, leads and deals, reports, or automations.</p>
+            </article>
+            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">HubSpot: contact-tier expansion</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">For Marketing Hub accounts with marketing contacts, HubSpot says exceeding the current tier—even by one contact—triggers an automatic move to the next tier. The higher tier remains billable until renewal even if the count later falls. Changing a contact to non-marketing also takes effect on the account’s next update date, not immediately.</p>
+            </article>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-slate-400">A safer estimate therefore includes a seat-owner process in Pipedrive and a marketing-contact ceiling, update-date review, and renewal plan in HubSpot. These are billing controls, not claims about which CRM is easier to use.</p>
+        </section>
+
         <section aria-labelledby="evaluation" className="border-b border-slate-800 py-8">
           <h2 id="evaluation" className="text-2xl font-bold text-white">Build a like-for-like CRM estimate</h2>
           <ol className="mt-5 grid gap-3 text-slate-300">
@@ -113,7 +128,7 @@ export default function PipedriveVsHubSpotPage() {
         <section aria-labelledby="sources" className="pt-8">
           <h2 id="sources" className="text-2xl font-bold text-white">Sources and method</h2>
           <p className="mt-3 leading-relaxed text-slate-300">
-            This comparison summarizes official pricing and plan documentation checked on 29 October 2026. It is desk research, not independent product testing or a conversion study. Plan names, offers, and included features can change; confirm the current terms in your account.
+            This comparison summarizes official pricing, plan, and billing documentation checked on 9 November 2026. It is desk research, not independent product testing or a conversion study. Plan names, offers, included features, and billing rules can change; confirm the current terms in your account.
           </p>
           <ul className="mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed text-blue-200">
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.pipedrive.com/en/pricing" target="_blank" rel="noopener noreferrer">Pipedrive pricing and trial details</a></li>
@@ -121,6 +136,7 @@ export default function PipedriveVsHubSpotPage() {
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://support.pipedrive.com/en/article/how-does-pricing-work-in-pipedrive" target="_blank" rel="noopener noreferrer">Pipedrive Help: billing cycles, seats, and add-ons</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.hubspot.com/pricing/crm" target="_blank" rel="noopener noreferrer">HubSpot pricing and free CRM limits</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://knowledge.hubspot.com/records/marketing-contacts" target="_blank" rel="noopener noreferrer">HubSpot Knowledge Base: marketing contact tiers</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://knowledge.hubspot.com/account/understand-marketing-contacts-billing" target="_blank" rel="noopener noreferrer">HubSpot Knowledge Base: automatic contact-tier upgrades and update dates</a></li>
           </ul>
         </section>
       </article>
