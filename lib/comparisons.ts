@@ -34,6 +34,10 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-09',
     status: 'Source checked · 9 Nov 2026',
   },
+  '/jira-vs-monday': {
+    sourceCheckedAt: '2026-11-09',
+    status: 'Source checked · 9 Nov 2026',
+  },
 };
 
 const comparisonDirectory = [
@@ -44,6 +48,7 @@ const comparisonDirectory = [
   { title: 'ClickUp vs Monday', href: '/clickup-vs-monday', category: 'Project management' },
   { title: 'ClickUp vs Notion', href: '/clickup-vs-notion', category: 'Workspaces' },
   { title: 'HubSpot vs Salesforce', href: '/hubspot-vs-salesforce', category: 'CRM' },
+  { title: 'Jira vs monday.com', href: '/jira-vs-monday', category: 'Issue tracking' },
   { title: 'Klaviyo vs Mailchimp', href: '/klaviyo-vs-mailchimp', category: 'Email marketing' },
   { title: 'Linear vs Jira', href: '/linear-vs-jira', category: 'Issue tracking' },
   { title: 'Mailchimp vs ActiveCampaign', href: '/mailchimp-vs-activecampaign', category: 'Email marketing' },

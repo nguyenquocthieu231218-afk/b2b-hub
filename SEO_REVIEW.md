@@ -18,6 +18,8 @@ The Linear vs Jira comparison was rechecked against current vendor pricing, bill
 
 The Zendesk vs Freshdesk comparison was added from current official pricing, billing, role, and add-on documentation. It separates email-first helpdesk prices from omnichannel suites, calculates the public annual-price gaps, and documents full-agent seats, light or occasional-agent edge cases, day passes, and metered AI add-ons without inventing a legacy Starter plan.
 
+The Jira vs monday.com comparison was added from current official cloud pricing, licensing, and automation documentation. It distinguishes Jira's live rule-run allowance from Atlassian's announced December 2026 step model, compares that unit with monday dev's per-action accounting, and records the permanent-free-plan and paid-seat differences without treating a trial as a free tier.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes
