@@ -1,5 +1,9 @@
 # StackEvalify SEO review — 5 November 2026
 
+## Maintenance note — 9 November 2026
+
+The HubSpot vs Salesforce comparison was rechecked against the vendors' current US pricing pages. HubSpot's standard Starter seat price and explicitly limited new-customer promotion are now separated, and the comparison directory, Article schema, and sitemap share the same source-check date. No hands-on claim, rating, testimonial, or brand asset was added.
+
 Source of truth: GitHub `nguyenquocthieu231218-afk/b2b-hub`, `main` at `bd1044800888bda3aa873970f2ce6f672b62f0fc`. This change starts from that commit; earlier uncommitted local edits are not included.
 
 ## Findings and changes

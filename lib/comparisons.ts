@@ -1,6 +1,13 @@
 const SOURCE_CHECKED_AT = '2026-10-29';
 const SOURCE_CHECKED_STATUS = 'Source checked · 29 Oct 2026';
 
+const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: string }> = {
+  '/hubspot-vs-salesforce': {
+    sourceCheckedAt: '2026-11-09',
+    status: 'Source checked · 9 Nov 2026',
+  },
+};
+
 const comparisonDirectory = [
   { title: 'Ahrefs vs Semrush', href: '/ahrefs-vs-semrush', category: 'SEO' },
   { title: 'Airtable vs Notion', href: '/airtable-vs-notion', category: 'Workspaces' },
@@ -23,6 +30,8 @@ const comparisonDirectory = [
 
 export const comparisons = comparisonDirectory.map((comparison) => ({
   ...comparison,
-  status: SOURCE_CHECKED_STATUS,
-  sourceCheckedAt: SOURCE_CHECKED_AT,
+  ...(sourceCheckOverrides[comparison.href] ?? {
+    status: SOURCE_CHECKED_STATUS,
+    sourceCheckedAt: SOURCE_CHECKED_AT,
+  }),
 }));

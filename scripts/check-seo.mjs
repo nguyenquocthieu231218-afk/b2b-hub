@@ -29,6 +29,14 @@ function plainText(html) {
   return html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
 }
 
+const comparisonSourceDates = new Map([
+  ['/hubspot-vs-salesforce', '2026-11-09'],
+]);
+
+function expectedComparisonSourceDate(path) {
+  return comparisonSourceDates.get(path) ?? '2026-10-29';
+}
+
 function checkArticle(html, path) {
   const article = jsonLd(html).find((data) => data['@type'] === 'Article');
   assert(article, `${path}: Article schema missing`);
@@ -39,7 +47,7 @@ function checkArticle(html, path) {
   assert.equal(article.author?.url, `${canonicalOrigin}/about`, `${path}: article author URL missing`);
   assert.equal(article.publisher?.['@id'], `${canonicalOrigin}/#organization`, `${path}: publisher entity mismatch`);
   if (/^\/[^/]+-vs-[^/]+$/.test(path)) {
-    assert.equal(article.dateModified, '2026-10-29', `${path}: source-check date missing from article schema`);
+    assert.equal(article.dateModified, expectedComparisonSourceDate(path), `${path}: source-check date missing from article schema`);
   }
   assert(!('aggregateRating' in article) && !('reviewRating' in article), 'Do not fabricate ratings');
   const contents = html.match(/<nav aria-label="On this page"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
@@ -77,9 +85,10 @@ assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory mi
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
 assert.equal(comparisonPaths.length, 17, 'Preserve all 17 published comparisons');
 for (const path of comparisonPaths) {
+  const sourceDate = expectedComparisonSourceDate(path);
   assert.match(
     sitemap,
-    new RegExp(`<loc>${canonicalOrigin}${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>2026-10-29</lastmod>`),
+    new RegExp(`<loc>${canonicalOrigin}${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>${sourceDate}</lastmod>`),
     `${path}: source-check date missing from sitemap`,
   );
 }

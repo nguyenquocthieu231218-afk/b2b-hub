@@ -19,14 +19,14 @@ export default function HubSpotVsSalesforce() {
           <p className="mt-5 text-lg leading-relaxed text-slate-300">
             These products do not line up as identical editions. HubSpot’s free CRM and Sales Hub tiers are sold separately from Salesforce’s Starter Suite and Sales Cloud editions. Match the package to your workflow and user count before comparing totals.
           </p>
-          <p className="mt-4 text-sm text-slate-400">Source check: 29 October 2026 · US vendor pages · USD · not a hands-on test</p>
+          <p className="mt-4 text-sm text-slate-400">Source check: <time dateTime="2026-11-09">9 November 2026</time> · US vendor pages · USD · not a hands-on test</p>
         </header>
 
         <section aria-labelledby="snapshot" className="border-b border-slate-800 py-8">
           <h2 id="snapshot" className="text-2xl font-bold text-white">At a glance</h2>
           <div className="mt-5 overflow-x-auto rounded-lg border border-slate-800">
             <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
-              <caption className="sr-only">HubSpot and Salesforce product scope and published US starting prices checked 29 October 2026</caption>
+              <caption className="sr-only">HubSpot and Salesforce product scope and published US starting prices checked 9 November 2026</caption>
               <thead className="bg-slate-950 text-slate-200">
                 <tr>
                   <th scope="col" className="p-4">What to compare</th>
@@ -42,7 +42,7 @@ export default function HubSpotVsSalesforce() {
                 </tr>
                 <tr>
                   <th scope="row" className="bg-slate-950/60 p-4 font-semibold text-white">Published entry pricing</th>
-                  <td className="p-4 align-top">Sales Hub Starter is shown from $15 per seat/month on HubSpot’s product page. The page notes a new-customer discount that can change. <a className={sourceClass} href="https://www.hubspot.com/products/crm">Source</a></td>
+                  <td className="p-4 align-top">Sales Hub Starter is normally $20 per seat/month. HubSpot currently advertises a limited-time new-customer offer from $7 per seat/month with annual payment or $10 month-to-month. Eligibility and offers can change. <a className={sourceClass} href="https://www.hubspot.com/pricing/crm?selectedPackage=free">Source</a></td>
                   <td className="p-4 align-top">Starter Suite is shown at $25 per user/month, billed monthly or annually. Salesforce says pricing can change and detailed quotes may require sales. <a className={sourceClass} href="https://www.salesforce.com/sales/pricing/">Source</a></td>
                 </tr>
                 <tr>
@@ -92,7 +92,8 @@ export default function HubSpotVsSalesforce() {
         <footer className="mt-8 border-t border-slate-800 pt-6">
           <h2 className="text-lg font-bold text-white">Sources and update policy</h2>
           <ul className="mt-3 list-disc space-y-2 pl-6 text-sm leading-relaxed text-slate-300">
-            <li><a className={sourceClass} href="https://www.hubspot.com/products/crm">HubSpot CRM product and pricing overview</a> — free limits, Starter features, and advertised starting price.</li>
+            <li><a className={sourceClass} href="https://www.hubspot.com/products/crm">HubSpot CRM product overview</a> — free limits and product scope.</li>
+            <li><a className={sourceClass} href="https://www.hubspot.com/pricing/crm?selectedPackage=free">HubSpot current pricing page</a> — standard Starter seat price and limited-time new-customer offer.</li>
             <li><a className={sourceClass} href="https://legal.hubspot.com/hubspot-product-and-services-catalog/free-tools">HubSpot Product & Services Catalog: Free Tools</a> — plan details and limits.</li>
             <li><a className={sourceClass} href="https://www.salesforce.com/sales/pricing/">Salesforce Sales Pricing</a> — suite prices, included features, trial details, and change caveat.</li>
           </ul>
