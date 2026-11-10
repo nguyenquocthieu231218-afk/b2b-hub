@@ -11,6 +11,15 @@ export type ComparisonCro = {
 };
 
 const comparisonCro: Record<string, ComparisonCro> = {
+  '/activecampaign-vs-convertkit': {
+    chooseA: 'Choose ActiveCampaign when multi-step lifecycle automation, conditional content, sales automation, or cross-channel add-ons justify contact-based pricing and send limits.',
+    chooseB: 'Choose Kit when unlimited email sends, one subscriber-centric list, and built-in digital-product or paid-newsletter selling fit a creator-led business.',
+    tableAnchor: 'plan-comparison',
+    faq: {
+      question: 'Is Kit cheaper than ActiveCampaign for 1,000 subscribers?',
+      answer: 'Not in every configuration. Kit publishes plan prices by confirmed subscriber tier, while ActiveCampaign prices by contact band and plan and applies separate send, seat, automation, and channel limits. Compare the exact tier and workflow you will operate.',
+    },
+  },
   '/ahrefs-vs-semrush': {
     chooseA: 'Choose Ahrefs if its Starter limits cover a light, single-user research workload and you value its lower listed entry price.',
     chooseB: 'Choose Semrush if the SEO Toolkit project, keyword, crawl, and reporting limits match your operating plan and you have priced any extra users.',
@@ -74,6 +83,15 @@ const comparisonCro: Record<string, ComparisonCro> = {
       answer: 'A universal price comparison is not reliable because the packages are not identical. Compare the same users, records, permissions, automations, onboarding, add-ons, and included products over a 12-month period.',
     },
   },
+  '/hubspot-vs-zoho-crm': {
+    chooseA: 'Choose HubSpot when its free CRM or a clearly scoped Hub package fits now and you have modelled paid seats, marketing-contact tiers, and any later Hub upgrades.',
+    chooseB: 'Choose Zoho CRM when its lower listed per-user editions cover the sales workflow and your team can govern the broader Zoho app and licensing choices.',
+    tableAnchor: 'scale-costs',
+    faq: {
+      question: 'Does Zoho CRM stay cheaper than HubSpot as a team grows?',
+      answer: 'Its published CRM seat prices are lower than HubSpot Sales Hub Professional and Enterprise starting seat prices, but the products are not identical. Include required Zoho apps, support, implementation, HubSpot Hubs, marketing-contact tiers, and add-ons in the same 12-month model.',
+    },
+  },
   '/jira-vs-monday': {
     chooseA: 'Choose Jira for an engineering-specific backlog and workflow model, especially when a permanent workspace for up to ten free users matters.',
     chooseB: 'Choose monday dev when its visual paid workflow, roadmap features, integrations, and action-based automation pools fit the team.',
@@ -120,12 +138,12 @@ const comparisonCro: Record<string, ComparisonCro> = {
     },
   },
   '/notion-vs-coda': {
-    chooseA: 'Choose Notion when its per-member workspace plans and team knowledge-base model fit the access pattern.',
-    chooseB: 'Choose Superhuman Docs, formerly Coda, when maker billing, tables, formulas, Packs, and document automation fit the workflow.',
+    chooseA: 'Choose Notion when per-member access, team knowledge bases, and its workspace ecosystem matter more than per-doc automation quotas.',
+    chooseB: 'Choose Superhuman Docs, formerly Coda, when maker billing, formulas, Packs, document automation, and explicit row/object limits fit the workflow.',
     tableAnchor: 'plan-details',
     faq: {
-      question: 'Is Coda now called Superhuman Docs?',
-      answer: 'Yes. Coda became Superhuman Docs in July 2026. Existing documents and workflows continue, but new customers should verify the current Superhuman suite offer and map it to the older Coda plan names before comparing prices.',
+      question: 'How many rows can a free Coda or Superhuman Docs document contain?',
+      answer: 'A shared Free document is limited to 1,000 table rows and 50 objects. Personal unshared Free documents have no page or object limit. Pack and Cross-doc sync tables have separate row limits.',
     },
   },
   '/pipedrive-vs-hubspot': {

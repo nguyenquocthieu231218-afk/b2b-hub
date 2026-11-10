@@ -12,12 +12,14 @@ async function importTypeScript(path) {
 
 const { comparisons } = await importTypeScript('../lib/comparisons.ts');
 const { normalizeSearch, searchComparisons, getSearchSuggestions } = await importTypeScript('../lib/search.ts');
-assert.equal(searchComparisons(comparisons, '').length, 20);
+assert.equal(searchComparisons(comparisons, '').length, 22);
 assert.equal(searchComparisons(comparisons, 'ClickUp').length, 2);
-assert.equal(searchComparisons(comparisons, 'crm').length, 2);
+assert.equal(searchComparisons(comparisons, 'crm').length, 3);
 assert.equal(searchComparisons(comparisons, 'monday.com').length, 2);
 assert.equal(searchComparisons(comparisons, 'mailchimp').length, 3);
-assert.equal(searchComparisons(comparisons, '', 'CRM').length, 2);
+assert.equal(searchComparisons(comparisons, '', 'CRM').length, 3);
+assert.equal(searchComparisons(comparisons, 'zoho').length, 1);
+assert.equal(searchComparisons(comparisons, 'activecampaign').length, 2);
 assert.equal(searchComparisons(comparisons, 'clickup', 'CRM').length, 0);
 assert.equal(searchComparisons(comparisons, 'missing product').length, 0);
 assert.deepEqual(getSearchSuggestions(comparisons, 'clikup'), ['ClickUp']);

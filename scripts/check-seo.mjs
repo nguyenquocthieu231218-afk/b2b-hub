@@ -77,7 +77,7 @@ const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => ne
 assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains duplicate URLs');
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
-assert.equal(comparisonPaths.length, 20, 'Preserve all 20 published comparisons');
+assert.equal(comparisonPaths.length, 22, 'Preserve all 22 published comparisons');
 for (const path of comparisonPaths) {
   assert.match(
     sitemap,
@@ -165,12 +165,13 @@ checkBreadcrumb(directory, '/category/saas');
 for (const path of comparisonPaths) assert(directory.includes(`href="${path}"`), `${path}: missing from directory`);
 assert.match(directory, /type="search"/);
 assert.match(directory, /id="comparison-category"/);
-assert(plainText(directory).includes('Showing 20 of 20 comparisons'), 'All comparisons must be present before JavaScript runs');
+assert(plainText(directory).includes('Showing 22 of 22 comparisons'), 'All comparisons must be present before JavaScript runs');
 
 const comparisonClusters = [
   ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
-  ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk'],
-  ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit'],
+  ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk', '/hubspot-vs-zoho-crm'],
+  ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit', '/activecampaign-vs-convertkit'],
+  ['/airtable-vs-notion', '/notion-vs-coda'],
 ];
 for (const cluster of comparisonClusters) {
   for (const source of cluster) {

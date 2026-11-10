@@ -91,8 +91,9 @@ const relatedCategories: Record<string, readonly string[]> = {
 // with the broader product/category relevance score below.
 const comparisonClusters: readonly (readonly string[])[] = [
   ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
-  ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk'],
-  ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit'],
+  ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk', '/hubspot-vs-zoho-crm'],
+  ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit', '/activecampaign-vs-convertkit'],
+  ['/airtable-vs-notion', '/notion-vs-coda'],
 ];
 
 export function getComparisonContext(tool1?: string, tool2?: string) {
