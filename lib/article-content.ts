@@ -96,6 +96,14 @@ const comparisonClusters: readonly (readonly string[])[] = [
   ['/airtable-vs-notion', '/notion-vs-coda'],
 ];
 
+// Preserve deliberate two-way bridges between adjacent topic clusters even
+// when a page already has three high-priority peers in its primary cluster.
+const reciprocalRelatedLinks: Readonly<Record<string, readonly string[]>> = {
+  '/notion-vs-coda': ['/clickup-vs-notion', '/asana-vs-trello'],
+  '/clickup-vs-notion': ['/notion-vs-coda'],
+  '/asana-vs-trello': ['/notion-vs-coda'],
+};
+
 export function getComparisonContext(tool1?: string, tool2?: string) {
   const current = comparisons.find(({ href }) => href === `/${tool1}-vs-${tool2}` || href === `/${tool2}-vs-${tool1}`);
   if (!current) return { current, related: [] as Comparison[] };
@@ -103,18 +111,24 @@ export function getComparisonContext(tool1?: string, tool2?: string) {
   const currentTools = current.href.slice(1).split('-vs-');
   const categoryOrder = relatedCategories[current.category] ?? [];
   const currentCluster = comparisonClusters.find((cluster) => cluster.includes(current.href));
+  const reciprocalLinks = reciprocalRelatedLinks[current.href] ?? [];
+  const priorityPeers = new Set([
+    ...(currentCluster?.filter((href) => href !== current.href) ?? []),
+    ...reciprocalLinks,
+  ]);
   const score = (comparison: Comparison) => {
     const sharedTools = comparison.href.slice(1).split('-vs-').filter((tool) => currentTools.includes(tool)).length;
     const categoryIndex = categoryOrder.indexOf(comparison.category);
     const clusterPriority = currentCluster?.includes(comparison.href) ? 1_000 : 0;
-    return clusterPriority + sharedTools * 100 + (comparison.category === current.category ? 30 : categoryIndex >= 0 ? 20 - categoryIndex : 0);
+    const reciprocalPriority = reciprocalLinks.includes(comparison.href) ? 2_000 : 0;
+    return reciprocalPriority + clusterPriority + sharedTools * 100 + (comparison.category === current.category ? 30 : categoryIndex >= 0 ? 20 - categoryIndex : 0);
   };
 
   const related = comparisons
     .filter((comparison) => comparison.href !== current.href)
     .map((comparison, index) => ({ comparison, index, relevance: score(comparison) }))
     .sort((a, b) => b.relevance - a.relevance || a.index - b.index)
-    .slice(0, 3)
+    .slice(0, Math.max(3, priorityPeers.size))
     .map(({ comparison }) => comparison);
 
   return { current, related };
