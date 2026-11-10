@@ -2,8 +2,8 @@ import { sourceCheckedComparisonMetadata } from '@/lib/seo';
 import ComparisonLayout from '@/app/components/ComparisonLayout';
 
 export const metadata = sourceCheckedComparisonMetadata({
-  title: 'Notion vs Coda (Superhuman Docs): Plans and Limits',
-  description: 'A dated comparison of Notion and Coda, now Superhuman Docs, covering plan limits, seat billing, collaboration, and the product rename.',
+  title: 'Notion vs Coda: Database Rows, Doc Limits and Pricing',
+  description: 'Compare Notion and Coda, now Superhuman Docs, on database and row limits, member versus Maker billing, automations, sync tables, and team access.',
   path: '/notion-vs-coda',
 });
 
@@ -28,6 +28,11 @@ const comparisonRows = [
     notion: 'The plan table lists basic button automations on Free and custom database automations on Plus and higher plans.',
     coda: 'Per doc/month: Free lists 35 time-based and 100 event-based automations; Pro lists 100 and 500; Team and Enterprise list unlimited automations.',
   },
+  {
+    label: 'Rows and synced data',
+    notion: 'The pricing table does not publish one universal row cap for ordinary Notion databases. Integration and API limits are separate, so test the largest representative database and views.',
+    coda: 'Shared Free docs allow 1,000 table rows. Pack and Cross-doc sync tables are capped at 100 rows on Free and 10,000 rows per sync table on paid plans.',
+  },
 ] as const;
 
 export default function NotionVsCodaPage() {
@@ -40,10 +45,10 @@ export default function NotionVsCodaPage() {
             Notion vs Coda: plans, limits, and team fit
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
-            The product formerly called Coda is now Superhuman Docs. Its docs, tables, formulas, Packs, automations, and existing plans continue under the new name. Existing subscribers can keep their current plans; new customers are offered Docs through the Superhuman suite.
+            The product formerly called Coda is now Superhuman Docs. Notion prices workspace members; Docs prices the people who can create docs and pages. Their free limits also use different units, so “unlimited pages” and “unlimited databases” are not enough to forecast a real team workspace.
           </p>
           <p className="mt-4 text-sm text-slate-400">
-            Source check: <time dateTime="2026-10-29">29 October 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
+            Source check: <time dateTime="2026-11-10">10 November 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
           </p>
         </header>
 
@@ -65,7 +70,7 @@ export default function NotionVsCodaPage() {
           <h2 id="plan-details" className="text-2xl font-bold text-white">Plans and documented limits</h2>
           <div className="mt-5 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
             <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
-              <caption className="sr-only">Published Notion and Coda (Superhuman Docs) plan details checked on 29 October 2026</caption>
+              <caption className="sr-only">Published Notion and Coda (Superhuman Docs) plan and row limits checked on 10 November 2026</caption>
               <thead className="bg-slate-950 text-slate-200">
                 <tr>
                   <th scope="col" className="p-4">Criteria</th>
@@ -124,6 +129,21 @@ export default function NotionVsCodaPage() {
           </div>
         </section>
 
+        <section aria-labelledby="data-scale" className="border-b border-slate-800 py-8">
+          <h2 id="data-scale" className="text-2xl font-bold text-white">Coda publishes row limits; Notion needs a workload test</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">Notion database planning</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">Notion’s public plan table describes page and block access, uploads, history, guests, automations, and integrations, but it does not provide one ordinary-database row ceiling to use as a universal procurement number. Build the largest real database, then test views, relations, rollups, search, export, and the integration path you depend on.</p>
+            </article>
+            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
+              <h3 className="font-bold text-white">Superhuman Docs data boundaries</h3>
+              <p className="mt-3 leading-relaxed text-slate-300">A shared Free doc has a hard 1,000-row and 50-object boundary. Paid docs remove page and object caps, but Pack and Cross-doc sync tables still have a published 10,000-row maximum. The new Superhuman Databases product targets larger scale and is still described as early access.</p>
+            </article>
+          </div>
+          <p className="mt-5 text-sm leading-relaxed text-slate-400">Do not confuse local table rows, sync-table rows, objects, blocks, and an external database record. They are different capacity units.</p>
+        </section>
+
         <section aria-labelledby="decision" className="border-b border-slate-800 py-8">
           <h2 id="decision" className="text-2xl font-bold text-white">A practical way to decide</h2>
           <ul className="mt-4 grid gap-3 text-slate-300">
@@ -136,12 +156,12 @@ export default function NotionVsCodaPage() {
         <section aria-labelledby="sources" className="pt-8">
           <h2 id="sources" className="text-2xl font-bold text-white">Sources and method</h2>
           <p className="mt-3 leading-relaxed text-slate-300">
-            This comparison summarizes official pricing, plan, billing, and product-change documentation checked on 29 October 2026. It is desk research, not independent usability testing. Coda’s new name and public plan packaging are changing; verify the current product, plan, and checkout price before purchase.
+            This comparison summarizes official pricing, plan, billing, row-limit, and product-change documentation checked on 10 November 2026. It is desk research, not independent usability or performance testing. Verify the current product, plan, and checkout price before purchase.
           </p>
           <ul className="mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed text-blue-200">
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.notion.com/pricing" target="_blank" rel="noopener noreferrer">Notion plans and pricing</a></li>
-            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.coda.io/hc/en-us/articles/39555725230989-Billing-and-pricing-basics" target="_blank" rel="noopener noreferrer">Coda billing and pricing basics</a></li>
-            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.coda.io/hc/en-us/articles/39555760015757-Overview-Doc-limits" target="_blank" rel="noopener noreferrer">Coda document limits</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.superhuman.com/hc/en-us/articles/46210161369741-Superhuman-Docs-billing-and-pricing-basics" target="_blank" rel="noopener noreferrer">Superhuman Docs billing and pricing basics</a></li>
+            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.superhuman.com/hc/en-us/articles/46210176318477-Overview-Doc-limits" target="_blank" rel="noopener noreferrer">Superhuman Docs document and sync-table limits</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.superhuman.com/hc/en-us/articles/46210093285773-What-s-changing-Coda-becomes-Superhuman-Docs" target="_blank" rel="noopener noreferrer">Announcement: Coda becomes Superhuman Docs</a></li>
             <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://superhuman.com/plans" target="_blank" rel="noopener noreferrer">Current Superhuman suite plans</a></li>
           </ul>

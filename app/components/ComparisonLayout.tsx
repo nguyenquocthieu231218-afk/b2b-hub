@@ -22,6 +22,7 @@ const PRODUCT_LINKS: Record<string, ProductLink> = {
   notion: { name: 'Notion', href: 'https://notion.so' },
   coda: { name: 'Superhuman Docs (formerly Coda)', href: 'https://docs.superhuman.com' },
   hubspot: { name: 'HubSpot', href: 'https://hubspot.com' },
+  'zoho-crm': { name: 'Zoho CRM', href: 'https://www.zoho.com/crm/' },
   salesforce: { name: 'Salesforce', href: 'https://salesforce.com' },
   asana: { name: 'Asana', href: 'https://asana.com' },
   trello: { name: 'Trello', href: 'https://trello.com' },
