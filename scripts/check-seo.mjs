@@ -29,22 +29,7 @@ function plainText(html) {
   return html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
 }
 
-const comparisonSourceDates = new Map([
-  ['/asana-vs-trello', '2026-11-09'],
-  ['/clickup-vs-notion', '2026-11-09'],
-  ['/clickup-vs-monday', '2026-11-09'],
-  ['/hubspot-vs-salesforce', '2026-11-09'],
-  ['/linear-vs-jira', '2026-11-09'],
-  ['/mailchimp-vs-activecampaign', '2026-11-09'],
-  ['/mailchimp-vs-convertkit', '2026-11-09'],
-  ['/pipedrive-vs-hubspot', '2026-11-09'],
-  ['/jira-vs-monday', '2026-11-09'],
-  ['/zendesk-vs-freshdesk', '2026-11-09'],
-]);
-
-function expectedComparisonSourceDate(path) {
-  return comparisonSourceDates.get(path) ?? '2026-10-29';
-}
+const comparisonModifiedDate = '2026-11-10';
 
 function checkArticle(html, path) {
   const article = jsonLd(html).find((data) => data['@type'] === 'Article');
@@ -56,7 +41,7 @@ function checkArticle(html, path) {
   assert.equal(article.author?.url, `${canonicalOrigin}/about`, `${path}: article author URL missing`);
   assert.equal(article.publisher?.['@id'], `${canonicalOrigin}/#organization`, `${path}: publisher entity mismatch`);
   if (/^\/[^/]+-vs-[^/]+$/.test(path)) {
-    assert.equal(article.dateModified, expectedComparisonSourceDate(path), `${path}: source-check date missing from article schema`);
+    assert.equal(article.dateModified, comparisonModifiedDate, `${path}: content update date missing from article schema`);
   }
   assert(!('aggregateRating' in article) && !('reviewRating' in article), 'Do not fabricate ratings');
   const contents = html.match(/<nav aria-label="On this page"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
@@ -94,11 +79,10 @@ assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory mi
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
 assert.equal(comparisonPaths.length, 20, 'Preserve all 20 published comparisons');
 for (const path of comparisonPaths) {
-  const sourceDate = expectedComparisonSourceDate(path);
   assert.match(
     sitemap,
-    new RegExp(`<loc>${canonicalOrigin}${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>${sourceDate}</lastmod>`),
-    `${path}: source-check date missing from sitemap`,
+    new RegExp(`<loc>${canonicalOrigin}${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>${comparisonModifiedDate}</lastmod>`),
+    `${path}: content update date missing from sitemap`,
   );
 }
 
@@ -124,6 +108,12 @@ for (const url of urls) {
     .map(([tag]) => attributes(tag)).find((tag) => tag.rel === 'canonical')?.href;
   assert(canonical, `${url.pathname}: canonical missing`);
   assert.equal(new URL(canonical).href, url.href, `${url.pathname}: canonical mismatch`);
+  for (const [tag] of html.matchAll(/<a\b[^>]*href="https?:\/\/[^\"]+"[^>]*>/g)) {
+    const outbound = attributes(tag);
+    const rel = new Set((outbound.rel ?? '').split(/\s+/));
+    assert.equal(outbound.target, '_blank', `${url.pathname}: outbound link must open a new tab`);
+    assert(rel.has('nofollow') && rel.has('sponsored'), `${url.pathname}: outbound link missing nofollow sponsored`);
+  }
   if (comparisonPaths.includes(url.pathname)) {
     checkBreadcrumb(html, url.pathname);
     assert.equal(meta(html, 'og:site_name'), 'StackEvalify');
@@ -134,6 +124,20 @@ for (const url of urls) {
     const relatedPaths = [...related.matchAll(/href="(\/[^"]+)"/g)].map(([, path]) => path);
     assert.equal(relatedPaths.length, 3);
     assert(!relatedPaths.includes(url.pathname), `${url.pathname}: article links to itself as related content`);
+    const quickVerdictIndex = html.indexOf('id="quick-verdict"');
+    const firstTableIndex = html.indexOf('<table');
+    assert(quickVerdictIndex >= 0 && firstTableIndex > quickVerdictIndex, `${url.pathname}: quick verdict must precede the detailed table`);
+    assert.match(html, /data-track="quick-verdict-jump"/, `${url.pathname}: quick verdict CTA tracking missing`);
+    assert.equal([...html.matchAll(/data-track="affiliate-cta"/g)].length, 2, `${url.pathname}: both vendor CTAs need tracking`);
+    assert(html.includes(`data-comparison-root="${url.pathname}"`), `${url.pathname}: comparison analytics root missing`);
+    assert.match(html, /data-comparison-analytics="cta,scroll-depth,table-interaction"/, `${url.pathname}: analytics hydration marker missing`);
+    const faq = jsonLd(html).find((data) => data['@type'] === 'FAQPage');
+    assert.equal(faq?.mainEntity?.length, 2, `${url.pathname}: FAQPage needs two visible questions`);
+    const visibleText = plainText(html);
+    for (const item of faq.mainEntity) {
+      assert(visibleText.includes(item.name), `${url.pathname}: FAQ question is not visible`);
+      assert(visibleText.includes(item.acceptedAnswer.text), `${url.pathname}: FAQ answer is not visible`);
+    }
   }
   if (url.pathname.startsWith('/guides/')) checkArticle(html, url.pathname);
   const parameterResponse = await request(`${url.pathname}?utm_source=seo-check`);
@@ -201,4 +205,4 @@ assert.equal((await request('/missing-seo-check-page')).status, 404, 'Missing pa
 const logoResponse = await request('/logo.png');
 assert.equal(logoResponse.status, 200);
 assert.deepEqual(Buffer.from(await logoResponse.arrayBuffer()), await readFile(new URL('../public/logo.png', import.meta.url)), 'Preview must serve the original logo bytes');
-console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} comparisons, reciprocal topic clusters, guide/article schema and TOC anchors, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
+console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} comparisons with quick verdicts, FAQ schema, tracked CTAs, standardized outbound links, reciprocal topic clusters, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);

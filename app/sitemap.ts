@@ -17,9 +17,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    ...comparisons.map(({ href, sourceCheckedAt }) => ({
+    ...comparisons.map(({ href, dateModified }) => ({
       url: `${SITE_URL}${href}`,
-      lastModified: sourceCheckedAt,
+      lastModified: dateModified,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),

@@ -6,11 +6,11 @@ import SiteHeader from '../../components/SiteHeader';
 
 export const metadata: Metadata = {
   title: 'Privacy Notice',
-  description: 'How StackEvalify handles local comparison searches, website visits, email correspondence, and links to external vendors.',
+  description: 'How StackEvalify handles local comparison searches, first-party interaction events, website visits, email correspondence, and external links.',
   alternates: { canonical: '/privacy' },
   openGraph: {
     title: 'StackEvalify Privacy Notice',
-    description: 'Information about local search, infrastructure logs, email correspondence, and external vendor links.',
+    description: 'Information about local search, first-party interaction events, infrastructure logs, email correspondence, and external vendor links.',
     url: '/privacy',
     siteName: 'StackEvalify',
     type: 'website',
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         <header>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">StackEvalify</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-white">Privacy notice</h1>
-          <p className="mt-4 text-sm text-slate-400">Last updated: <time dateTime="2026-11-05">5 November 2026</time></p>
+          <p className="mt-4 text-sm text-slate-400">Last updated: <time dateTime="2026-11-10">10 November 2026</time></p>
           <p className="mt-5 text-lg leading-relaxed text-slate-300">
             This notice describes the current StackEvalify website: a public library of software comparisons, guides, and developer hardware field notes. It explains what happens when you browse, search the directory, follow vendor links, or email us.
           </p>
@@ -37,10 +37,20 @@ export default function PrivacyPage() {
           <section aria-labelledby="site-features">
             <h2 id="site-features">Browsing and directory search</h2>
             <p>
-              The current application has no user accounts, contact forms, customer database, analytics scripts, advertising, or affiliate tracking. It does not operate a newsletter or use your browsing activity to build an advertising profile.
+              The current application has no user accounts, contact forms, customer database, advertising network, or third-party analytics script. It does not operate a newsletter or use your browsing activity to build an advertising profile.
             </p>
             <p>
               The comparison directory filters the existing page data in your browser. Search words and category selections stay in page memory; the search feature does not send them to StackEvalify or a search provider, add them to the page address, or save them in cookies or browser storage. All comparison links remain available without using search.
+            </p>
+          </section>
+
+          <section aria-labelledby="interaction-events">
+            <h2 id="interaction-events">First-party interaction events</h2>
+            <p>
+              Comparison pages create first-party browser events when you follow a call-to-action or external source link, reach 25%, 50%, 75%, or 100% scroll depth, or interact with a comparison table. These events include the current page, event type, and the clicked link label or destination when relevant.
+            </p>
+            <p>
+              StackEvalify currently keeps up to 100 of these events only in page memory for the active tab and does not send them to an analytics endpoint, set a tracking cookie, or save them in browser storage. The events are exposed through the <code>stackevalify:track</code> browser event and a compatible in-page data layer so an analytics service can be connected later. This notice must be updated before such a service begins receiving data.
             </p>
           </section>
 
