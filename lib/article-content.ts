@@ -87,16 +87,26 @@ const relatedCategories: Record<string, readonly string[]> = {
   'Customer support': ['CRM', 'Team communication', 'Workflow automation'],
 };
 
+// Keep high-intent topic clusters reciprocal before filling the remaining slots
+// with the broader product/category relevance score below.
+const comparisonClusters: readonly (readonly string[])[] = [
+  ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
+  ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk'],
+  ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit'],
+];
+
 export function getComparisonContext(tool1?: string, tool2?: string) {
   const current = comparisons.find(({ href }) => href === `/${tool1}-vs-${tool2}` || href === `/${tool2}-vs-${tool1}`);
   if (!current) return { current, related: [] as Comparison[] };
 
   const currentTools = current.href.slice(1).split('-vs-');
   const categoryOrder = relatedCategories[current.category] ?? [];
+  const currentCluster = comparisonClusters.find((cluster) => cluster.includes(current.href));
   const score = (comparison: Comparison) => {
     const sharedTools = comparison.href.slice(1).split('-vs-').filter((tool) => currentTools.includes(tool)).length;
     const categoryIndex = categoryOrder.indexOf(comparison.category);
-    return sharedTools * 100 + (comparison.category === current.category ? 30 : categoryIndex >= 0 ? 20 - categoryIndex : 0);
+    const clusterPriority = currentCluster?.includes(comparison.href) ? 1_000 : 0;
+    return clusterPriority + sharedTools * 100 + (comparison.category === current.category ? 30 : categoryIndex >= 0 ? 20 - categoryIndex : 0);
   };
 
   const related = comparisons

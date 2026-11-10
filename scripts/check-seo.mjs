@@ -162,6 +162,21 @@ for (const path of comparisonPaths) assert(directory.includes(`href="${path}"`),
 assert.match(directory, /type="search"/);
 assert.match(directory, /id="comparison-category"/);
 assert(plainText(directory).includes('Showing 20 of 20 comparisons'), 'All comparisons must be present before JavaScript runs');
+
+const comparisonClusters = [
+  ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
+  ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk'],
+  ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit'],
+];
+for (const cluster of comparisonClusters) {
+  for (const source of cluster) {
+    const related = pages.get(source)?.match(/<section aria-labelledby="related-comparisons"[^>]*>([\s\S]*?)<\/section>/)?.[1] ?? '';
+    for (const target of cluster) {
+      if (target !== source) assert(related.includes(`href="${target}"`), `${source}: missing reciprocal cluster link to ${target}`);
+    }
+  }
+}
+
 for (const path of ['/guides', '/guides/choose-b2b-software', '/guides/saas-total-cost', '/privacy', '/terms']) {
   assert(pages.has(path), `${path}: new guide or trust page missing from sitemap`);
 }
@@ -186,4 +201,4 @@ assert.equal((await request('/missing-seo-check-page')).status, 404, 'Missing pa
 const logoResponse = await request('/logo.png');
 assert.equal(logoResponse.status, 200);
 assert.deepEqual(Buffer.from(await logoResponse.arrayBuffer()), await readFile(new URL('../public/logo.png', import.meta.url)), 'Preview must serve the original logo bytes');
-console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} comparisons, guide/article schema and TOC anchors, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
+console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} comparisons, reciprocal topic clusters, guide/article schema and TOC anchors, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
