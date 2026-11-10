@@ -122,7 +122,7 @@ for (const url of urls) {
     const related = html.match(/<section aria-labelledby="related-comparisons"[^>]*>([\s\S]*?)<\/section>/)?.[1];
     assert(related, `${url.pathname}: related comparisons missing`);
     const relatedPaths = [...related.matchAll(/href="(\/[^"]+)"/g)].map(([, path]) => path);
-    assert.equal(relatedPaths.length, 3);
+    assert(relatedPaths.length >= 3 && relatedPaths.length <= 4, `${url.pathname}: expected three or four focused related comparisons`);
     assert(!relatedPaths.includes(url.pathname), `${url.pathname}: article links to itself as related content`);
     const quickVerdictIndex = html.indexOf('id="quick-verdict"');
     const firstTableIndex = html.indexOf('<table');
@@ -180,6 +180,17 @@ for (const cluster of comparisonClusters) {
       if (target !== source) assert(related.includes(`href="${target}"`), `${source}: missing reciprocal cluster link to ${target}`);
     }
   }
+}
+
+const reciprocalLinkPairs = [
+  ['/notion-vs-coda', '/clickup-vs-notion'],
+  ['/notion-vs-coda', '/asana-vs-trello'],
+];
+for (const [left, right] of reciprocalLinkPairs) {
+  const leftRelated = pages.get(left)?.match(/<section aria-labelledby="related-comparisons"[^>]*>([\s\S]*?)<\/section>/)?.[1] ?? '';
+  const rightRelated = pages.get(right)?.match(/<section aria-labelledby="related-comparisons"[^>]*>([\s\S]*?)<\/section>/)?.[1] ?? '';
+  assert(leftRelated.includes(`href="${right}"`), `${left}: missing reciprocal bridge to ${right}`);
+  assert(rightRelated.includes(`href="${left}"`), `${right}: missing reciprocal bridge to ${left}`);
 }
 
 for (const path of ['/guides', '/guides/choose-b2b-software', '/guides/saas-total-cost', '/privacy', '/terms']) {
