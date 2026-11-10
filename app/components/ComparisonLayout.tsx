@@ -1,11 +1,13 @@
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 import SiteFooter from '../../components/SiteFooter';
 import SiteHeader from '../../components/SiteHeader';
 import Breadcrumbs from '../../components/Breadcrumbs';
+import ComparisonAnalytics from '../../components/ComparisonAnalytics';
 import JsonLd from '../../components/JsonLd';
 import TableOfContents from '../../components/TableOfContents';
 import { getArticleContent, getComparisonContext } from '@/lib/article-content';
+import { getComparisonCro, type ComparisonFaq } from '@/lib/comparison-cro';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 type ProductLink = {
@@ -14,6 +16,7 @@ type ProductLink = {
 };
 
 const PRODUCT_LINKS: Record<string, ProductLink> = {
+  airtable: { name: 'Airtable', href: 'https://airtable.com' },
   clickup: { name: 'ClickUp', href: 'https://clickup.com' },
   monday: { name: 'Monday.com', href: 'https://monday.com' },
   notion: { name: 'Notion', href: 'https://notion.so' },
@@ -71,6 +74,55 @@ interface ComparisonLayoutProps {
   showDraftNotice?: boolean;
 }
 
+type HtmlElementProps = {
+  children?: ReactNode;
+  href?: string;
+  rel?: string;
+  target?: string;
+  [key: string]: unknown;
+};
+
+function normalizeOutboundLinks(nodes: ReactNode): ReactNode {
+  return Children.map(nodes, (node) => {
+    if (!isValidElement<HtmlElementProps>(node)) return node;
+    const children = normalizeOutboundLinks(node.props.children);
+    if (node.type === 'a' && typeof node.props.href === 'string' && /^https?:\/\//.test(node.props.href)) {
+      return cloneElement(node, {
+        target: '_blank',
+        rel: 'nofollow sponsored noopener noreferrer',
+        'data-track': node.props['data-track'] ?? 'outbound-source',
+      }, children);
+    }
+    return cloneElement(node, {}, children);
+  });
+}
+
+function injectArticleSections(nodes: ReactNode, quickVerdict: ReactElement, faqSection: ReactElement): ReactNode {
+  return Children.map(nodes, (node) => {
+    if (!isValidElement<HtmlElementProps>(node) || node.type !== 'article') return node;
+    const articleChildren = Children.toArray(node.props.children);
+    const headerIndex = articleChildren.findIndex((child) => isValidElement(child) && child.type === 'header');
+    const insertionIndex = headerIndex >= 0 ? headerIndex + 1 : 0;
+    articleChildren.splice(insertionIndex, 0, quickVerdict);
+    articleChildren.push(faqSection);
+    return cloneElement(node, {}, articleChildren);
+  });
+}
+
+function faqSchema(articleUrl: string, faqs: readonly ComparisonFaq[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${articleUrl}#faq`,
+    url: `${articleUrl}#faq`,
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  };
+}
+
 export default function ComparisonLayout({
   children,
   tool1,
@@ -101,6 +153,50 @@ export default function ComparisonLayout({
   const articleContent = getArticleContent(children);
   const { current: comparison, related: relatedComparisons } = getComparisonContext(tool1, tool2);
   const articleUrl = comparison ? `${SITE_URL}${comparison.href}` : undefined;
+  const cro = getComparisonCro(comparison?.href);
+  const faqs: ComparisonFaq[] = cro && productA && productB ? [
+    cro.faq,
+    {
+      question: `Which is better for a team: ${productA.name} or ${productB.name}?`,
+      answer: `There is no universal winner. ${cro.chooseA} ${cro.chooseB} Validate the shortlist with the same representative workflow and current vendor documentation.`,
+    },
+  ] : [];
+  const quickVerdict = cro && productA && productB ? (
+    <section key="quick-verdict" aria-labelledby="quick-verdict" className="border-b border-slate-800 py-8">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">TL;DR / Quick verdict</p>
+      <h2 id="quick-verdict" className="mt-2 text-2xl font-bold text-white">Choose by the constraint that changes your decision</h2>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        <article className="rounded-xl border border-blue-400/25 bg-blue-400/5 p-5">
+          <h3 className="font-bold text-white">Who should choose {productA.name}?</h3>
+          <p className="mt-3 leading-relaxed text-slate-300">{cro.chooseA}</p>
+        </article>
+        <article className="rounded-xl border border-violet-400/25 bg-violet-400/5 p-5">
+          <h3 className="font-bold text-white">Who should choose {productB.name}?</h3>
+          <p className="mt-3 leading-relaxed text-slate-300">{cro.chooseB}</p>
+        </article>
+      </div>
+      <a href={`#${cro.tableAnchor}`} data-track="quick-verdict-jump" className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+        Jump to the detailed comparison <span aria-hidden="true" className="ml-2">↓</span>
+      </a>
+    </section>
+  ) : null;
+  const faqSection = faqs.length > 0 ? (
+    <section key="comparison-faq" aria-labelledby="faq" className="border-t border-slate-800 pt-8">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-300">Common buying questions</p>
+      <h2 id="faq" className="mt-2 text-2xl font-bold text-white">Frequently asked questions</h2>
+      <div className="mt-5 grid gap-4">
+        {faqs.map((faq) => (
+          <details key={faq.question} className="group rounded-xl border border-slate-800 bg-slate-950/60 p-5 open:border-slate-700">
+            <summary className="cursor-pointer list-none pr-8 font-bold text-white marker:hidden">{faq.question}</summary>
+            <p className="mt-3 leading-relaxed text-slate-300">{faq.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  ) : null;
+  const enhancedChildren = quickVerdict && faqSection
+    ? normalizeOutboundLinks(injectArticleSections(children, quickVerdict, faqSection))
+    : normalizeOutboundLinks(children);
 
   return (
     <>
@@ -115,7 +211,7 @@ export default function ComparisonLayout({
           url: articleUrl,
           mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
           inLanguage: 'en',
-          dateModified: comparison.sourceCheckedAt,
+          dateModified: comparison.dateModified,
           author: {
             '@type': 'Organization',
             '@id': `${SITE_URL}/#organization`,
@@ -126,6 +222,7 @@ export default function ComparisonLayout({
           isPartOf: { '@type': 'WebSite', '@id': `${SITE_URL}/#website` },
         }} />
       )}
+      {!showDraftNotice && articleUrl && faqs.length > 0 && <JsonLd data={faqSchema(articleUrl, faqs)} />}
       <main id="main-content" className="mx-auto min-h-screen w-full min-w-0 max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
         <Breadcrumbs items={[
           { name: 'Home', href: '/' },
@@ -141,9 +238,9 @@ export default function ComparisonLayout({
 
         <TableOfContents headings={articleContent.headings} />
 
-        <div className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl sm:p-8 lg:p-10 [&_h2[id]]:scroll-mt-40">
+        <ComparisonAnalytics path={comparison?.href ?? ''} className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-xl sm:p-8 lg:p-10 [&_h2[id]]:scroll-mt-40">
           {hasChildren ? (
-            children
+            enhancedChildren
           ) : (
             <article>
               <header className="border-b border-slate-800 pb-7">
@@ -247,17 +344,17 @@ export default function ComparisonLayout({
 
           <div className="mt-8 grid gap-3 border-t border-slate-800 pt-6 sm:flex sm:flex-wrap">
             {productA?.href && (
-              <a href={productA.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+              <a href={productA.href} target="_blank" rel="nofollow sponsored noopener noreferrer" data-track="affiliate-cta" data-vendor={productA.name} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
                 Visit {productA.name} official site
               </a>
             )}
             {productB?.href && (
-              <a href={productB.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300">
+              <a href={productB.href} target="_blank" rel="nofollow sponsored noopener noreferrer" data-track="affiliate-cta" data-vendor={productB.name} className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300">
                 Visit {productB.name} official site
               </a>
             )}
           </div>
-        </div>
+        </ComparisonAnalytics>
 
         {relatedComparisons.length > 0 && (
           <section aria-labelledby="related-comparisons" className="mt-10">

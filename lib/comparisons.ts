@@ -1,5 +1,6 @@
 const SOURCE_CHECKED_AT = '2026-10-29';
 const SOURCE_CHECKED_STATUS = 'Source checked · 29 Oct 2026';
+const CONTENT_UPDATED_AT = '2026-11-10';
 
 const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: string }> = {
   '/asana-vs-trello': {
@@ -69,6 +70,7 @@ const comparisonDirectory = [
 
 export const comparisons = comparisonDirectory.map((comparison) => ({
   ...comparison,
+  dateModified: CONTENT_UPDATED_AT,
   ...(sourceCheckOverrides[comparison.href] ?? {
     status: SOURCE_CHECKED_STATUS,
     sourceCheckedAt: SOURCE_CHECKED_AT,

@@ -26,7 +26,7 @@ export default function ChooseSoftwareGuide() {
         <h2>2. Separate gates from preferences</h2>
         <p>Use pass/fail gates for requirements that cannot be traded away. Examples might include export of necessary records, a required integration, or an access-control capability. Name the exact plan that supplies each capability; a product-level feature list does not establish that it is included in the edition you can buy.</p>
         <p>Keep preferences in a second list and rank them before viewing vendor demos. That avoids changing the scoring rules to favor the most polished presentation. Leave a requirement as “unknown” until there is evidence instead of converting a sales statement into a pass.</p>
-        <p>Ask your security or data owner which controls matter for the proposed data. The <a href="https://www.ncsc.gov.uk/collection/cloud/the-cloud-security-principles">NCSC Cloud Security Principles</a> provide a useful structure for questions about identity, user management, audit information, and data protection. This is a source for your assessment questions, not a certification of any product.</p>
+        <p>Ask your security or data owner which controls matter for the proposed data. The <a href="https://www.ncsc.gov.uk/collection/cloud/the-cloud-security-principles" target="_blank" rel="nofollow sponsored noopener noreferrer">NCSC Cloud Security Principles</a> provide a useful structure for questions about identity, user management, audit information, and data protection. This is a source for your assessment questions, not a certification of any product.</p>
       </section>
       <section id="pilot">
         <h2>3. Run the same pilot</h2>
