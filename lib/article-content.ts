@@ -85,6 +85,7 @@ const relatedCategories: Record<string, readonly string[]> = {
   'Website builders': ['SEO', 'Commerce platforms', 'Email marketing'],
   'Workflow automation': ['Workspaces', 'CRM', 'Project management'],
   'Customer support': ['CRM', 'Team communication', 'Workflow automation'],
+  'HR & payroll': ['CRM', 'Workspaces', 'Workflow automation'],
 };
 
 // Keep high-intent topic clusters reciprocal before filling the remaining slots
@@ -99,6 +100,8 @@ const comparisonClusters: readonly (readonly string[])[] = [
 // Preserve deliberate two-way bridges between adjacent topic clusters even
 // when a page already has three high-priority peers in its primary cluster.
 const reciprocalRelatedLinks: Readonly<Record<string, readonly string[]>> = {
+  '/intercom-vs-zendesk': ['/zendesk-vs-freshdesk'],
+  '/zendesk-vs-freshdesk': ['/intercom-vs-zendesk'],
   '/notion-vs-coda': ['/clickup-vs-notion', '/asana-vs-trello'],
   '/clickup-vs-notion': ['/notion-vs-coda'],
   '/asana-vs-trello': ['/notion-vs-coda'],

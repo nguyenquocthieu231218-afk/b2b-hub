@@ -2,6 +2,12 @@ const SOURCE_CHECKED_AT = '2026-10-29';
 const SOURCE_CHECKED_STATUS = 'Source checked · 29 Oct 2026';
 const CONTENT_UPDATED_AT = '2026-11-10';
 
+const contentModifiedOverrides: Record<string, string> = {
+  '/deel-vs-rippling': '2026-11-12',
+  '/intercom-vs-zendesk': '2026-11-12',
+  '/webflow-vs-framer': '2026-11-12',
+};
+
 const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: string }> = {
   '/asana-vs-trello': {
     sourceCheckedAt: '2026-11-09',
@@ -55,6 +61,18 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-10',
     status: 'Source checked · 10 Nov 2026',
   },
+  '/deel-vs-rippling': {
+    sourceCheckedAt: '2026-11-12',
+    status: 'Source checked · 12 Nov 2026',
+  },
+  '/intercom-vs-zendesk': {
+    sourceCheckedAt: '2026-11-12',
+    status: 'Source checked · 12 Nov 2026',
+  },
+  '/webflow-vs-framer': {
+    sourceCheckedAt: '2026-11-12',
+    status: 'Source checked · 12 Nov 2026',
+  },
 };
 
 const comparisonDirectory = [
@@ -64,8 +82,10 @@ const comparisonDirectory = [
   { title: 'ChatGPT vs Claude', href: '/chatgpt-vs-claude', category: 'AI assistants' },
   { title: 'ClickUp vs Monday', href: '/clickup-vs-monday', category: 'Project management' },
   { title: 'ClickUp vs Notion', href: '/clickup-vs-notion', category: 'Workspaces' },
+  { title: 'Deel vs Rippling', href: '/deel-vs-rippling', category: 'HR & payroll' },
   { title: 'HubSpot vs Zoho CRM', href: '/hubspot-vs-zoho-crm', category: 'CRM' },
   { title: 'HubSpot vs Salesforce', href: '/hubspot-vs-salesforce', category: 'CRM' },
+  { title: 'Intercom vs Zendesk', href: '/intercom-vs-zendesk', category: 'Customer support' },
   { title: 'Jira vs monday.com', href: '/jira-vs-monday', category: 'Issue tracking' },
   { title: 'Klaviyo vs Mailchimp', href: '/klaviyo-vs-mailchimp', category: 'Email marketing' },
   { title: 'Linear vs Jira', href: '/linear-vs-jira', category: 'Issue tracking' },
@@ -84,7 +104,7 @@ const comparisonDirectory = [
 
 export const comparisons = comparisonDirectory.map((comparison) => ({
   ...comparison,
-  dateModified: CONTENT_UPDATED_AT,
+  dateModified: contentModifiedOverrides[comparison.href] ?? CONTENT_UPDATED_AT,
   ...(sourceCheckOverrides[comparison.href] ?? {
     status: SOURCE_CHECKED_STATUS,
     sourceCheckedAt: SOURCE_CHECKED_AT,
