@@ -33,6 +33,14 @@ The shared `ComparisonLayout` injects this block from `lib/comparison-cro.ts`. N
 - Vendor CTAs use `data-track="affiliate-cta"`; ordinary external evidence links use `data-track="outbound-source"` unless a more specific approved event applies.
 - `sponsored` is a conservative site-wide link policy. It does not by itself claim that a commission is currently earned; any actual affiliate relationship still requires visible disclosure.
 
+### Centralized SaaS partner destinations
+
+- Every vendor CTA, partner destination, or affiliate destination for a SaaS product must be declared in `lib/affiliate-links.ts` and resolved through its exported helper. Never hardcode these destination URLs in a component or `page.tsx` file.
+- `ComparisonLayout` is the single rendering path for comparison-page vendor CTAs. A page may identify the products by slug or override visible vendor names, but it must not accept or provide a page-level destination URL.
+- Adding a comparison vendor requires adding its canonical partner destination to `lib/affiliate-links.ts` before publication. Replacing a direct link with a PartnerStack, Impact, or other approved affiliate URL must require changing only that central entry.
+- The centralized-destination rule applies to commercial CTA/partner links. First-party pricing, help, legal, and product-documentation URLs used as visible editorial evidence remain article-local source links and must use `data-track="outbound-source"`; they must never be presented or tracked as affiliate CTAs.
+- The publication audit must confirm that every `data-track="affiliate-cta"` link is rendered from `lib/affiliate-links.ts`, that no CTA URL override remains, and that every published comparison product slug resolves to a central entry.
+
 ## Privacy-first event tracking contract
 
 - Comparison interactions are recorded by `components/ComparisonAnalytics.tsx` as first-party browser events. Required event names are:
