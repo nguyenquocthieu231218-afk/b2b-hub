@@ -74,6 +74,15 @@ const comparisonCro: Record<string, ComparisonCro> = {
       answer: 'It depends on the first limit your team will reach. ClickUp publishes attachment and automation quotas, while Notion limits content blocks in a multi-person Free workspace. Model your real tasks, files, and editors in both.',
     },
   },
+  '/deel-vs-rippling': {
+    chooseA: 'Choose Deel when published per-worker prices for contractor, Contractor of Record, PEO, or EOR services make the international hiring bill easier to model before a sales call.',
+    chooseB: 'Choose Rippling when one employee record across HRIS, payroll, IT, and spend is worth a modular quote and you can price every selected product, employee population, and base fee.',
+    tableAnchor: 'pricing-model',
+    faq: {
+      question: 'Is Deel cheaper than Rippling for an international team?',
+      answer: 'The public pages do not support a universal answer. Deel publishes starting prices for several worker types, while Rippling starts at $8 per employee per month plus a monthly base fee and prices the selected modules through a custom quote. Compare the same countries, worker types, services, and contract terms.',
+    },
+  },
   '/hubspot-vs-salesforce': {
     chooseA: 'Choose HubSpot if its free CRM limits or a specific Sales Hub package matches the small team and product scope you need now.',
     chooseB: 'Choose Salesforce if Starter Suite’s broader bundled scope or a Sales Cloud edition matches your workflow and total-cost estimate.',
@@ -90,6 +99,15 @@ const comparisonCro: Record<string, ComparisonCro> = {
     faq: {
       question: 'Does Zoho CRM stay cheaper than HubSpot as a team grows?',
       answer: 'Its published CRM seat prices are lower than HubSpot Sales Hub Professional and Enterprise starting seat prices, but the products are not identical. Include required Zoho apps, support, implementation, HubSpot Hubs, marketing-contact tiers, and add-ons in the same 12-month model.',
+    },
+  },
+  '/intercom-vs-zendesk': {
+    chooseA: 'Choose Intercom when its seat price plus Fin outcome model is forecastable from your expected AI resolutions and the messaging-first helpdesk matches the support workflow.',
+    chooseB: 'Choose Zendesk when its Suite tier, included automated-resolution allowance, omnichannel routing, and account-wide Copilot decision produce the more controllable support budget.',
+    tableAnchor: 'cost-model',
+    faq: {
+      question: 'How do Intercom Fin and Zendesk AI charge for automated support?',
+      answer: 'Intercom lists Fin from $0.99 per outcome and charges at most once per conversation for a billable outcome. Zendesk includes a monthly automated-resolution allowance by plan and agent count, then lists committed resolutions at $1.50 and pay-as-you-go resolutions at $2.00.',
     },
   },
   '/jira-vs-monday': {
@@ -174,12 +192,12 @@ const comparisonCro: Record<string, ComparisonCro> = {
     },
   },
   '/webflow-vs-framer': {
-    chooseA: 'Choose Webflow when its site and workspace model, CMS capacity, and publishing controls match the project you have scoped.',
-    chooseB: 'Choose Framer when its design workflow and lower listed Basic starting price cover the required pages, CMS, editors, and traffic.',
+    chooseA: 'Choose Webflow when a 20,000-item Premium CMS, separate full or limited Workspace seats, and purchasable bandwidth blocks fit a content-heavy team or agency site.',
+    chooseB: 'Choose Framer when its $10 Basic or $30 Pro annual plan, explicit CMS and bandwidth expansion prices, and $20 additional editor seats make the project easier to forecast.',
     tableAnchor: 'plan-comparison',
     faq: {
-      question: 'Is Framer cheaper than Webflow?',
-      answer: 'Framer Basic has a lower listed starting price in the checked annual view, but the plans are not equivalent. Webflow separates Site and Workspace costs and its CMS capacity varies by tier, so compare the complete project configuration.',
+      question: 'What happens when a Webflow or Framer site exceeds its bandwidth?',
+      answer: 'Webflow publishes Premium bandwidth add-ons, including 50 GB for $20 per month on annual billing, and says two consecutive months over certain plan limits can trigger an automatic upgrade. Framer Pro lists another 100 GB for $40 per month, up to a 2 TB maximum.',
     },
   },
   '/wix-vs-squarespace': {

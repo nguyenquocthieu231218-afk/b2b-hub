@@ -1,32 +1,34 @@
-import { sourceCheckedComparisonMetadata } from '@/lib/seo';
 import ComparisonLayout from '@/app/components/ComparisonLayout';
+import { sourceCheckedComparisonMetadata } from '@/lib/seo';
 
 export const metadata = sourceCheckedComparisonMetadata({
-  title: 'Webflow vs Framer (2026): Plans, CMS and Publishing',
-  description: 'A dated comparison of Webflow and Framer site plans, CMS limits, hosting, and separate workspace costs based on official vendor sources.',
+  title: 'Webflow vs Framer (2026): CMS, Bandwidth and Seats',
+  description: 'A source-checked Webflow vs Framer cost comparison covering CMS items, bandwidth overages, site plans, and collaborator seats for teams and agencies.',
   path: '/webflow-vs-framer',
 });
 
-const comparisonRows = [
+const sourceClass = 'underline decoration-blue-400/50 underline-offset-4 hover:text-white';
+
+const rows = [
   {
-    label: 'Free publishing',
-    webflow: 'Starter sites can publish to a webflow.io subdomain, with a limit of 2 static pages and 50 CMS items. A paid Site plan is required for a custom domain.',
-    framer: 'Free plan includes a Framer domain, 1 GB bandwidth, and design pages. A paid Site plan is required to connect a custom domain and remove Framer branding.',
+    label: 'Annual entry plan',
+    webflow: 'Basic is $15/month per site, billed yearly. It includes a custom domain, 300 static pages, and 10 GB bandwidth, but no CMS items.',
+    framer: 'Basic is $10/month on yearly billing. It includes 30 site pages, 2 CMS collections, 1,000 CMS items, and 50 GB bandwidth.',
   },
   {
-    label: 'Paid site plan price',
-    webflow: 'Basic is US$15/month billed yearly or US$25/month billed monthly. It is for sites without CMS or ecommerce. Premium is US$25/month billed yearly or US$39/month billed monthly.',
-    framer: 'Basic is US$10/month and Pro is US$30/month on the pricing page’s yearly-billing view.',
+    label: 'Content-heavy plan',
+    webflow: 'Premium is $25/month per site, billed yearly. The comparison table lists 20,000 CMS items and 40 CMS collections.',
+    framer: 'Pro is $30/month on yearly billing. It includes 150 pages, 10 CMS collections, 2,500 CMS items, and 100 GB bandwidth.',
   },
   {
-    label: 'CMS capacity',
-    webflow: 'The new Premium plan includes 20,000 CMS items and 40 CMS collections.',
-    framer: 'Basic includes 2 CMS collections and 1,000 items. Pro includes 10 collections and 2,500 items before optional scaling.',
+    label: 'CMS expansion',
+    webflow: 'Premium starts much higher at 20,000 items; larger Team and Enterprise platform configurations are separate sales motions.',
+    framer: 'Pro can add 10,000 CMS items for $20/month, up to 40,000, and 10 collections for $40/month, up to 40 collections.',
   },
   {
-    label: 'Hosting and custom domain',
-    webflow: 'A paid Site plan is needed to host an individual site on a custom domain. Site plans are billed separately from Workspace plans.',
-    framer: 'Paid Site plans include hosting and support connecting a custom domain. Workspace editor limits and costs depend on the highest-tier Site plan in that Workspace.',
+    label: 'Collaboration seats',
+    webflow: 'The Workspace includes one member. Extra Full seats are $39/month and Limited seats are $15/month, both billed yearly; reviewer/commenter seats are free.',
+    framer: 'Additional editors are $20/month and viewers are free. Enterprise lists unlimited editors with custom pricing.',
   },
 ] as const;
 
@@ -37,109 +39,62 @@ export default function WebflowVsFramerPage() {
         <header className="border-b border-slate-800 pb-7">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">Website builders · Desk research</p>
           <h1 className="mt-3 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
-            Webflow vs Framer: plans, CMS, and publishing
+            Webflow vs Framer: CMS, bandwidth, and team-seat economics
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
-            The old price comparison for these builders is no longer reliable. Webflow updated its self-serve Site plans in 2026, and both vendors separate at least some site-publishing costs from workspace collaboration. This comparison focuses on current published plans and CMS needs.
-          </p>
-          <p className="mt-4 text-sm text-slate-400">
-            Source check: <time dateTime="2026-10-29">29 October 2026</time> · Desk research only; StackEvalify has not run a hands-on product test for this comparison.
-          </p>
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">The cheap plan is rarely the agency bill. Webflow separates each published Site plan from Workspace seats; Framer exposes smaller CMS limits and explicit expansion prices. Model content growth, traffic, and collaborators before comparing the $15 and $10 entry points.</p>
+          <p className="mt-4 text-sm text-slate-400">Source check: <time dateTime="2026-11-12">12 November 2026</time> · US vendor pages · USD · desk research, not an independent builder or hosting benchmark</p>
         </header>
 
-        <section aria-labelledby="quick-take" className="border-b border-slate-800 py-8">
-          <h2 id="quick-take" className="text-2xl font-bold text-white">Quick take</h2>
-          <p className="mt-4 leading-relaxed text-slate-300">
-            Framer’s listed Basic plan starts lower at US$10/month on its yearly-billing view. Webflow’s new Basic Site plan is US$15/month billed yearly and does not include CMS; its Premium plan is US$25/month billed yearly and includes substantially larger published CMS capacity. Compare the exact site and workspace plan your project needs rather than treating those starting prices as equivalent.
-          </p>
-        </section>
-
         <section aria-labelledby="plan-comparison" className="border-b border-slate-800 py-8">
-          <h2 id="plan-comparison" className="text-2xl font-bold text-white">Published plans and limits</h2>
+          <h2 id="plan-comparison" className="text-2xl font-bold text-white">Published annual plans and scaling limits</h2>
           <div className="mt-5 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
-            <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
-              <caption className="sr-only">Published Webflow and Framer site plan details checked on 29 October 2026</caption>
-              <thead className="bg-slate-950 text-slate-200">
-                <tr>
-                  <th scope="col" className="p-4">Criteria</th>
-                  <th scope="col" className="p-4">Webflow</th>
-                  <th scope="col" className="p-4">Framer</th>
-                </tr>
-              </thead>
+            <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
+              <caption className="sr-only">Webflow and Framer site, CMS, bandwidth, and seat constraints checked 12 November 2026</caption>
+              <thead className="bg-slate-950 text-slate-200"><tr><th scope="col" className="p-4">Constraint</th><th scope="col" className="p-4">Webflow</th><th scope="col" className="p-4">Framer</th></tr></thead>
               <tbody className="divide-y divide-slate-800 text-slate-300">
-                {comparisonRows.map((row) => (
-                  <tr key={row.label}>
-                    <th scope="row" className="bg-slate-950/60 p-4 font-semibold text-white">{row.label}</th>
-                    <td className="p-4 align-top leading-relaxed">{row.webflow}</td>
-                    <td className="p-4 align-top leading-relaxed">{row.framer}</td>
-                  </tr>
-                ))}
+                {rows.map((row) => <tr key={row.label}><th scope="row" className="bg-slate-950/60 p-4 font-semibold text-white">{row.label}</th><td className="p-4 align-top leading-relaxed">{row.webflow}</td><td className="p-4 align-top leading-relaxed">{row.framer}</td></tr>)}
               </tbody>
             </table>
           </div>
           <div className="mt-4 grid gap-3 sm:hidden">
-            {comparisonRows.map((row) => (
-              <article key={row.label} className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
-                <h3 className="font-bold text-white">{row.label}</h3>
-                <dl className="mt-3 grid gap-3 text-sm">
-                  <div>
-                    <dt className="font-semibold text-blue-200">Webflow</dt>
-                    <dd className="mt-1 leading-relaxed text-slate-300">{row.webflow}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold text-blue-200">Framer</dt>
-                    <dd className="mt-1 leading-relaxed text-slate-300">{row.framer}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
+            {rows.map((row) => <article key={row.label} className="rounded-lg border border-slate-800 bg-slate-950/60 p-4"><h3 className="font-bold text-white">{row.label}</h3><dl className="mt-3 grid gap-3 text-sm"><div><dt className="font-semibold text-blue-200">Webflow</dt><dd className="mt-1 leading-relaxed text-slate-300">{row.webflow}</dd></div><div><dt className="font-semibold text-blue-200">Framer</dt><dd className="mt-1 leading-relaxed text-slate-300">{row.framer}</dd></div></dl></article>)}
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-slate-400">
-            The vendors display prices in US dollars, but workspace charges, taxes, billing frequency, and existing customer terms can differ. Webflow says new Site plan prices apply to new purchases, while existing sites may transition on a later renewal or billable change. Confirm your own plan details before budgeting.
-          </p>
+          <p className="mt-4 text-sm leading-relaxed text-slate-400">Prices are listed in USD before tax on yearly-billing views. Site/domain costs, Workspace members, localization, analytics, optimization, ecommerce, enterprise services, and negotiated terms can be separate.</p>
         </section>
 
-        <section aria-labelledby="workflow-fit" className="border-b border-slate-800 py-8">
-          <h2 id="workflow-fit" className="text-2xl font-bold text-white">Which site should you trial?</h2>
+        <section aria-labelledby="bandwidth-overage" className="border-b border-slate-800 py-8">
+          <h2 id="bandwidth-overage" className="text-2xl font-bold text-white">Bandwidth is a price ladder, not a footnote</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-              <h3 className="font-bold text-white">Shortlist Webflow</h3>
-              <p className="mt-3 leading-relaxed text-slate-300">
-                Consider Webflow Premium if your site needs a larger structured CMS under its published 20,000-item and 40-collection limits. Check the separate Workspace plan if you need more staging sites or collaboration controls, and note that each custom-domain site needs its own Site plan.
-              </p>
-            </article>
-            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-              <h3 className="font-bold text-white">Shortlist Framer</h3>
-              <p className="mt-3 leading-relaxed text-slate-300">
-                Consider Framer Basic or Pro if their published page and CMS limits fit your site. Compare workspace editor requirements as well as the Site plan: Framer ties editor limits and pricing to the highest-tier Site plan in the Workspace.
-              </p>
-            </article>
+            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5"><h3 className="font-bold text-white">Webflow</h3><p className="mt-3 leading-relaxed text-slate-300">Basic lists 10 GB/month. Premium publishes add-on blocks: +50 GB for $20/month, +100 GB for $40, +150 GB for $60, and +250 GB for $100 on annual billing. Webflow says two consecutive months above certain plan limits trigger an automatic upgrade.</p></article>
+            <article className="rounded-xl border border-slate-800 bg-slate-950/60 p-5"><h3 className="font-bold text-white">Framer</h3><p className="mt-3 leading-relaxed text-slate-300">Basic includes 50 GB and Pro 100 GB. Pro lists another 100 GB for $40/month, with scaling up to 2 TB. That makes a traffic forecast directly convertible into an add-on budget.</p></article>
           </div>
-          <p className="mt-5 leading-relaxed text-slate-300">
-            Do not infer design quality, SEO performance, or ease of use from these plan tables. Trial both with the same page, CMS content, responsive breakpoints, forms, and publishing checklist; then compare editing time, accessibility, performance, and the bill for your required seats and limits.
-          </p>
+          <p className="mt-5 leading-relaxed text-slate-300">Use CDN logs or current host transfer, not page views alone. Images, video, downloadable files, bot traffic, and cache behavior determine transfer. Forecast an ordinary month and a campaign spike.</p>
         </section>
 
-        <section aria-labelledby="decision" className="border-b border-slate-800 py-8">
-          <h2 id="decision" className="text-2xl font-bold text-white">A practical evaluation checklist</h2>
-          <ol className="mt-4 grid gap-3 text-slate-300">
-            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">1. Count what you need.</strong> List static pages, CMS collections and items, bandwidth, forms, redirects, and custom domains.</li>
-            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">2. Price the whole team setup.</strong> Include the Site plan for each published site, Workspace features, editor seats, add-ons, and annual commitment.</li>
-            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">3. Test the handoff.</strong> Try content editing, staging, publishing, redirects, accessibility, and exporting or migrating the site before choosing.</li>
+        <section aria-labelledby="workspace-seats" className="border-b border-slate-800 py-8">
+          <h2 id="workspace-seats" className="text-2xl font-bold text-white">Agency cost appears when collaborators become editors</h2>
+          <p className="mt-4 leading-relaxed text-slate-300">Webflow&apos;s Site plan pays for publishing a specific site; its Workspace organizes sites and collaborators. One Workspace member is included, then Full and Limited capabilities carry different annual seat prices. Framer&apos;s model is simpler on the public page: additional editors are $20/month and viewers are free. For either vendor, map designers, developers, content editors, client reviewers, and temporary contractors to the lowest permission that still lets them work.</p>
+          <div className="mt-5 rounded-xl border border-blue-400/20 bg-blue-400/5 p-5"><h3 className="font-bold text-blue-100">A five-person team can invert the headline comparison</h3><p className="mt-2 leading-relaxed text-slate-300">The site subscription may be smaller than the collaboration layer. Price one live site plus every paid editor for twelve months before choosing on the basis of Basic or Pro alone.</p></div>
+        </section>
+
+        <section aria-labelledby="agency-model" className="border-b border-slate-800 py-8">
+          <h2 id="agency-model" className="text-2xl font-bold text-white">Build a quote for the site you expect in year two</h2>
+          <ol className="mt-5 grid gap-3 text-slate-300">
+            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">1. Inventory content.</strong> Count static pages, CMS collections, CMS items, locales, redirects, forms, files, and search requirements.</li>
+            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">2. Forecast bandwidth.</strong> Model median and peak monthly transfer with a growth buffer and the published expansion blocks.</li>
+            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">3. Assign permissions.</strong> Separate full designers, limited content editors, reviewers, guests, and client stakeholders.</li>
+            <li className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 leading-relaxed"><strong className="text-white">4. Test the exit path.</strong> Export representative code/content, document redirect and domain handoff, and price the migration work before committing.</li>
           </ol>
         </section>
 
         <section aria-labelledby="sources" className="pt-8">
           <h2 id="sources" className="text-2xl font-bold text-white">Sources and method</h2>
-          <p className="mt-3 leading-relaxed text-slate-300">
-            This page summarizes vendor-published plans checked on 29 October 2026. It is desk research, not independent usability testing. Plans, prices, limits, and migration terms can change; confirm the current details for your Workspace and site before purchasing.
-          </p>
+          <p className="mt-3 leading-relaxed text-slate-300">This page analyzes public vendor pricing checked 12 November 2026. It does not claim independent design-quality, accessibility, uptime, export, SEO-performance, or support testing.</p>
           <ul className="mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed text-blue-200">
-            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://webflow.com/pricing" target="_blank" rel="noopener noreferrer">Webflow Site and Workspace pricing</a></li>
-            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://webflow.com/blog/simplified-plans-and-updated-pricing-2026" target="_blank" rel="noopener noreferrer">Webflow announcement: 2026 plan and price changes</a></li>
-            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://help.webflow.com/hc/en-us/articles/33961232582419-Choose-a-Site-plan" target="_blank" rel="noopener noreferrer">Webflow Help Center: choosing a Site plan</a></li>
-            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.framer.com/pricing" target="_blank" rel="noopener noreferrer">Framer pricing and plan limits</a></li>
-            <li><a className="underline decoration-blue-400/50 underline-offset-4 hover:text-white" href="https://www.framer.com/help/articles/site-plans-explained/" target="_blank" rel="noopener noreferrer">Framer Help: Site plans and Workspace editor costs</a></li>
+            <li><a className={sourceClass} href="https://webflow.com/pricing">Webflow pricing</a> — Site plans, CMS limits, bandwidth add-ons, Workspace seats, and plan separation.</li>
+            <li><a className={sourceClass} href="https://help.webflow.com/hc/en-us/articles/33961232582419-Choose-a-Site-plan">Webflow Help: choose a Site plan</a> — publishing and plan scope.</li>
+            <li><a className={sourceClass} href="https://www.framer.com/pricing">Framer pricing</a> — pages, CMS items, bandwidth, expansion units, and editor cost.</li>
+            <li><a className={sourceClass} href="https://www.framer.com/help/articles/site-plans-explained/">Framer Help: Site plans</a> — plan and Workspace billing context.</li>
           </ul>
         </section>
       </article>

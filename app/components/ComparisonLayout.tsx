@@ -7,49 +7,9 @@ import ComparisonAnalytics from '../../components/ComparisonAnalytics';
 import JsonLd from '../../components/JsonLd';
 import TableOfContents from '../../components/TableOfContents';
 import { getArticleContent, getComparisonContext } from '@/lib/article-content';
+import { getAffiliateLink } from '@/lib/affiliate-links';
 import { getComparisonCro, type ComparisonFaq } from '@/lib/comparison-cro';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
-
-type ProductLink = {
-  name: string;
-  href: string;
-};
-
-const PRODUCT_LINKS: Record<string, ProductLink> = {
-  airtable: { name: 'Airtable', href: 'https://airtable.com' },
-  clickup: { name: 'ClickUp', href: 'https://clickup.com' },
-  monday: { name: 'Monday.com', href: 'https://monday.com' },
-  notion: { name: 'Notion', href: 'https://notion.so' },
-  coda: { name: 'Superhuman Docs (formerly Coda)', href: 'https://docs.superhuman.com' },
-  hubspot: { name: 'HubSpot', href: 'https://hubspot.com' },
-  'zoho-crm': { name: 'Zoho CRM', href: 'https://www.zoho.com/crm/' },
-  salesforce: { name: 'Salesforce', href: 'https://salesforce.com' },
-  asana: { name: 'Asana', href: 'https://asana.com' },
-  trello: { name: 'Trello', href: 'https://trello.com' },
-  ahrefs: { name: 'Ahrefs', href: 'https://ahrefs.com' },
-  semrush: { name: 'Semrush', href: 'https://semrush.com' },
-  slack: { name: 'Slack', href: 'https://slack.com' },
-  teams: { name: 'Microsoft Teams', href: 'https://teams.microsoft.com' },
-  shopify: { name: 'Shopify', href: 'https://shopify.com' },
-  woocommerce: { name: 'WooCommerce', href: 'https://woocommerce.com' },
-  zapier: { name: 'Zapier', href: 'https://zapier.com' },
-  make: { name: 'Make', href: 'https://make.com' },
-  webflow: { name: 'Webflow', href: 'https://webflow.com' },
-  framer: { name: 'Framer', href: 'https://framer.com' },
-  mailchimp: { name: 'Mailchimp', href: 'https://mailchimp.com' },
-  activecampaign: { name: 'ActiveCampaign', href: 'https://activecampaign.com' },
-  pipedrive: { name: 'Pipedrive', href: 'https://pipedrive.com' },
-  klaviyo: { name: 'Klaviyo', href: 'https://klaviyo.com' },
-  wix: { name: 'Wix', href: 'https://wix.com' },
-  squarespace: { name: 'Squarespace', href: 'https://squarespace.com' },
-  chatgpt: { name: 'ChatGPT', href: 'https://chatgpt.com' },
-  claude: { name: 'Claude', href: 'https://claude.ai' },
-  linear: { name: 'Linear', href: 'https://linear.app' },
-  jira: { name: 'Jira', href: 'https://atlassian.com/software/jira' },
-  zendesk: { name: 'Zendesk', href: 'https://zendesk.com' },
-  freshdesk: { name: 'Freshdesk', href: 'https://freshworks.com/freshdesk' },
-  convertkit: { name: 'Kit (formerly ConvertKit)', href: 'https://kit.com' },
-};
 
 interface ComparisonLayoutProps {
   children?: ReactNode;
@@ -60,8 +20,6 @@ interface ComparisonLayoutProps {
   lead?: string;
   toolAName?: string;
   toolBName?: string;
-  toolALink?: string;
-  toolBLink?: string;
   verdictText?: string;
   tableData?: Array<{
     metric: string;
@@ -133,8 +91,6 @@ export default function ComparisonLayout({
   lead,
   toolAName,
   toolBName,
-  toolALink,
-  toolBLink,
   verdictText,
   tableData = [],
   coreDifferenceTextA,
@@ -144,11 +100,11 @@ export default function ComparisonLayout({
   showDraftNotice = true,
 }: ComparisonLayoutProps) {
   const productA = toolAName
-    ? { name: toolAName, href: toolALink ?? PRODUCT_LINKS[tool1 ?? '']?.href }
-    : PRODUCT_LINKS[tool1 ?? ''];
+    ? { name: toolAName, href: getAffiliateLink(tool1)?.href }
+    : getAffiliateLink(tool1);
   const productB = toolBName
-    ? { name: toolBName, href: toolBLink ?? PRODUCT_LINKS[tool2 ?? '']?.href }
-    : PRODUCT_LINKS[tool2 ?? ''];
+    ? { name: toolBName, href: getAffiliateLink(tool2)?.href }
+    : getAffiliateLink(tool2);
   const hasChildren = children !== undefined && children !== null;
   const pageTitle = title ?? `${productA?.name ?? 'Product A'} vs ${productB?.name ?? 'Product B'}`;
   const articleContent = getArticleContent(children);

@@ -29,7 +29,15 @@ function plainText(html) {
   return html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
 }
 
-const comparisonModifiedDate = '2026-11-10';
+const comparisonModifiedDates = new Map([
+  ['/deel-vs-rippling', '2026-11-12'],
+  ['/intercom-vs-zendesk', '2026-11-12'],
+  ['/webflow-vs-framer', '2026-11-12'],
+]);
+
+function comparisonModifiedDate(path) {
+  return comparisonModifiedDates.get(path) ?? '2026-11-10';
+}
 
 function checkArticle(html, path) {
   const article = jsonLd(html).find((data) => data['@type'] === 'Article');
@@ -41,7 +49,7 @@ function checkArticle(html, path) {
   assert.equal(article.author?.url, `${canonicalOrigin}/about`, `${path}: article author URL missing`);
   assert.equal(article.publisher?.['@id'], `${canonicalOrigin}/#organization`, `${path}: publisher entity mismatch`);
   if (/^\/[^/]+-vs-[^/]+$/.test(path)) {
-    assert.equal(article.dateModified, comparisonModifiedDate, `${path}: content update date missing from article schema`);
+    assert.equal(article.dateModified, comparisonModifiedDate(path), `${path}: content update date missing from article schema`);
   }
   assert(!('aggregateRating' in article) && !('reviewRating' in article), 'Do not fabricate ratings');
   const contents = html.match(/<nav aria-label="On this page"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
@@ -77,11 +85,11 @@ const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => ne
 assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains duplicate URLs');
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
-assert.equal(comparisonPaths.length, 22, 'Preserve all 22 published comparisons');
+assert.equal(comparisonPaths.length, 24, 'Preserve all 24 published comparisons');
 for (const path of comparisonPaths) {
   assert.match(
     sitemap,
-    new RegExp(`<loc>${canonicalOrigin}${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>${comparisonModifiedDate}</lastmod>`),
+    new RegExp(`<loc>${canonicalOrigin}${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>${comparisonModifiedDate(path)}</lastmod>`),
     `${path}: content update date missing from sitemap`,
   );
 }
@@ -110,13 +118,15 @@ for (const url of urls) {
   assert.equal(new URL(canonical).href, url.href, `${url.pathname}: canonical mismatch`);
   for (const [tag] of html.matchAll(/<a\b[^>]*href="https?:\/\/[^\"]+"[^>]*>/g)) {
     const outbound = attributes(tag);
-    const rel = new Set((outbound.rel ?? '').split(/\s+/));
     assert.equal(outbound.target, '_blank', `${url.pathname}: outbound link must open a new tab`);
-    assert(rel.has('nofollow') && rel.has('sponsored'), `${url.pathname}: outbound link missing nofollow sponsored`);
+    assert.equal(outbound.rel, 'nofollow sponsored noopener noreferrer', `${url.pathname}: outbound link relationship tokens differ from policy`);
   }
   if (comparisonPaths.includes(url.pathname)) {
     checkBreadcrumb(html, url.pathname);
     assert.equal(meta(html, 'og:site_name'), 'StackEvalify');
+    if (comparisonModifiedDates.has(url.pathname)) {
+      assert(html.includes('dateTime="2026-11-12"'), `${url.pathname}: visible source-check date is not 12 November 2026`);
+    }
     assert(meta(html, 'twitter:title')?.startsWith(title.split(' | ')[0]), `${url.pathname}: inherited homepage social title`);
     checkArticle(html, url.pathname);
     const related = html.match(/<section aria-labelledby="related-comparisons"[^>]*>([\s\S]*?)<\/section>/)?.[1];
@@ -165,7 +175,7 @@ checkBreadcrumb(directory, '/category/saas');
 for (const path of comparisonPaths) assert(directory.includes(`href="${path}"`), `${path}: missing from directory`);
 assert.match(directory, /type="search"/);
 assert.match(directory, /id="comparison-category"/);
-assert(plainText(directory).includes('Showing 22 of 22 comparisons'), 'All comparisons must be present before JavaScript runs');
+assert(plainText(directory).includes('Showing 24 of 24 comparisons'), 'All comparisons must be present before JavaScript runs');
 
 const comparisonClusters = [
   ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
@@ -183,6 +193,7 @@ for (const cluster of comparisonClusters) {
 }
 
 const reciprocalLinkPairs = [
+  ['/intercom-vs-zendesk', '/zendesk-vs-freshdesk'],
   ['/notion-vs-coda', '/clickup-vs-notion'],
   ['/notion-vs-coda', '/asana-vs-trello'],
 ];
