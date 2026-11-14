@@ -1,6 +1,7 @@
 import ComparisonLayout from '@/app/components/ComparisonLayout';
 import TcoCalculator from '@/app/components/TcoCalculator';
 import { sourceCheckedComparisonMetadata } from '@/lib/seo';
+import { tcoConfigs } from '@/lib/tco-configs';
 
 export const metadata = sourceCheckedComparisonMetadata({
   title: 'Deel vs Rippling TCO Calculator (2026): 12 and 24 Months',
@@ -20,13 +21,14 @@ export default function DeelVsRipplingPage() {
             Deel vs Rippling: normalize the 12- and 24-month workforce bill
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">Public prices do not support a $25,000 annual approval. Deel&apos;s starting rates apply to named worker services; Rippling&apos;s $8 starting point does not price the required payroll, EOR, contractor, IT, or spend scope. Normalize both signed quotes against the same monthly headcount and 24-month term.</p>
-          <p className="mt-4 text-sm text-slate-400">Source check: <time dateTime="2026-11-12">12 November 2026</time> · US vendor pages · USD · desk research, not payroll, legal, or tax advice</p>
+          <p className="mt-4 text-sm text-slate-400">Source check: <time dateTime="2026-11-14">14 November 2026</time> · US vendor pages · USD · desk research, not payroll, legal, or tax advice</p>
         </header>
 
         <section aria-labelledby="pricing-model" className="border-b border-slate-800 py-8">
           <h2 id="pricing-model" className="text-2xl font-bold text-white">Build the 12- and 24-month invoice</h2>
-          <p className="mt-4 max-w-3xl leading-relaxed text-slate-300">Enter the same worker population for both vendors, then replace every <span className="font-mono text-xs text-amber-300">[VERIFY_BILLING_DATA]</span> value with a dated quote, order form, or invoice. A zero means the cost is unknown or excluded—not free.</p>
-          <TcoCalculator />
+          <p className="mt-4 max-w-3xl leading-relaxed text-slate-300">Enter the same worker population for both vendors, then overwrite the editable public-rate and contract-assumption baselines with the signed quote. A zero means the service is outside the current baseline—not free.</p>
+          <TcoCalculator config={tcoConfigs['deel-vs-rippling']} />
+          <p className="mt-5 rounded-xl border border-blue-400/20 bg-blue-400/5 p-4 text-sm leading-relaxed text-blue-100"><strong>Audit Baseline (Nov 14, 2026):</strong> Modeled from vendor public pricing schedules &amp; standard MSA terms. Excludes custom enterprise volume discounts and statutory local employer taxes.</p>
         </section>
 
         <section aria-labelledby="deel-boundary" className="border-b border-slate-800 py-8">
@@ -67,9 +69,10 @@ export default function DeelVsRipplingPage() {
 
         <section aria-labelledby="sources" className="pt-8">
           <h2 id="sources" className="text-2xl font-bold text-white">Sources and method</h2>
-          <p className="mt-3 leading-relaxed text-slate-300">Vendor pages checked 12 November 2026 supply the public defaults, not invoice evidence. Calculator fields marked <span className="font-mono text-xs text-amber-300">[VERIFY_BILLING_DATA]</span> must be replaced with dated commercial documents. This analysis does not replace country-specific legal, tax, payroll, security, or procurement review.</p>
+          <p className="mt-3 leading-relaxed text-slate-300">Vendor pages checked 14 November 2026 supply the published starting rates. Editable FX, renewal, module, implementation, and deposit assumptions remain scenario inputs until the signed order form fixes them. This analysis does not replace country-specific legal, tax, payroll, security, or procurement review.</p>
           <ul className="mt-4 list-inside list-disc space-y-2 text-sm leading-relaxed text-blue-200">
             <li><a className={sourceClass} href="https://www.deel.com/pricing/">Deel pricing</a> — contractor, Contractor of Record, PEO, and EOR starting prices and service FAQ.</li>
+            <li><a className={sourceClass} href="https://help.letsdeel.com/hc/en-gb/articles/15574494993297-About-EOR-Deposit-Calculations">Deel EOR deposit calculation</a> — refundable deposit basis, country exceptions, and refund mechanics.</li>
             <li><a className={sourceClass} href="https://www.deel.com/hr/">Deel HR</a> — workforce-management product scope.</li>
             <li><a className={sourceClass} href="https://www.rippling.com/pricing">Rippling pricing</a> — starting price, base-fee disclosure, per-employee and modular quote model.</li>
             <li><a className={sourceClass} href="https://www.rippling.com/products">Rippling product ecosystem</a> — HRIS, payroll, global, IT, and Finance product boundaries.</li>

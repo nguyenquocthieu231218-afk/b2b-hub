@@ -1,53 +1,32 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import type { TcoComparisonConfig, TcoHeadcountKey, TcoVendorConfig } from '@/lib/tco-configs';
 
-type CalculatorInputs = {
-  usEmployees: number;
-  eorEmployees: number;
-  contractors: number;
-  fxSpread: number;
-  renewalUplift: number;
-  deelUsRate: number;
-  deelEorRate: number;
-  deelContractorRate: number;
-  deelBaseFee: number;
-  deelImplementation: number;
-  ripplingUsRate: number;
-  ripplingEorRate: number;
-  ripplingContractorRate: number;
-  ripplingBaseFee: number;
-  ripplingImplementation: number;
+type WorkforceInputs = TcoComparisonConfig['defaultWorkforce'];
+
+type VendorScenario = {
+  usPayrollPerEmployee: number;
+  eorPerEmployee: number;
+  contractorPerWorker: number;
+  corePlatformPerEmployee: number;
+  itManagementPerEmployee: number;
+  basePlatformFee: number;
+  implementationFee: number;
+  waiveImplementation: boolean;
+  fxSpreadPercent: number;
+  renewalUpliftPercent: number;
+  depositMonths: number;
 };
 
 type VendorEstimate = {
   advertised12: number;
-  advertised24: number;
   yearOne: number;
   yearTwo: number;
   total24: number;
   delta24: number;
-};
-
-const VERIFY_LABEL = '[VERIFY_BILLING_DATA]';
-
-const initialInputs: CalculatorInputs = {
-  usEmployees: 20,
-  eorEmployees: 5,
-  contractors: 5,
-  fxSpread: 1,
-  renewalUplift: 5,
-  // [VERIFY_BILLING_DATA] Replace every rate below with a dated quote, order form, or invoice before approval.
-  deelUsRate: 0,
-  deelEorRate: 599,
-  deelContractorRate: 49,
-  deelBaseFee: 0,
-  deelImplementation: 0,
-  ripplingUsRate: 8,
-  ripplingEorRate: 0,
-  ripplingContractorRate: 0,
-  ripplingBaseFee: 0,
-  ripplingImplementation: 0,
+  cashFlowDeposit: number;
+  peakCashRequirement: number;
 };
 
 const currency = new Intl.NumberFormat('en-US', {
@@ -56,30 +35,62 @@ const currency = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0,
 });
 
+function initialVendorScenarios(config: TcoComparisonConfig) {
+  return Object.fromEntries(config.vendors.map((vendor) => [vendor.id, {
+    usPayrollPerEmployee: vendor.rates.usPayrollPerEmployee,
+    eorPerEmployee: vendor.rates.eorPerEmployee,
+    contractorPerWorker: vendor.rates.contractorPerWorker,
+    corePlatformPerEmployee: vendor.rates.corePlatformPerEmployee,
+    itManagementPerEmployee: vendor.rates.itManagementPerEmployee,
+    basePlatformFee: vendor.rates.basePlatformFee,
+    implementationFee: vendor.rates.implementationFee,
+    waiveImplementation: false,
+    fxSpreadPercent: vendor.rates.fxSpreadPercent,
+    renewalUpliftPercent: vendor.rates.renewalUpliftPercent,
+    depositMonths: vendor.cashFlowDeposit.monthsOfEorGrossSalary,
+  }])) as Record<string, VendorScenario>;
+}
+
+function scopedHeadcount(workforce: WorkforceInputs, scopes: readonly TcoHeadcountKey[]) {
+  return scopes.reduce((total, scope) => total + workforce[scope], 0);
+}
+
 function estimateVendor(
-  inputs: CalculatorInputs,
-  rates: { us: number; eor: number; contractor: number; baseFee: number; implementation: number },
+  workforce: WorkforceInputs,
+  vendor: TcoVendorConfig,
+  scenario: VendorScenario,
 ): VendorEstimate {
-  const recurringMonthly = (
-    inputs.usEmployees * rates.us
-    + inputs.eorEmployees * rates.eor
-    + inputs.contractors * rates.contractor
+  const workerServiceMonthly = (
+    workforce.usEmployees * scenario.usPayrollPerEmployee
+    + workforce.eorEmployees * scenario.eorPerEmployee
+    + workforce.contractors * scenario.contractorPerWorker
   );
-  const fxEligibleMonthly = inputs.eorEmployees * rates.eor + inputs.contractors * rates.contractor;
-  const fxMonthly = fxEligibleMonthly * (inputs.fxSpread / 100);
+  const coreMonthly = scopedHeadcount(workforce, vendor.rates.corePlatformScopes) * scenario.corePlatformPerEmployee;
+  const itMonthly = scopedHeadcount(workforce, vendor.rates.itManagementScopes) * scenario.itManagementPerEmployee;
+  const recurringMonthly = workerServiceMonthly + coreMonthly + itMonthly;
+  const fxEligibleMonthly = (
+    workforce.eorEmployees * workforce.eorMonthlyGrossSalary
+    + workforce.contractors * workforce.contractorAverageMonthlyInvoice
+  );
+  const fxMonthly = fxEligibleMonthly * (scenario.fxSpreadPercent / 100);
+  const implementation = scenario.waiveImplementation ? 0 : scenario.implementationFee;
   const advertised12 = recurringMonthly * 12;
-  const advertised24 = advertised12 * 2;
-  const yearOne = (recurringMonthly + rates.baseFee + fxMonthly) * 12 + rates.implementation;
-  const yearTwo = (recurringMonthly + rates.baseFee + fxMonthly) * 12 * (1 + inputs.renewalUplift / 100);
+  const yearOne = (recurringMonthly + scenario.basePlatformFee + fxMonthly) * 12 + implementation;
+  const yearTwo = (
+    (recurringMonthly + scenario.basePlatformFee) * (1 + scenario.renewalUpliftPercent / 100)
+    + fxMonthly
+  ) * 12;
   const total24 = yearOne + yearTwo;
+  const cashFlowDeposit = workforce.eorEmployees * workforce.eorMonthlyGrossSalary * scenario.depositMonths;
 
   return {
     advertised12,
-    advertised24,
     yearOne,
     yearTwo,
     total24,
-    delta24: total24 - advertised24,
+    delta24: total24 - advertised12 * 2,
+    cashFlowDeposit,
+    peakCashRequirement: total24 + cashFlowDeposit,
   };
 }
 
@@ -90,7 +101,6 @@ function NumberField({
   onChange,
   step = 1,
   suffix,
-  verify = false,
 }: {
   id: string;
   label: string;
@@ -98,14 +108,10 @@ function NumberField({
   onChange: (value: number) => void;
   step?: number;
   suffix?: string;
-  verify?: boolean;
 }) {
   return (
     <label htmlFor={id} className="grid gap-2 text-sm text-slate-200">
-      <span className="font-semibold">
-        {label}
-        {verify && <span className="ml-2 font-mono text-[0.68rem] text-amber-300">{VERIFY_LABEL}</span>}
-      </span>
+      <span className="font-semibold">{label}</span>
       <span className="flex min-h-11 items-center rounded-lg border border-slate-700 bg-slate-950 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-400/20">
         <input
           id={id}
@@ -122,40 +128,51 @@ function NumberField({
   );
 }
 
-export default function TcoCalculator() {
-  const [inputs, setInputs] = useState(initialInputs);
+function coverageWarnings(vendor: TcoVendorConfig, scenario: VendorScenario, workforce: WorkforceInputs) {
+  const warnings: string[] = [];
+  if (workforce.usEmployees > 0 && scenario.usPayrollPerEmployee === 0) warnings.push('US payroll is outside this baseline.');
+  if (workforce.eorEmployees > 0 && scenario.eorPerEmployee === 0) warnings.push('EOR is outside this baseline.');
+  if (workforce.contractors > 0 && scenario.contractorPerWorker === 0) warnings.push('Contractor service is outside this baseline.');
+  return warnings.map((warning) => `${vendor.name}: ${warning}`);
+}
+
+export default function TcoCalculator({ config }: { config: TcoComparisonConfig }) {
+  const [workforce, setWorkforce] = useState<WorkforceInputs>(config.defaultWorkforce);
+  const [vendorScenarios, setVendorScenarios] = useState<Record<string, VendorScenario>>(() => initialVendorScenarios(config));
   const [copyStatus, setCopyStatus] = useState('');
 
-  const update = (key: keyof CalculatorInputs, value: number) => {
-    setInputs((current) => ({ ...current, [key]: value }));
+  const updateWorkforce = (key: keyof WorkforceInputs, value: number) => {
+    setWorkforce((current) => ({ ...current, [key]: value }));
     setCopyStatus('');
   };
 
-  const estimates = useMemo(() => ({
-    Deel: estimateVendor(inputs, {
-      us: inputs.deelUsRate,
-      eor: inputs.deelEorRate,
-      contractor: inputs.deelContractorRate,
-      baseFee: inputs.deelBaseFee,
-      implementation: inputs.deelImplementation,
-    }),
-    Rippling: estimateVendor(inputs, {
-      us: inputs.ripplingUsRate,
-      eor: inputs.ripplingEorRate,
-      contractor: inputs.ripplingContractorRate,
-      baseFee: inputs.ripplingBaseFee,
-      implementation: inputs.ripplingImplementation,
-    }),
-  }), [inputs]);
+  const updateVendor = <K extends keyof VendorScenario>(vendorId: string, key: K, value: VendorScenario[K]) => {
+    setVendorScenarios((current) => ({
+      ...current,
+      [vendorId]: { ...current[vendorId], [key]: value },
+    }));
+    setCopyStatus('');
+  };
+
+  const estimates = useMemo(() => Object.fromEntries(config.vendors.map((vendor) => [
+    vendor.id,
+    estimateVendor(workforce, vendor, vendorScenarios[vendor.id]),
+  ])) as Record<string, VendorEstimate>, [config.vendors, vendorScenarios, workforce]);
+
+  const warnings = config.vendors.flatMap((vendor) => coverageWarnings(vendor, vendorScenarios[vendor.id], workforce));
 
   const copySlackSummary = async () => {
+    const vendorLines = config.vendors.map((vendor) => {
+      const estimate = estimates[vendor.id];
+      return `${vendor.name}: advertised 12-month run rate ${currency.format(estimate.advertised12)} · 24-month service invoice ${currency.format(estimate.total24)} · refundable cash-flow deposit ${currency.format(estimate.cashFlowDeposit)}`;
+    });
     const summary = [
-      '*Deel vs Rippling — 24-month TCO draft*',
-      `Scope: ${inputs.usEmployees} US payroll employees · ${inputs.eorEmployees} EOR employees · ${inputs.contractors} contractors`,
-      `Deel: advertised 12-month run rate ${currency.format(estimates.Deel.advertised12)} · normalized 24-month invoice ${currency.format(estimates.Deel.total24)}`,
-      `Rippling: advertised 12-month run rate ${currency.format(estimates.Rippling.advertised12)} · normalized 24-month invoice ${currency.format(estimates.Rippling.total24)}`,
-      `Assumptions: ${inputs.fxSpread}% FX spread · ${inputs.renewalUplift}% year-two uplift`,
-      `${VERIFY_LABEL}: replace every editable vendor rate, base fee, and implementation fee with a dated quote or order form before approval.`,
+      `*${config.title} — 24-month TCO baseline*`,
+      `Scope: ${workforce.usEmployees} US payroll employees · ${workforce.eorEmployees} EOR employees · ${workforce.contractors} contractors`,
+      ...vendorLines,
+      `FX volume basis: ${currency.format(workforce.eorEmployees * workforce.eorMonthlyGrossSalary + workforce.contractors * workforce.contractorAverageMonthlyInvoice)} per month`,
+      warnings.length ? `Coverage gaps: ${warnings.join(' ')}` : 'Coverage gaps: none in the current baseline.',
+      `Source check: ${config.sourceCheckedAt}. Replace scenario assumptions with the signed order form before approval.`,
     ].join('\n');
 
     try {
@@ -166,56 +183,69 @@ export default function TcoCalculator() {
     }
   };
 
-  const vendorRows = Object.entries(estimates) as Array<[keyof typeof estimates, VendorEstimate]>;
-
   return (
-    <div className="mt-6 grid gap-6" data-tco-calculator>
+    <div className="mt-6 grid gap-6" data-tco-calculator data-tco-slug={config.slug}>
       <aside className="rounded-xl border border-amber-400/25 bg-amber-400/5 p-5 text-sm leading-relaxed text-amber-100">
-        <strong>Approval gate:</strong> Public starting prices are prefilled only to expose the math. Every vendor rate, base fee, and implementation fee remains <span className="font-mono text-xs">{VERIFY_LABEL}</span> until replaced with dated billing evidence. This estimates platform and service invoices, not wages, employer taxes, benefits, or statutory severance.
+        <strong>Audit baseline:</strong> Public list prices and disclosed model assumptions are editable below. The 24-month invoice excludes wages, employer taxes, benefits, statutory severance, and country-specific pass-through costs. Refundable deposits are shown separately from vendor revenue.
       </aside>
 
+      {warnings.length > 0 && (
+        <aside className="rounded-xl border border-rose-400/25 bg-rose-400/5 p-5 text-sm leading-relaxed text-rose-100" aria-label="Coverage gaps">
+          <strong>Scope gap:</strong> {warnings.join(' ')} Enter the signed quote rate before using the total for approval.
+        </aside>
+      )}
+
       <fieldset className="rounded-xl border border-slate-800 bg-slate-950/40 p-5">
-        <legend className="px-2 text-base font-bold text-white">Workforce and contract assumptions</legend>
+        <legend className="px-2 text-base font-bold text-white">Workforce and cash-flow assumptions</legend>
         <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <NumberField id="us-employees" label="US payroll employees" value={inputs.usEmployees} onChange={(value) => update('usEmployees', value)} />
-          <NumberField id="eor-employees" label="International EOR employees" value={inputs.eorEmployees} onChange={(value) => update('eorEmployees', value)} />
-          <NumberField id="contractors" label="Contractors" value={inputs.contractors} onChange={(value) => update('contractors', value)} />
-          <NumberField id="fx-spread" label="FX spread assumption" value={inputs.fxSpread} onChange={(value) => update('fxSpread', value)} step={0.1} suffix="%" />
-          <NumberField id="renewal-uplift" label="Year-two renewal uplift" value={inputs.renewalUplift} onChange={(value) => update('renewalUplift', value)} step={0.1} suffix="%" />
+          <NumberField id={`${config.slug}-us-employees`} label="US payroll employees" value={workforce.usEmployees} onChange={(value) => updateWorkforce('usEmployees', value)} />
+          <NumberField id={`${config.slug}-eor-employees`} label="International EOR employees" value={workforce.eorEmployees} onChange={(value) => updateWorkforce('eorEmployees', value)} />
+          <NumberField id={`${config.slug}-contractors`} label="Contractors" value={workforce.contractors} onChange={(value) => updateWorkforce('contractors', value)} />
+          <NumberField id={`${config.slug}-eor-salary`} label="Average EOR gross salary / month" value={workforce.eorMonthlyGrossSalary} onChange={(value) => updateWorkforce('eorMonthlyGrossSalary', value)} suffix="USD" />
+          <NumberField id={`${config.slug}-contractor-invoice`} label="Average contractor invoice / month" value={workforce.contractorAverageMonthlyInvoice} onChange={(value) => updateWorkforce('contractorAverageMonthlyInvoice', value)} suffix="USD" />
         </div>
+        <p className="mt-4 text-xs leading-relaxed text-slate-400">FX cost is applied to modeled EOR gross salary plus contractor invoice volume. It is not applied to platform fees.</p>
       </fieldset>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <fieldset className="rounded-xl border border-blue-400/20 bg-blue-400/5 p-5">
-          <legend className="px-2 text-base font-bold text-white">Deel quote inputs</legend>
-          <p className="mt-2 text-sm leading-relaxed text-slate-400">The public defaults are not invoice proof. US Payroll stays at $0 because the published US PEO starting price is not interchangeable with a payroll-only rate.</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <NumberField id="deel-us-rate" label="US payroll / employee / month" value={inputs.deelUsRate} onChange={(value) => update('deelUsRate', value)} verify suffix="USD" />
-            <NumberField id="deel-eor-rate" label="EOR / employee / month" value={inputs.deelEorRate} onChange={(value) => update('deelEorRate', value)} verify suffix="USD" />
-            <NumberField id="deel-contractor-rate" label="Contractor / month" value={inputs.deelContractorRate} onChange={(value) => update('deelContractorRate', value)} verify suffix="USD" />
-            <NumberField id="deel-base-fee" label="Base platform fee / month" value={inputs.deelBaseFee} onChange={(value) => update('deelBaseFee', value)} verify suffix="USD" />
-            <NumberField id="deel-implementation" label="Implementation fee" value={inputs.deelImplementation} onChange={(value) => update('deelImplementation', value)} verify suffix="USD" />
-          </div>
-        </fieldset>
-
-        <fieldset className="rounded-xl border border-violet-400/20 bg-violet-400/5 p-5">
-          <legend className="px-2 text-base font-bold text-white">Rippling quote inputs</legend>
-          <p className="mt-2 text-sm leading-relaxed text-slate-400">The $8 default is the public platform starting point, not a complete US Payroll, EOR, contractor, IT, or spend quote. Enter the contracted per-worker rates.</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <NumberField id="rippling-us-rate" label="US payroll / employee / month" value={inputs.ripplingUsRate} onChange={(value) => update('ripplingUsRate', value)} verify suffix="USD" />
-            <NumberField id="rippling-eor-rate" label="EOR / employee / month" value={inputs.ripplingEorRate} onChange={(value) => update('ripplingEorRate', value)} verify suffix="USD" />
-            <NumberField id="rippling-contractor-rate" label="Contractor / month" value={inputs.ripplingContractorRate} onChange={(value) => update('ripplingContractorRate', value)} verify suffix="USD" />
-            <NumberField id="rippling-base-fee" label="Base platform fee / month" value={inputs.ripplingBaseFee} onChange={(value) => update('ripplingBaseFee', value)} verify suffix="USD" />
-            <NumberField id="rippling-implementation" label="Implementation fee" value={inputs.ripplingImplementation} onChange={(value) => update('ripplingImplementation', value)} verify suffix="USD" />
-          </div>
-        </fieldset>
+        {config.vendors.map((vendor, index) => {
+          const scenario = vendorScenarios[vendor.id];
+          const tint = index === 0 ? 'border-blue-400/20 bg-blue-400/5' : 'border-violet-400/20 bg-violet-400/5';
+          return (
+            <fieldset key={vendor.id} className={`rounded-xl border p-5 ${tint}`}>
+              <legend className="px-2 text-base font-bold text-white">{vendor.name} rate inputs</legend>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">{vendor.pricingBasis}</p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <NumberField id={`${config.slug}-${vendor.id}-us`} label="US payroll / employee / month" value={scenario.usPayrollPerEmployee} onChange={(value) => updateVendor(vendor.id, 'usPayrollPerEmployee', value)} suffix="USD" />
+                <NumberField id={`${config.slug}-${vendor.id}-eor`} label="EOR / employee / month" value={scenario.eorPerEmployee} onChange={(value) => updateVendor(vendor.id, 'eorPerEmployee', value)} suffix="USD" />
+                <NumberField id={`${config.slug}-${vendor.id}-contractor`} label="Contractor / month" value={scenario.contractorPerWorker} onChange={(value) => updateVendor(vendor.id, 'contractorPerWorker', value)} suffix="USD" />
+                <NumberField id={`${config.slug}-${vendor.id}-core`} label="Core platform / employee / month" value={scenario.corePlatformPerEmployee} onChange={(value) => updateVendor(vendor.id, 'corePlatformPerEmployee', value)} suffix="USD" />
+                <NumberField id={`${config.slug}-${vendor.id}-it`} label="IT management / employee / month" value={scenario.itManagementPerEmployee} onChange={(value) => updateVendor(vendor.id, 'itManagementPerEmployee', value)} suffix="USD" />
+                <NumberField id={`${config.slug}-${vendor.id}-base`} label="Base platform fee / month" value={scenario.basePlatformFee} onChange={(value) => updateVendor(vendor.id, 'basePlatformFee', value)} suffix="USD" />
+                <NumberField id={`${config.slug}-${vendor.id}-implementation`} label="Implementation fee" value={scenario.implementationFee} onChange={(value) => updateVendor(vendor.id, 'implementationFee', value)} suffix="USD" />
+                <NumberField id={`${config.slug}-${vendor.id}-fx`} label="FX spread" value={scenario.fxSpreadPercent} onChange={(value) => updateVendor(vendor.id, 'fxSpreadPercent', value)} step={0.1} suffix="%" />
+                <NumberField id={`${config.slug}-${vendor.id}-renewal`} label="Year-two renewal uplift" value={scenario.renewalUpliftPercent} onChange={(value) => updateVendor(vendor.id, 'renewalUpliftPercent', value)} step={0.1} suffix="%" />
+                <NumberField id={`${config.slug}-${vendor.id}-deposit`} label="Refundable deposit / EOR salary months" value={scenario.depositMonths} onChange={(value) => updateVendor(vendor.id, 'depositMonths', value)} step={0.1} suffix="months" />
+              </div>
+              {vendor.rates.implementationWaivableWithAnnualCommitment && (
+                <label className="mt-4 flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-slate-200">
+                  <input type="checkbox" checked={scenario.waiveImplementation} onChange={(event) => updateVendor(vendor.id, 'waiveImplementation', event.target.checked)} className="size-4 accent-blue-500" />
+                  Waive implementation fee for annual commitment
+                </label>
+              )}
+              <ul className="mt-4 list-disc space-y-2 pl-5 text-xs leading-relaxed text-slate-400">
+                {vendor.assumptions.map((assumption) => <li key={assumption}>{assumption}</li>)}
+              </ul>
+            </fieldset>
+          );
+        })}
       </div>
 
-      <section aria-labelledby="tco-results" className="rounded-xl border border-slate-800 bg-slate-950/50 p-5">
+      <section aria-labelledby={`${config.slug}-tco-results`} className="rounded-xl border border-slate-800 bg-slate-950/50 p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">Normalized output</p>
-            <h3 id="tco-results" className="mt-2 text-xl font-bold text-white">Advertised price versus 24-month invoice</h3>
+            <h3 id={`${config.slug}-tco-results`} className="mt-2 text-xl font-bold text-white">Advertised price versus 24-month invoice</h3>
           </div>
           <button type="button" onClick={copySlackSummary} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
             Copy Slack summary
@@ -224,47 +254,60 @@ export default function TcoCalculator() {
         <p className="mt-3 min-h-5 text-sm text-emerald-300" aria-live="polite">{copyStatus}</p>
 
         <div className="mt-4 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
-          <table className="w-full min-w-[52rem] border-collapse text-left text-sm" data-comparison-table>
-            <caption className="sr-only">Deel and Rippling advertised annual prices and normalized 12- and 24-month invoice estimates</caption>
+          <table className="w-full min-w-[68rem] border-collapse text-left text-sm" data-comparison-table>
+            <caption className="sr-only">{config.title} advertised annual prices, normalized 12- and 24-month invoice estimates, and refundable cash-flow deposits</caption>
             <thead className="bg-slate-950 text-slate-200">
               <tr>
                 <th scope="col" className="p-4">Vendor</th>
-                <th scope="col" className="p-4">Advertised list price · 12 months</th>
+                <th scope="col" className="p-4">Advertised · 12 months</th>
                 <th scope="col" className="p-4">Normalized year 1</th>
                 <th scope="col" className="p-4">Normalized year 2</th>
-                <th scope="col" className="p-4">Total invoice · 24 months</th>
-                <th scope="col" className="p-4">24-month delta vs list</th>
+                <th scope="col" className="p-4">Service invoice · 24 months</th>
+                <th scope="col" className="p-4">Delta vs list</th>
+                <th scope="col" className="p-4">Cash-flow deposit</th>
+                <th scope="col" className="p-4">Peak 24-month cash need</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800 text-slate-300">
-              {vendorRows.map(([vendor, estimate]) => (
-                <tr key={vendor}>
-                  <th scope="row" className="bg-slate-950/60 p-4 font-bold text-white">{vendor}</th>
-                  <td className="p-4">{currency.format(estimate.advertised12)}</td>
-                  <td className="p-4">{currency.format(estimate.yearOne)}</td>
-                  <td className="p-4">{currency.format(estimate.yearTwo)}</td>
-                  <td className="p-4 font-bold text-white">{currency.format(estimate.total24)}</td>
-                  <td className="p-4 text-amber-200">{currency.format(estimate.delta24)}</td>
-                </tr>
-              ))}
+              {config.vendors.map((vendor) => {
+                const estimate = estimates[vendor.id];
+                return (
+                  <tr key={vendor.id}>
+                    <th scope="row" className="bg-slate-950/60 p-4 font-bold text-white">{vendor.name}</th>
+                    <td className="p-4">{currency.format(estimate.advertised12)}</td>
+                    <td className="p-4">{currency.format(estimate.yearOne)}</td>
+                    <td className="p-4">{currency.format(estimate.yearTwo)}</td>
+                    <td className="p-4 font-bold text-white">{currency.format(estimate.total24)}</td>
+                    <td className="p-4 text-amber-200">{currency.format(estimate.delta24)}</td>
+                    <td className="p-4 text-blue-200">{currency.format(estimate.cashFlowDeposit)}</td>
+                    <td className="p-4 font-bold text-white">{currency.format(estimate.peakCashRequirement)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
 
         <div className="mt-4 grid gap-3 sm:hidden">
-          {vendorRows.map(([vendor, estimate]) => (
-            <article key={vendor} className="rounded-lg border border-slate-800 bg-slate-950/70 p-4">
-              <h4 className="font-bold text-white">{vendor}</h4>
-              <dl className="mt-3 grid gap-2 text-sm text-slate-300">
-                <div className="flex justify-between gap-4"><dt>Advertised · 12 mo</dt><dd>{currency.format(estimate.advertised12)}</dd></div>
-                <div className="flex justify-between gap-4"><dt>Normalized · year 1</dt><dd>{currency.format(estimate.yearOne)}</dd></div>
-                <div className="flex justify-between gap-4"><dt>Normalized · year 2</dt><dd>{currency.format(estimate.yearTwo)}</dd></div>
-                <div className="flex justify-between gap-4 border-t border-slate-800 pt-2 font-bold text-white"><dt>Total · 24 mo</dt><dd>{currency.format(estimate.total24)}</dd></div>
-                <div className="flex justify-between gap-4 text-amber-200"><dt>Delta vs list</dt><dd>{currency.format(estimate.delta24)}</dd></div>
-              </dl>
-            </article>
-          ))}
+          {config.vendors.map((vendor) => {
+            const estimate = estimates[vendor.id];
+            return (
+              <article key={vendor.id} className="rounded-lg border border-slate-800 bg-slate-950/70 p-4">
+                <h4 className="font-bold text-white">{vendor.name}</h4>
+                <dl className="mt-3 grid gap-2 text-sm text-slate-300">
+                  <div className="flex justify-between gap-4"><dt>Advertised · 12 mo</dt><dd>{currency.format(estimate.advertised12)}</dd></div>
+                  <div className="flex justify-between gap-4"><dt>Normalized · year 1</dt><dd>{currency.format(estimate.yearOne)}</dd></div>
+                  <div className="flex justify-between gap-4"><dt>Normalized · year 2</dt><dd>{currency.format(estimate.yearTwo)}</dd></div>
+                  <div className="flex justify-between gap-4 border-t border-slate-800 pt-2 font-bold text-white"><dt>Service invoice · 24 mo</dt><dd>{currency.format(estimate.total24)}</dd></div>
+                  <div className="flex justify-between gap-4 text-amber-200"><dt>Delta vs list</dt><dd>{currency.format(estimate.delta24)}</dd></div>
+                  <div className="flex justify-between gap-4 text-blue-200"><dt>Refundable deposit</dt><dd>{currency.format(estimate.cashFlowDeposit)}</dd></div>
+                  <div className="flex justify-between gap-4 font-bold text-white"><dt>Peak cash need</dt><dd>{currency.format(estimate.peakCashRequirement)}</dd></div>
+                </dl>
+              </article>
+            );
+          })}
         </div>
+        <p className="mt-4 text-xs leading-relaxed text-slate-400">Cash-flow deposits are excluded from the 24-month service invoice because they are modeled as refundable. Peak cash need adds the deposit to the service invoice without treating it as vendor revenue.</p>
       </section>
     </div>
   );

@@ -62,8 +62,8 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     status: 'Source checked · 10 Nov 2026',
   },
   '/deel-vs-rippling': {
-    sourceCheckedAt: '2026-11-12',
-    status: 'Source checked · 12 Nov 2026',
+    sourceCheckedAt: '2026-11-14',
+    status: 'Source checked · 14 Nov 2026',
   },
   '/intercom-vs-zendesk': {
     sourceCheckedAt: '2026-11-12',
