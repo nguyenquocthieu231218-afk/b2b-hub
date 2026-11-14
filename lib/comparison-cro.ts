@@ -6,6 +6,7 @@ export type ComparisonFaq = {
 export type ComparisonCro = {
   chooseA: string;
   chooseB: string;
+  verdictBullets?: readonly [string, string, string];
   tableAnchor: string;
   faq: ComparisonFaq;
 };
@@ -75,12 +76,17 @@ const comparisonCro: Record<string, ComparisonCro> = {
     },
   },
   '/deel-vs-rippling': {
-    chooseA: 'Choose Deel when published per-worker prices for contractor, Contractor of Record, PEO, or EOR services make the international hiring bill easier to model before a sales call.',
-    chooseB: 'Choose Rippling when one employee record across HRIS, payroll, IT, and spend is worth a modular quote and you can price every selected product, employee population, and base fee.',
+    chooseA: 'Use Deel as the budget baseline only when EOR plus contractor headcount is greater than zero and the purchase is limited to named worker services by country. Price every worker type for 12 and 24 months before approval.',
+    chooseB: 'Use Rippling as the budget baseline only when US payroll headcount is greater than zero and the required scope includes HRIS plus at least one payroll, IT, or spend module. Require every module, base fee, minimum, implementation charge, and renewal term on the order form.',
+    verdictBullets: [
+      'Do not approve a $25,000 annual purchase from public pricing. Require the same worker population, countries, modules, and contract term in both signed quotes.',
+      'Use Deel only when international EOR or contractor services are in scope; calculate each worker type by country and add FX, implementation, and employment exit costs separately.',
+      'Use Rippling only when US payroll plus HRIS and at least one additional IT or spend module are in scope; reject a quote that does not itemize the base fee, required modules, implementation, minimums, and year-two uplift.',
+    ],
     tableAnchor: 'pricing-model',
     faq: {
       question: 'Is Deel cheaper than Rippling for an international team?',
-      answer: 'The public pages do not support a universal answer. Deel publishes starting prices for several worker types, while Rippling starts at $8 per employee per month plus a monthly base fee and prices the selected modules through a custom quote. Compare the same countries, worker types, services, and contract terms.',
+      answer: 'Public pricing cannot answer this. Deel lists starting rates by worker service, while Rippling publishes a platform starting point and quotes the remaining scope. Compare signed quotes with the same monthly headcount, countries, modules, implementation, base fees, renewal uplift, and 24-month term.',
     },
   },
   '/hubspot-vs-salesforce': {

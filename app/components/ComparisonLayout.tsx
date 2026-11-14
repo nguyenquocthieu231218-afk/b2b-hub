@@ -121,19 +121,27 @@ export default function ComparisonLayout({
   const quickVerdict = cro && productA && productB ? (
     <section key="quick-verdict" aria-labelledby="quick-verdict" className="border-b border-slate-800 py-8">
       <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">TL;DR / Quick verdict</p>
-      <h2 id="quick-verdict" className="mt-2 text-2xl font-bold text-white">Choose by the constraint that changes your decision</h2>
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <article className="rounded-xl border border-blue-400/25 bg-blue-400/5 p-5">
-          <h3 className="font-bold text-white">Who should choose {productA.name}?</h3>
-          <p className="mt-3 leading-relaxed text-slate-300">{cro.chooseA}</p>
-        </article>
-        <article className="rounded-xl border border-violet-400/25 bg-violet-400/5 p-5">
-          <h3 className="font-bold text-white">Who should choose {productB.name}?</h3>
-          <p className="mt-3 leading-relaxed text-slate-300">{cro.chooseB}</p>
-        </article>
-      </div>
+      <h2 id="quick-verdict" className="mt-2 text-2xl font-bold text-white">Budget gates before approval</h2>
+      {cro.verdictBullets ? (
+        <ul className="mt-5 grid gap-3 text-slate-200">
+          {cro.verdictBullets.map((bullet) => (
+            <li key={bullet} className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 leading-relaxed before:mr-3 before:text-emerald-300 before:content-['•']">{bullet}</li>
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <article className="rounded-xl border border-blue-400/25 bg-blue-400/5 p-5">
+            <h3 className="font-bold text-white">Who should choose {productA.name}?</h3>
+            <p className="mt-3 leading-relaxed text-slate-300">{cro.chooseA}</p>
+          </article>
+          <article className="rounded-xl border border-violet-400/25 bg-violet-400/5 p-5">
+            <h3 className="font-bold text-white">Who should choose {productB.name}?</h3>
+            <p className="mt-3 leading-relaxed text-slate-300">{cro.chooseB}</p>
+          </article>
+        </div>
+      )}
       <a href={`#${cro.tableAnchor}`} data-track="quick-verdict-jump" className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
-        Jump to the detailed comparison <span aria-hidden="true" className="ml-2">↓</span>
+        {cro.verdictBullets ? 'Open the 12- and 24-month cost model' : 'Jump to the detailed comparison'} <span aria-hidden="true" className="ml-2">↓</span>
       </a>
     </section>
   ) : null;

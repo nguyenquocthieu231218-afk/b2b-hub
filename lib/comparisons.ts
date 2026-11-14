@@ -3,7 +3,7 @@ const SOURCE_CHECKED_STATUS = 'Source checked · 29 Oct 2026';
 const CONTENT_UPDATED_AT = '2026-11-10';
 
 const contentModifiedOverrides: Record<string, string> = {
-  '/deel-vs-rippling': '2026-11-12',
+  '/deel-vs-rippling': '2026-11-14',
   '/intercom-vs-zendesk': '2026-11-12',
   '/webflow-vs-framer': '2026-11-12',
 };

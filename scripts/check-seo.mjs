@@ -30,7 +30,7 @@ function plainText(html) {
 }
 
 const comparisonModifiedDates = new Map([
-  ['/deel-vs-rippling', '2026-11-12'],
+  ['/deel-vs-rippling', '2026-11-14'],
   ['/intercom-vs-zendesk', '2026-11-12'],
   ['/webflow-vs-framer', '2026-11-12'],
 ]);
