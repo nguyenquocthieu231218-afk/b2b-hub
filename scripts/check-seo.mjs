@@ -35,6 +35,12 @@ const comparisonModifiedDates = new Map([
   ['/webflow-vs-framer', '2026-11-12'],
 ]);
 
+const visibleSourceCheckDates = new Map([
+  ['/deel-vs-rippling', '2026-11-14'],
+  ['/intercom-vs-zendesk', '2026-11-12'],
+  ['/webflow-vs-framer', '2026-11-12'],
+]);
+
 function comparisonModifiedDate(path) {
   return comparisonModifiedDates.get(path) ?? '2026-11-10';
 }
@@ -124,8 +130,9 @@ for (const url of urls) {
   if (comparisonPaths.includes(url.pathname)) {
     checkBreadcrumb(html, url.pathname);
     assert.equal(meta(html, 'og:site_name'), 'StackEvalify');
-    if (comparisonModifiedDates.has(url.pathname)) {
-      assert(html.includes('dateTime="2026-11-12"'), `${url.pathname}: visible source-check date is not 12 November 2026`);
+    if (visibleSourceCheckDates.has(url.pathname)) {
+      const expectedSourceDate = visibleSourceCheckDates.get(url.pathname);
+      assert(html.includes(`dateTime="${expectedSourceDate}"`), `${url.pathname}: visible source-check date is not ${expectedSourceDate}`);
     }
     assert(meta(html, 'twitter:title')?.startsWith(title.split(' | ')[0]), `${url.pathname}: inherited homepage social title`);
     checkArticle(html, url.pathname);
