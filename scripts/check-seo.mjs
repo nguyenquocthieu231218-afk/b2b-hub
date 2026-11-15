@@ -32,16 +32,18 @@ function plainText(html) {
 const comparisonModifiedDates = new Map([
   ['/deel-vs-rippling', '2026-11-14'],
   ['/deel-vs-remote', '2026-11-15'],
-  ['/intercom-vs-zendesk', '2026-11-12'],
-  ['/webflow-vs-framer', '2026-11-12'],
+  ['/rippling-vs-gusto', '2026-11-15'],
+  ['/deel-vs-oyster', '2026-11-15'],
 ]);
 
 const visibleSourceCheckDates = new Map([
   ['/deel-vs-rippling', '2026-11-14'],
   ['/deel-vs-remote', '2026-11-15'],
-  ['/intercom-vs-zendesk', '2026-11-12'],
-  ['/webflow-vs-framer', '2026-11-12'],
+  ['/rippling-vs-gusto', '2026-11-15'],
+  ['/deel-vs-oyster', '2026-11-15'],
 ]);
+
+const auditedComparisonPaths = [...visibleSourceCheckDates.keys()];
 
 function comparisonModifiedDate(path) {
   return comparisonModifiedDates.get(path) ?? '2026-11-10';
@@ -93,7 +95,8 @@ const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => ne
 assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains duplicate URLs');
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
-assert.equal(comparisonPaths.length, 25, 'Preserve all 25 published comparisons');
+assert.equal(comparisonPaths.length, 4, 'Only four calculator-audited comparisons may enter the sitemap');
+assert.deepEqual([...comparisonPaths].sort(), [...auditedComparisonPaths].sort(), 'Sitemap comparison set differs from the audited calculator set');
 for (const path of comparisonPaths) {
   assert.match(
     sitemap,
@@ -177,16 +180,39 @@ assert.equal(organization?.contactPoint?.url, `${canonicalOrigin}/contact`);
 assert.equal(website?.publisher?.['@id'], organization?.['@id']);
 assert.equal(meta(home, 'author'), 'StackEvalify');
 assert.match(home, /href="\/category\/saas"/);
-assert(comparisonPaths.filter((path) => home.includes(`href="${path}"`)).length >= 6, 'Homepage must expose software articles');
+assert([...home.matchAll(/href="(\/[^"#?]+-vs-[^"#?]+)"/g)].length >= 6, 'Homepage must expose software articles');
 
 const directory = pages.get('/category/saas');
 checkBreadcrumb(directory, '/category/saas');
-for (const path of comparisonPaths) assert(directory.includes(`href="${path}"`), `${path}: missing from directory`);
+const allComparisonPaths = [...new Set(
+  [...directory.matchAll(/href="(\/[^"#?]+-vs-[^"#?]+)"/g)].map(([, path]) => path),
+)].filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
+assert.equal(allComparisonPaths.length, 27, 'Directory must retain all 27 comparison routes');
+for (const path of allComparisonPaths) assert(directory.includes(`href="${path}"`), `${path}: missing from directory`);
 assert.match(directory, /type="search"/);
 assert.match(directory, /id="comparison-category"/);
-assert(plainText(directory).includes('Showing 25 of 25 comparisons'), 'All comparisons must be present before JavaScript runs');
+assert(plainText(directory).includes('Showing 27 of 27 comparisons'), 'All comparisons must be present before JavaScript runs');
+
+for (const path of allComparisonPaths) {
+  if (!pages.has(path)) {
+    const response = await request(path);
+    assert.equal(response.status, 200, `${path}: comparison route must remain accessible`);
+    pages.set(path, await response.text());
+  }
+  const html = pages.get(path);
+  const robotsMeta = meta(html, 'robots') ?? '';
+  if (auditedComparisonPaths.includes(path)) {
+    assert(!/noindex/i.test(robotsMeta), `${path}: audited calculator page must be indexable`);
+    assert(comparisonPaths.includes(path), `${path}: audited calculator page missing from sitemap`);
+  } else {
+    assert.match(robotsMeta, /noindex/i, `${path}: unaudited comparison must be noindex`);
+    assert.match(robotsMeta, /follow/i, `${path}: unaudited comparison must remain followable`);
+    assert(!comparisonPaths.includes(path), `${path}: unaudited comparison leaked into sitemap`);
+  }
+}
 
 const comparisonClusters = [
+  ['/deel-vs-rippling', '/deel-vs-remote', '/rippling-vs-gusto', '/deel-vs-oyster'],
   ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
   ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk', '/hubspot-vs-zoho-crm'],
   ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit', '/activecampaign-vs-convertkit'],
@@ -238,4 +264,4 @@ assert.equal((await request('/missing-seo-check-page')).status, 404, 'Missing pa
 const logoResponse = await request('/logo.png');
 assert.equal(logoResponse.status, 200);
 assert.deepEqual(Buffer.from(await logoResponse.arrayBuffer()), await readFile(new URL('../public/logo.png', import.meta.url)), 'Preview must serve the original logo bytes');
-console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} comparisons with quick verdicts, FAQ schema, tracked CTAs, standardized outbound links, reciprocal topic clusters, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
+console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} audited calculator comparisons, ${allComparisonPaths.length - comparisonPaths.length} comparison drafts noindex, FAQ schema, tracked CTAs, standardized outbound links, reciprocal topic clusters, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);

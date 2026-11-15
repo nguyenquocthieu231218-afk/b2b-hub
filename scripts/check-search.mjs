@@ -18,7 +18,7 @@ for (const comparison of comparisons) {
     assert(affiliateLinks[product]?.href, `${comparison.href}: missing centralized affiliate destination for ${product}`);
   }
 }
-assert.equal(searchComparisons(comparisons, '').length, 25);
+assert.equal(searchComparisons(comparisons, '').length, 27);
 assert.equal(searchComparisons(comparisons, 'ClickUp').length, 2);
 assert.equal(searchComparisons(comparisons, 'crm').length, 3);
 assert.equal(searchComparisons(comparisons, 'monday.com').length, 2);
@@ -27,10 +27,15 @@ assert.equal(searchComparisons(comparisons, '', 'CRM').length, 3);
 assert.equal(searchComparisons(comparisons, 'zoho').length, 1);
 assert.equal(searchComparisons(comparisons, 'activecampaign').length, 2);
 assert.equal(searchComparisons(comparisons, 'intercom').length, 1);
-assert.equal(searchComparisons(comparisons, 'rippling').length, 1);
+assert.equal(searchComparisons(comparisons, 'rippling').length, 2);
 assert.equal(searchComparisons(comparisons, 'remote').length, 1);
+assert.equal(searchComparisons(comparisons, 'gusto').length, 1);
+assert.equal(searchComparisons(comparisons, 'oyster').length, 1);
+assert.equal(searchComparisons(comparisons, 'deel').length, 3);
 assert.equal(searchComparisons(comparisons, '', 'Customer support').length, 2);
-assert.equal(searchComparisons(comparisons, '', 'HR & payroll').length, 2);
+assert.equal(searchComparisons(comparisons, '', 'HR & payroll').length, 4);
+assert.equal(comparisons.filter(({ isAudited, hasCalculator }) => isAudited && hasCalculator).length, 4);
+assert.equal(comparisons.filter(({ isAudited, hasCalculator }) => !isAudited && !hasCalculator).length, 23);
 assert.equal(searchComparisons(comparisons, 'clickup', 'CRM').length, 0);
 assert.equal(searchComparisons(comparisons, 'missing product').length, 0);
 assert.deepEqual(getSearchSuggestions(comparisons, 'clikup'), ['ClickUp']);

@@ -5,6 +5,8 @@ const CONTENT_UPDATED_AT = '2026-11-10';
 const contentModifiedOverrides: Record<string, string> = {
   '/deel-vs-rippling': '2026-11-14',
   '/deel-vs-remote': '2026-11-15',
+  '/rippling-vs-gusto': '2026-11-15',
+  '/deel-vs-oyster': '2026-11-15',
   '/intercom-vs-zendesk': '2026-11-12',
   '/webflow-vs-framer': '2026-11-12',
 };
@@ -70,6 +72,14 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-15',
     status: 'Source checked · 15 Nov 2026',
   },
+  '/rippling-vs-gusto': {
+    sourceCheckedAt: '2026-11-15',
+    status: 'Source checked · 15 Nov 2026',
+  },
+  '/deel-vs-oyster': {
+    sourceCheckedAt: '2026-11-15',
+    status: 'Source checked · 15 Nov 2026',
+  },
   '/intercom-vs-zendesk': {
     sourceCheckedAt: '2026-11-12',
     status: 'Source checked · 12 Nov 2026',
@@ -89,6 +99,7 @@ const comparisonDirectory = [
   { title: 'ClickUp vs Notion', href: '/clickup-vs-notion', category: 'Workspaces' },
   { title: 'Deel vs Rippling', href: '/deel-vs-rippling', category: 'HR & payroll' },
   { title: 'Deel vs Remote', href: '/deel-vs-remote', category: 'HR & payroll' },
+  { title: 'Deel vs Oyster', href: '/deel-vs-oyster', category: 'HR & payroll' },
   { title: 'HubSpot vs Zoho CRM', href: '/hubspot-vs-zoho-crm', category: 'CRM' },
   { title: 'HubSpot vs Salesforce', href: '/hubspot-vs-salesforce', category: 'CRM' },
   { title: 'Intercom vs Zendesk', href: '/intercom-vs-zendesk', category: 'Customer support' },
@@ -100,6 +111,7 @@ const comparisonDirectory = [
   { title: 'ActiveCampaign vs Kit (ConvertKit)', href: '/activecampaign-vs-convertkit', category: 'Email marketing' },
   { title: 'Notion vs Coda (Superhuman Docs)', href: '/notion-vs-coda', category: 'Workspaces' },
   { title: 'Pipedrive vs HubSpot', href: '/pipedrive-vs-hubspot', category: 'CRM' },
+  { title: 'Rippling vs Gusto', href: '/rippling-vs-gusto', category: 'HR & payroll' },
   { title: 'Shopify vs WooCommerce', href: '/shopify-vs-woocommerce', category: 'Commerce platforms' },
   { title: 'Slack vs Teams', href: '/slack-vs-teams', category: 'Team communication' },
   { title: 'Webflow vs Framer', href: '/webflow-vs-framer', category: 'Website builders' },
@@ -108,11 +120,28 @@ const comparisonDirectory = [
   { title: 'Zendesk vs Freshdesk', href: '/zendesk-vs-freshdesk', category: 'Customer support' },
 ] as const;
 
+export const auditedCalculatorPaths = [
+  '/deel-vs-rippling',
+  '/deel-vs-remote',
+  '/rippling-vs-gusto',
+  '/deel-vs-oyster',
+] as const;
+
+const auditedCalculatorPathSet = new Set<string>(auditedCalculatorPaths);
+
 export const comparisons = comparisonDirectory.map((comparison) => ({
   ...comparison,
+  isAudited: auditedCalculatorPathSet.has(comparison.href),
+  hasCalculator: auditedCalculatorPathSet.has(comparison.href),
   dateModified: contentModifiedOverrides[comparison.href] ?? CONTENT_UPDATED_AT,
   ...(sourceCheckOverrides[comparison.href] ?? {
     status: SOURCE_CHECKED_STATUS,
     sourceCheckedAt: SOURCE_CHECKED_AT,
   }),
 }));
+
+export const indexableComparisons = comparisons.filter(({ isAudited, hasCalculator }) => isAudited && hasCalculator);
+
+export function getComparisonByPath(path: string) {
+  return comparisons.find((comparison) => comparison.href === path);
+}

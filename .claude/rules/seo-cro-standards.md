@@ -55,5 +55,6 @@ The shared `ComparisonLayout` injects this block from `lib/comparison-cro.ts`. N
 
 ## Publication gate
 
+- Comparison indexing is controlled centrally in `lib/comparisons.ts`. A comparison may enter `sitemap.xml` and receive `robots: { index: true, follow: true }` only when both `isAudited` and `hasCalculator` are true. All other comparison routes must remain accessible with `noindex,follow` so internal links continue to work without diluting the audited index set.
 - A published comparison must be listed in `lib/comparisons.ts`, have a canonical metadata entry, be included in the generated sitemap, expose three related comparisons, and pass `.claude/skills/seo-qa-check/SKILL.md`.
 - Keep held or incomplete content `noindex` and out of the sitemap. Do not publish a draft merely to increase route count.

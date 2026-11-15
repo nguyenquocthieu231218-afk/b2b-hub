@@ -91,6 +91,7 @@ const relatedCategories: Record<string, readonly string[]> = {
 // Keep high-intent topic clusters reciprocal before filling the remaining slots
 // with the broader product/category relevance score below.
 const comparisonClusters: readonly (readonly string[])[] = [
+  ['/deel-vs-rippling', '/deel-vs-remote', '/rippling-vs-gusto', '/deel-vs-oyster'],
   ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
   ['/hubspot-vs-salesforce', '/pipedrive-vs-hubspot', '/zendesk-vs-freshdesk', '/hubspot-vs-zoho-crm'],
   ['/mailchimp-vs-activecampaign', '/mailchimp-vs-convertkit', '/activecampaign-vs-convertkit'],
