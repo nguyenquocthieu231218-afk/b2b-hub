@@ -31,12 +31,14 @@ function plainText(html) {
 
 const comparisonModifiedDates = new Map([
   ['/deel-vs-rippling', '2026-11-14'],
+  ['/deel-vs-remote', '2026-11-15'],
   ['/intercom-vs-zendesk', '2026-11-12'],
   ['/webflow-vs-framer', '2026-11-12'],
 ]);
 
 const visibleSourceCheckDates = new Map([
   ['/deel-vs-rippling', '2026-11-14'],
+  ['/deel-vs-remote', '2026-11-15'],
   ['/intercom-vs-zendesk', '2026-11-12'],
   ['/webflow-vs-framer', '2026-11-12'],
 ]);
@@ -91,7 +93,7 @@ const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => ne
 assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains duplicate URLs');
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
-assert.equal(comparisonPaths.length, 24, 'Preserve all 24 published comparisons');
+assert.equal(comparisonPaths.length, 25, 'Preserve all 25 published comparisons');
 for (const path of comparisonPaths) {
   assert.match(
     sitemap,
@@ -182,7 +184,7 @@ checkBreadcrumb(directory, '/category/saas');
 for (const path of comparisonPaths) assert(directory.includes(`href="${path}"`), `${path}: missing from directory`);
 assert.match(directory, /type="search"/);
 assert.match(directory, /id="comparison-category"/);
-assert(plainText(directory).includes('Showing 24 of 24 comparisons'), 'All comparisons must be present before JavaScript runs');
+assert(plainText(directory).includes('Showing 25 of 25 comparisons'), 'All comparisons must be present before JavaScript runs');
 
 const comparisonClusters = [
   ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
@@ -200,6 +202,7 @@ for (const cluster of comparisonClusters) {
 }
 
 const reciprocalLinkPairs = [
+  ['/deel-vs-remote', '/deel-vs-rippling'],
   ['/intercom-vs-zendesk', '/zendesk-vs-freshdesk'],
   ['/notion-vs-coda', '/clickup-vs-notion'],
   ['/notion-vs-coda', '/asana-vs-trello'],

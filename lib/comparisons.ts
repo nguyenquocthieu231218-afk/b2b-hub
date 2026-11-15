@@ -4,6 +4,7 @@ const CONTENT_UPDATED_AT = '2026-11-10';
 
 const contentModifiedOverrides: Record<string, string> = {
   '/deel-vs-rippling': '2026-11-14',
+  '/deel-vs-remote': '2026-11-15',
   '/intercom-vs-zendesk': '2026-11-12',
   '/webflow-vs-framer': '2026-11-12',
 };
@@ -65,6 +66,10 @@ const sourceCheckOverrides: Record<string, { sourceCheckedAt: string; status: st
     sourceCheckedAt: '2026-11-14',
     status: 'Source checked · 14 Nov 2026',
   },
+  '/deel-vs-remote': {
+    sourceCheckedAt: '2026-11-15',
+    status: 'Source checked · 15 Nov 2026',
+  },
   '/intercom-vs-zendesk': {
     sourceCheckedAt: '2026-11-12',
     status: 'Source checked · 12 Nov 2026',
@@ -83,6 +88,7 @@ const comparisonDirectory = [
   { title: 'ClickUp vs Monday', href: '/clickup-vs-monday', category: 'Project management' },
   { title: 'ClickUp vs Notion', href: '/clickup-vs-notion', category: 'Workspaces' },
   { title: 'Deel vs Rippling', href: '/deel-vs-rippling', category: 'HR & payroll' },
+  { title: 'Deel vs Remote', href: '/deel-vs-remote', category: 'HR & payroll' },
   { title: 'HubSpot vs Zoho CRM', href: '/hubspot-vs-zoho-crm', category: 'CRM' },
   { title: 'HubSpot vs Salesforce', href: '/hubspot-vs-salesforce', category: 'CRM' },
   { title: 'Intercom vs Zendesk', href: '/intercom-vs-zendesk', category: 'Customer support' },
