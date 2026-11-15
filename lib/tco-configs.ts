@@ -67,7 +67,7 @@ const deel: TcoVendorConfig = {
     monthsOfEorGrossSalary: 1,
     refundable: true,
   },
-  pricingBasis: 'Public starting rates plus contract-model assumptions checked 14 Nov 2026.',
+  pricingBasis: 'Public starting rates plus editable contract-model assumptions.',
   assumptions: [
     'Public starts: US Payroll $19, EOR $599, and Contractor $49 per worker per month.',
     'The cash-flow line models one month of EOR gross salary. Deel states its standard deposit can be 1–1.5 times all monthly charges, so the signed quote controls.',
@@ -108,7 +108,7 @@ const remote: TcoVendorConfig = {
   id: 'remote',
   name: 'Remote',
   rates: {
-    usPayrollPerEmployee: 19,
+    usPayrollPerEmployee: 29,
     eorPerEmployee: 599,
     contractorPerWorker: 29,
     corePlatformPerEmployee: 0,
@@ -122,14 +122,14 @@ const remote: TcoVendorConfig = {
     renewalUpliftPercent: 5,
   },
   cashFlowDeposit: {
-    monthsOfEorGrossSalary: 0,
+    monthsOfEorGrossSalary: 1,
     refundable: true,
   },
-  pricingBasis: 'Public annual-contract starting rates checked 14 Nov 2026.',
+  pricingBasis: 'Public annual-contract starting rates checked 15 Nov 2026.',
   assumptions: [
-    'Public starts: Global Payroll $19, annual-contract EOR $599, and Contractor Management $29 per worker per month, with no platform base fee.',
-    'Remote says no standard deposit applies, although a refundable reserve may be required in specific cases.',
-    'The 1.5% FX spread and 5% year-two uplift are editable scenario assumptions because Remote does not publish one universal percentage for either item.',
+    'Public starts: Global Payroll $29, annual-contract EOR $599, and Contractor Management $29 per worker per month, with no platform base fee.',
+    'The cash-flow line models one month of EOR gross salary. Remote Help says the standard EOR reserve is typically one month of total cost of employment, while its pricing FAQ says reserves apply only in certain circumstances; the signed reserve schedule controls.',
+    'The 1.5% FX spread and 5% year-two uplift are editable scenario assumptions. Remote publishes a fixed monthly-cycle FX method but no universal spread or renewal percentage.',
   ],
 };
 
@@ -215,12 +215,18 @@ export const tcoConfigs: Record<TcoComparisonSlug, TcoComparisonConfig> = {
   'deel-vs-remote': {
     slug: 'deel-vs-remote',
     title: 'Deel vs Remote',
-    sourceCheckedAt: '2026-11-14',
-    defaultWorkforce,
+    sourceCheckedAt: '2026-11-15',
+    defaultWorkforce: { ...defaultWorkforce, usEmployees: 0 },
     vendors: [deel, remote],
     sources: [
       { label: 'Deel pricing', url: 'https://www.deel.com/pricing/' },
+      { label: 'Deel EOR entity procurement guide', url: 'https://www.deel.com/blog/how-to-choose-an-employer-of-record-a-procurement-buyers-guide/' },
+      { label: 'Deel exchange rates and fees', url: 'https://help.letsdeel.com/hc/en-gb/articles/4407745380241-About-Exchange-Rates-and-Fees' },
+      { label: 'Deel EOR deposit calculation', url: 'https://help.letsdeel.com/hc/en-gb/articles/15574494993297-About-EOR-Deposit-Calculations' },
       { label: 'Remote pricing', url: 'https://remote.com/pricing' },
+      { label: 'Remote EOR entity model', url: 'https://remote.com/global-hr/employer-of-record' },
+      { label: 'Remote FX rate', url: 'https://support.remote.com/pricing/client-pricing-and-billing/remote-fx-rate' },
+      { label: 'Remote reserve payments', url: 'https://support.remote.com/eor/Reserve-payments/1-reserve-payments' },
     ],
   },
   'rippling-vs-gusto': {

@@ -89,6 +89,20 @@ const comparisonCro: Record<string, ComparisonCro> = {
       answer: 'Public pricing cannot answer this. Deel lists starting rates by worker service, while Rippling publishes a platform starting point and quotes the remaining scope. Compare signed quotes with the same monthly headcount, countries, modules, implementation, base fees, renewal uplift, and 24-month term.',
     },
   },
+  '/deel-vs-remote': {
+    chooseA: 'Approve Deel only after the order form names the employing entity in every country and fixes the deposit basis, invoice currency, payment method, and FX timing for the actual worker population.',
+    chooseB: 'Approve Remote only after the order form names the employing entity in every country and fixes the reserve requirement or waiver, invoice currency, annual commitment, and FX method for the actual worker population.',
+    verdictBullets: [
+      'Do not approve on entity-network slogans. Remote says its EOR entities are 100% owned; Deel says it owns 250+ entities. Require the legal employer name and registration number for every hiring country.',
+      'Compare FX on identical invoice and payment currencies. Deel locks a banking-partner forward rate when an invoice is funded; Remote fixes its own FX rate for each monthly billing cycle. Neither publishes one universal spread.',
+      'Budget refundable cash separately from software fees. Deel says its standard EOR deposit is 1–1.5 times monthly charges; Remote Help says the standard reserve is typically one month of total cost of employment, while its pricing FAQ says reserves apply only in some cases. The signed reserve schedule controls.',
+    ],
+    tableAnchor: 'pricing-model',
+    faq: {
+      question: 'Does Remote own its EOR entities while Deel uses local partners?',
+      answer: 'That blanket claim is not supported by the vendors’ current disclosures. Remote says its EOR entities are 100% owned, and Deel says it owns more than 250 entities. Procurement should verify the exact legal employer and registration number for each hiring country instead of relying on a network-wide slogan.',
+    },
+  },
   '/hubspot-vs-salesforce': {
     chooseA: 'Choose HubSpot if its free CRM limits or a specific Sales Hub package matches the small team and product scope you need now.',
     chooseB: 'Choose Salesforce if Starter Suite’s broader bundled scope or a Sales Cloud edition matches your workflow and total-cost estimate.',

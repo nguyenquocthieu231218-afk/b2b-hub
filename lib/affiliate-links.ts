@@ -30,6 +30,7 @@ export const affiliateLinks = {
   notion: { name: 'Notion', href: 'https://notion.so' },
   pipedrive: { name: 'Pipedrive', href: 'https://pipedrive.com' },
   rippling: { name: 'Rippling', href: 'https://www.rippling.com' },
+  remote: { name: 'Remote', href: 'https://remote.com' },
   salesforce: { name: 'Salesforce', href: 'https://salesforce.com' },
   semrush: { name: 'Semrush', href: 'https://semrush.com' },
   shopify: { name: 'Shopify', href: 'https://shopify.com' },

@@ -184,7 +184,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
   };
 
   return (
-    <div className="mt-6 grid gap-6" data-tco-calculator data-tco-slug={config.slug}>
+    <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6" data-tco-calculator data-tco-slug={config.slug}>
       <aside className="rounded-xl border border-amber-400/25 bg-amber-400/5 p-5 text-sm leading-relaxed text-amber-100">
         <strong>Audit baseline:</strong> Public list prices and disclosed model assumptions are editable below. The 24-month invoice excludes wages, employer taxes, benefits, statutory severance, and country-specific pass-through costs. Refundable deposits are shown separately from vendor revenue.
       </aside>
@@ -195,7 +195,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
         </aside>
       )}
 
-      <fieldset className="rounded-xl border border-slate-800 bg-slate-950/40 p-5">
+      <fieldset className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/40 p-5">
         <legend className="px-2 text-base font-bold text-white">Workforce and cash-flow assumptions</legend>
         <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <NumberField id={`${config.slug}-us-employees`} label="US payroll employees" value={workforce.usEmployees} onChange={(value) => updateWorkforce('usEmployees', value)} />
@@ -212,7 +212,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
           const scenario = vendorScenarios[vendor.id];
           const tint = index === 0 ? 'border-blue-400/20 bg-blue-400/5' : 'border-violet-400/20 bg-violet-400/5';
           return (
-            <fieldset key={vendor.id} className={`rounded-xl border p-5 ${tint}`}>
+            <fieldset key={vendor.id} className={`min-w-0 rounded-xl border p-5 ${tint}`}>
               <legend className="px-2 text-base font-bold text-white">{vendor.name} rate inputs</legend>
               <p className="mt-2 text-sm leading-relaxed text-slate-400">{vendor.pricingBasis}</p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
