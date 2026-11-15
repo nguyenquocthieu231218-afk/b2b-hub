@@ -32,6 +32,7 @@ The shared `ComparisonLayout` injects this block from `lib/comparison-cro.ts`. N
 - The shared layout must normalize source links as well as vendor CTAs. Do not apply this rule to internal links or `mailto:` links.
 - Vendor CTAs use `data-track="affiliate-cta"`; ordinary external evidence links use `data-track="outbound-source"` unless a more specific approved event applies.
 - `sponsored` is a conservative site-wide link policy. It does not by itself claim that a commission is currently earned; any actual affiliate relationship still requires visible disclosure.
+- When a destination becomes commissionable, add a plain-language disclosure beside the relevant recommendation or CTA. A methodology-page policy alone is not a substitute for a clear, conspicuous link-level disclosure.
 
 ### Centralized SaaS partner destinations
 
@@ -56,5 +57,6 @@ The shared `ComparisonLayout` injects this block from `lib/comparison-cro.ts`. N
 ## Publication gate
 
 - Comparison indexing is controlled centrally in `lib/comparisons.ts`. A comparison may enter `sitemap.xml` and receive `robots: { index: true, follow: true }` only when both `isAudited` and `hasCalculator` are true. All other comparison routes must remain accessible with `noindex,follow` so internal links continue to work without diluting the audited index set.
+- Standalone calculators are controlled in `lib/audited-tools.ts` and must also hold both `isAudited` and `hasCalculator` before entering `sitemap.xml` or receiving indexable metadata.
 - A published comparison must be listed in `lib/comparisons.ts`, have a canonical metadata entry, be included in the generated sitemap, expose three related comparisons, and pass `.claude/skills/seo-qa-check/SKILL.md`.
 - Keep held or incomplete content `noindex` and out of the sitemap. Do not publish a draft merely to increase route count.
