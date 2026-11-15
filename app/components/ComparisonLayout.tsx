@@ -10,6 +10,7 @@ import { getArticleContent, getComparisonContext } from '@/lib/article-content';
 import { getAffiliateLink } from '@/lib/affiliate-links';
 import { getComparisonCro, type ComparisonFaq } from '@/lib/comparison-cro';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { linksToEorCalculator } from '@/lib/audited-tools';
 
 interface ComparisonLayoutProps {
   children?: ReactNode;
@@ -162,6 +163,7 @@ export default function ComparisonLayout({
   const enhancedChildren = quickVerdict && faqSection
     ? normalizeOutboundLinks(injectArticleSections(children, quickVerdict, faqSection))
     : normalizeOutboundLinks(children);
+  const showEorCalculator = linksToEorCalculator(comparison?.href);
 
   return (
     <>
@@ -320,6 +322,17 @@ export default function ComparisonLayout({
             )}
           </div>
         </ComparisonAnalytics>
+
+        {showEorCalculator && (
+          <section aria-labelledby="eor-calculator-link" className="mt-8 rounded-2xl border border-emerald-400/25 bg-emerald-400/5 p-6">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">Three-vendor budget model</p>
+            <h2 id="eor-calculator-link" className="mt-2 text-2xl font-bold text-white">Run Deel, Remote, and Oyster through one EOR cost model</h2>
+            <p className="mt-3 max-w-3xl leading-relaxed text-slate-300">Compare management fees, a shared FX sensitivity, and refundable security cash over 12 and 24 months before requesting final quotes.</p>
+            <Link href="/eor-cost-calculator" className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-emerald-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+              Open the EOR cost calculator <span aria-hidden="true" className="ml-2">→</span>
+            </Link>
+          </section>
+        )}
 
         {relatedComparisons.length > 0 && (
           <section aria-labelledby="related-comparisons" className="mt-10">

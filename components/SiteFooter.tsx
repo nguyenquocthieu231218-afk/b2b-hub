@@ -9,6 +9,7 @@ export default function SiteFooter() {
           <Link href="/category/saas" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">SaaS</Link>
           <Link href="/category/hardware" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">Hardware</Link>
           <Link href="/guides" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">Buyer guides</Link>
+          <Link href="/eor-cost-calculator" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">EOR calculator</Link>
           <Link href="/about" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">About</Link>
           <Link href="/methodology" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">Methodology</Link>
           <Link href="/contact" className="rounded hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">Contact</Link>

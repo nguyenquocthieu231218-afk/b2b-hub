@@ -44,6 +44,7 @@ const visibleSourceCheckDates = new Map([
 ]);
 
 const auditedComparisonPaths = [...visibleSourceCheckDates.keys()];
+const auditedToolPath = '/eor-cost-calculator';
 
 function comparisonModifiedDate(path) {
   return comparisonModifiedDates.get(path) ?? '2026-11-10';
@@ -97,6 +98,8 @@ assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory mi
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
 assert.equal(comparisonPaths.length, 4, 'Only four calculator-audited comparisons may enter the sitemap');
 assert.deepEqual([...comparisonPaths].sort(), [...auditedComparisonPaths].sort(), 'Sitemap comparison set differs from the audited calculator set');
+assert(urls.some((url) => url.pathname === auditedToolPath), 'Audited EOR calculator missing from sitemap');
+assert.match(sitemap, new RegExp(`<loc>${canonicalOrigin}${auditedToolPath}</loc>\\s*<lastmod>2026-11-15</lastmod>`), 'EOR calculator audit date missing from sitemap');
 for (const path of comparisonPaths) {
   assert.match(
     sitemap,
@@ -211,6 +214,36 @@ for (const path of allComparisonPaths) {
   }
 }
 
+const eorCalculator = pages.get(auditedToolPath);
+assert(eorCalculator, 'EOR calculator must be fetched from the sitemap');
+checkBreadcrumb(eorCalculator, auditedToolPath);
+assert.match(eorCalculator, /data-eor-cost-calculator/, 'EOR calculator hydration marker missing');
+assert.match(eorCalculator, /data-comparison-table/, 'EOR calculator comparison table missing');
+assert.match(eorCalculator, /data-comparison-root="\/eor-cost-calculator"/, 'EOR calculator analytics root missing');
+assert.match(eorCalculator, /data-comparison-analytics="cta,scroll-depth,table-interaction"/, 'EOR calculator analytics marker missing');
+assert(plainText(eorCalculator).includes('Copy Slack summary'), 'EOR calculator Slack control missing');
+const eorApplication = jsonLd(eorCalculator).find((data) => data['@type'] === 'WebApplication');
+assert.equal(eorApplication?.name, 'StackEvalify EOR Cost Calculator', 'EOR calculator WebApplication schema missing');
+assert.equal(eorApplication?.dateModified, '2026-11-15', 'EOR calculator schema date mismatch');
+const eorFaq = jsonLd(eorCalculator).find((data) => data['@type'] === 'FAQPage');
+assert.equal(eorFaq?.mainEntity?.length, 3, 'EOR calculator FAQPage needs three visible questions');
+for (const item of eorFaq.mainEntity) {
+  const visibleText = plainText(eorCalculator);
+  assert(visibleText.includes(item.name), 'EOR calculator FAQ question is not visible');
+  assert(visibleText.includes(item.acceptedAnswer.text), 'EOR calculator FAQ answer is not visible');
+}
+for (const comparisonPath of auditedComparisonPaths) {
+  assert(eorCalculator.includes(`href="${comparisonPath}"`), `${auditedToolPath}: missing link to ${comparisonPath}`);
+  assert(pages.get(comparisonPath)?.includes(`href="${auditedToolPath}"`), `${comparisonPath}: missing backlink to EOR calculator`);
+}
+
+const methodology = pages.get('/methodology');
+assert(methodology, 'Methodology must remain in the sitemap');
+assert(plainText(methodology).includes('How we audit total cost of ownership'), 'TCO audit method missing');
+assert(plainText(methodology).includes('Editorial Independence & Affiliate Disclosure'), 'Affiliate independence disclosure missing');
+assert(methodology.includes('href="/eor-cost-calculator"'), 'Methodology must link to the EOR calculator');
+assert(home.includes('href="/eor-cost-calculator"'), 'Site footer must expose the EOR calculator');
+
 const comparisonClusters = [
   ['/deel-vs-rippling', '/deel-vs-remote', '/rippling-vs-gusto', '/deel-vs-oyster'],
   ['/clickup-vs-notion', '/asana-vs-trello', '/jira-vs-monday', '/linear-vs-jira'],
@@ -264,4 +297,4 @@ assert.equal((await request('/missing-seo-check-page')).status, 404, 'Missing pa
 const logoResponse = await request('/logo.png');
 assert.equal(logoResponse.status, 200);
 assert.deepEqual(Buffer.from(await logoResponse.arrayBuffer()), await readFile(new URL('../public/logo.png', import.meta.url)), 'Preview must serve the original logo bytes');
-console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} audited calculator comparisons, ${allComparisonPaths.length - comparisonPaths.length} comparison drafts noindex, FAQ schema, tracked CTAs, standardized outbound links, reciprocal topic clusters, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
+console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} audited calculator comparisons, 1 audited EOR calculator, ${allComparisonPaths.length - comparisonPaths.length} comparison drafts noindex, FAQ schema, tracked interactions, standardized outbound links, reciprocal HR links, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);

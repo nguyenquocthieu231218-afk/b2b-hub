@@ -108,7 +108,7 @@ const remote: TcoVendorConfig = {
   id: 'remote',
   name: 'Remote',
   rates: {
-    usPayrollPerEmployee: 29,
+    usPayrollPerEmployee: 19,
     eorPerEmployee: 599,
     contractorPerWorker: 29,
     corePlatformPerEmployee: 0,
@@ -127,8 +127,8 @@ const remote: TcoVendorConfig = {
   },
   pricingBasis: 'Public annual-contract starting rates checked 15 Nov 2026.',
   assumptions: [
-    'Public starts: Global Payroll $29, annual-contract EOR $599, and Contractor Management $29 per worker per month, with no platform base fee.',
-    'The cash-flow line models one month of EOR gross salary. Remote Help says the standard EOR reserve is typically one month of total cost of employment, while its pricing FAQ says reserves apply only in certain circumstances; the signed reserve schedule controls.',
+    'Public starts: Global Payroll $19, annual-contract EOR $599, and Contractor Management $29 per worker per month, with no platform base fee.',
+    'The cash-flow line models one month of EOR gross salary. Remote Help says an EOR reserve is required and is typically one month of total cost of employment, including mandatory employer costs but excluding Remote management fees; the signed reserve schedule controls.',
     'The 1.5% FX spread and 5% year-two uplift are editable scenario assumptions. Remote publishes a fixed monthly-cycle FX method but no universal spread or renewal percentage.',
   ],
 };
@@ -190,6 +190,8 @@ const oyster: TcoVendorConfig = {
     'The 1.5% FX spread is an editable scenario assumption. Oyster charges conversion when payment and contract currencies differ and states that annual EOR renewal increases are capped at 5%.',
   ],
 };
+
+export const tcoVendors = { deel, rippling, remote, gusto, oyster } as const;
 
 const defaultWorkforce = {
   usEmployees: 20,

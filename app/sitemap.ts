@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { indexableComparisons } from '@/lib/comparisons';
 import { SITE_URL } from '@/lib/site';
 import { guides } from '@/lib/guides';
+import { indexableTools } from '@/lib/audited-tools';
 
 const informationalRoutes = ['/', '/about', '/contact', '/methodology', '/privacy', '/terms', '/guides'] as const;
 
@@ -22,6 +23,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: dateModified,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
+    })),
+    ...indexableTools.map(({ href, dateModified }) => ({
+      url: `${SITE_URL}${href}`,
+      lastModified: dateModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
     })),
     ...guides.map(({ href }) => ({
       url: `${SITE_URL}${href}`,

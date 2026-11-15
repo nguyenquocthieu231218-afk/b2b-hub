@@ -5,7 +5,7 @@ import SiteFooter from '../../components/SiteFooter';
 
 export const metadata: Metadata = {
   title: 'Review Methodology',
-  description: 'See how StackEvalify separates hands-on evaluations, performance testing, and desk research.',
+  description: 'See how StackEvalify audits B2B software TCO, separates evidence types, and keeps affiliate relationships independent from formulas and editorial conclusions.',
   alternates: { canonical: '/methodology' },
 };
 
@@ -65,6 +65,30 @@ export default function MethodologyPage() {
             <li>Correct a review when a material error is found.</li>
           </ul>
         </section>
+        <section aria-labelledby="tco-audit" className="mt-12 border-t border-slate-800 pt-10">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">B2B procurement method</p>
+          <h2 id="tco-audit" className="mt-2 text-2xl font-bold text-white">How we audit total cost of ownership</h2>
+          <p className="mt-4 max-w-3xl leading-relaxed text-slate-300">A TCO model is a screening tool, not a substitute for an order form. We keep public evidence, contract assumptions, service expense, and refundable security cash on separate lines so a low advertised rate cannot conceal implementation, FX, renewal, or deposit exposure.</p>
+          <ol className="mt-6 grid gap-4 md:grid-cols-2">
+            <li className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm font-bold text-blue-300">1 · Establish the public baseline</p>
+              <p className="mt-3 leading-relaxed text-slate-300">Record first-party pricing, billing unit, contract period, included scope, currency, and source-check date. A “starts at” rate stays labeled as a starting point.</p>
+            </li>
+            <li className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm font-bold text-blue-300">2 · Normalize the quote</p>
+              <p className="mt-3 leading-relaxed text-slate-300">Apply the same headcount and time horizon, then expose platform fees, per-worker charges, modules, implementation, FX, payment fees, minimums, and year-two changes.</p>
+            </li>
+            <li className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm font-bold text-blue-300">3 · Read the MSA and schedules</p>
+              <p className="mt-3 leading-relaxed text-slate-300">When documents are available, check renewal, cancellation, price protection, service credits, data export, deposit rights, country schedules, and the definition of a billable worker.</p>
+            </li>
+            <li className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm font-bold text-blue-300">4 · Separate expense from liquidity</p>
+              <p className="mt-3 leading-relaxed text-slate-300">Refundable deposits and reserves are reported as cash-flow pressure, not vendor revenue. Wages, employer taxes, benefits, and statutory severance remain outside software service fees.</p>
+            </li>
+          </ol>
+          <p className="mt-5 leading-relaxed text-slate-300">The <Link href="/eor-cost-calculator" className="font-medium text-emerald-300 underline underline-offset-4 hover:text-emerald-200">EOR cost calculator</Link> shows this separation directly across Deel, Remote, and Oyster.</p>
+        </section>
         <section aria-labelledby="sources-and-corrections" className="mt-12 border-t border-slate-800 pt-10">
           <h2 id="sources-and-corrections" className="text-2xl font-bold text-white">Sources, dates and corrections</h2>
           <div className="mt-5 space-y-4 leading-relaxed text-slate-300">
@@ -82,13 +106,15 @@ export default function MethodologyPage() {
             </p>
           </div>
         </section>
-        <section aria-labelledby="affiliate-policy" className="mt-12 rounded-xl border border-slate-800 bg-slate-900 p-6">
-          <h2 id="affiliate-policy" className="text-xl font-bold text-white">Affiliate relationships</h2>
-          <p className="mt-3 leading-relaxed text-slate-300">
-            Product links currently point to official product websites. If affiliate
-            relationships are added, they will be disclosed beside the relevant link
-            and will not change reported measurements or editorial conclusions.
-          </p>
+        <section aria-labelledby="affiliate-policy" className="mt-12 rounded-2xl border border-amber-300/25 bg-amber-300/5 p-6 sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-200">Commercial transparency</p>
+          <h2 id="affiliate-policy" className="mt-2 text-2xl font-bold text-white">Editorial Independence &amp; Affiliate Disclosure</h2>
+          <div className="mt-4 space-y-4 leading-relaxed text-slate-300">
+            <p>Product links currently point to official vendor websites. If StackEvalify activates a commissionable link, the relevant page will place a plain-language disclosure next to the recommendation or link: <strong className="text-white">“StackEvalify may earn a commission if you purchase through this link; it does not increase your price.”</strong> This policy page does not replace that link-level notice.</p>
+            <p>Affiliate networks, advertisers, sponsorships, free access, and commissions do not buy a ranking, remove a documented drawback, or change a calculator result. Calculator outputs use fixed, inspectable formulas applied to the reader&apos;s inputs and the dated rates or assumptions shown on the page. Commercial terms are reviewed after the editorial method is defined.</p>
+            <p>StackEvalify does not claim hands-on use when evidence is desk research. A vendor may identify a factual error and provide primary evidence, but it cannot purchase a favorable conclusion or suppress a supported criticism. Material corrections update the claim and evidence trail, not the commercial relationship.</p>
+            <p>This disclosure process follows the FTC principle that a material connection should be clear and conspicuous and placed close to the endorsement or affiliate link. See the <a href="https://www.ftc.gov/business-guidance/resources/ftcs-endorsement-guides-what-people-are-asking" target="_blank" rel="nofollow sponsored noopener noreferrer" className="font-medium text-blue-300 underline underline-offset-4 hover:text-blue-200">FTC Endorsement Guides Q&amp;A</a>. PartnerStack, Impact, and individual advertiser programs may impose additional program-specific terms; publishing this policy does not guarantee acceptance into any program.</p>
+          </div>
         </section>
       </main>
       <SiteFooter />

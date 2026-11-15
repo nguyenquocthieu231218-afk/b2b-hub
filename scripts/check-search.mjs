@@ -11,6 +11,7 @@ async function importTypeScript(path) {
 }
 
 const { comparisons } = await importTypeScript('../lib/comparisons.ts');
+const { auditedTools } = await importTypeScript('../lib/audited-tools.ts');
 const { affiliateLinks } = await importTypeScript('../lib/affiliate-links.ts');
 const { normalizeSearch, searchComparisons, getSearchSuggestions } = await importTypeScript('../lib/search.ts');
 for (const comparison of comparisons) {
@@ -36,6 +37,8 @@ assert.equal(searchComparisons(comparisons, '', 'Customer support').length, 2);
 assert.equal(searchComparisons(comparisons, '', 'HR & payroll').length, 4);
 assert.equal(comparisons.filter(({ isAudited, hasCalculator }) => isAudited && hasCalculator).length, 4);
 assert.equal(comparisons.filter(({ isAudited, hasCalculator }) => !isAudited && !hasCalculator).length, 23);
+assert.equal(auditedTools.filter(({ isAudited, hasCalculator }) => isAudited && hasCalculator).length, 1);
+assert.equal(auditedTools[0]?.href, '/eor-cost-calculator');
 assert.equal(searchComparisons(comparisons, 'clickup', 'CRM').length, 0);
 assert.equal(searchComparisons(comparisons, 'missing product').length, 0);
 assert.deepEqual(getSearchSuggestions(comparisons, 'clikup'), ['ClickUp']);
