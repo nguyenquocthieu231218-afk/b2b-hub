@@ -86,7 +86,7 @@ const rippling: TcoVendorConfig = {
     corePlatformScopes: ['usEmployees', 'eorEmployees'],
     itManagementPerEmployee: 8,
     itManagementScopes: ['usEmployees', 'eorEmployees'],
-    basePlatformFee: 35,
+    basePlatformFee: 40,
     implementationFee: 1000,
     implementationWaivableWithAnnualCommitment: true,
     fxSpreadPercent: 1.5,
@@ -96,10 +96,10 @@ const rippling: TcoVendorConfig = {
     monthsOfEorGrossSalary: 0,
     refundable: false,
   },
-  pricingBasis: 'Public $8 starting point plus an editable normalized quote baseline checked 14 Nov 2026.',
+  pricingBasis: 'Public $8 starting point and $40 small-business base plus editable quote assumptions checked 15 Nov 2026.',
   assumptions: [
-    'Rippling publicly states plans start at $8 per employee per month plus a monthly base fee; the $35 base fee is the normalized audit baseline.',
-    'US Payroll $8, Global EOR $599, IT Management $8, $1,000 implementation, 1.5% FX, and 7% renewal uplift are editable quote baselines, not universal public rate-card promises.',
+    'Rippling publicly states plans start at $8 per employee per month plus a monthly base fee; its small-business page lists a $40 monthly base.',
+    'US Payroll $8, Global EOR $599, IT Management $8, $1,000 implementation, 1.5% FX, and 7% renewal uplift are editable quote-normalization assumptions, not universal public rate-card promises.',
     'Contractor pricing is excluded from this baseline because Rippling does not publish a universal contractor rate; a non-zero contractor population therefore needs a signed quote adjustment.',
   ],
 };
@@ -154,7 +154,7 @@ const gusto: TcoVendorConfig = {
     monthsOfEorGrossSalary: 0,
     refundable: false,
   },
-  pricingBasis: 'Gusto Simple public monthly pricing checked 14 Nov 2026.',
+  pricingBasis: 'Gusto Simple public monthly pricing checked 15 Nov 2026.',
   assumptions: [
     'Gusto Simple is modeled at $49 per month plus $6 per paid US employee or contractor.',
     'Gusto bills US contractors in months when they are paid; the model assumes every entered contractor is paid every month.',
@@ -183,11 +183,11 @@ const oyster: TcoVendorConfig = {
     monthsOfEorGrossSalary: 1,
     refundable: true,
   },
-  pricingBasis: 'Public monthly EOR and contractor rates checked 14 Nov 2026.',
+  pricingBasis: 'Public monthly EOR and contractor rates checked 15 Nov 2026.',
   assumptions: [
     'Public starts: EOR $699 per employee per month and Global Contractors $29 per contractor per month, with no standard setup fee.',
-    'The calculator models a refundable deposit equal to one month of EOR gross salary; Oyster discloses a refundable EOR deposit but the proposal sets the actual amount.',
-    'The 1.5% FX spread is an editable scenario assumption. Oyster states that annual EOR renewal increases are capped at 5%.',
+    'The calculator uses one month of EOR gross salary as a cash-flow proxy. Oyster says its normal refundable deposit is approximately one month of total cost of services and may require more, so the signed service agreement controls.',
+    'The 1.5% FX spread is an editable scenario assumption. Oyster charges conversion when payment and contract currencies differ and states that annual EOR renewal increases are capped at 5%.',
   ],
 };
 
@@ -232,24 +232,29 @@ export const tcoConfigs: Record<TcoComparisonSlug, TcoComparisonConfig> = {
   'rippling-vs-gusto': {
     slug: 'rippling-vs-gusto',
     title: 'Rippling vs Gusto',
-    sourceCheckedAt: '2026-11-14',
+    sourceCheckedAt: '2026-11-15',
     defaultWorkforce: { ...defaultWorkforce, eorEmployees: 0, contractors: 3 },
     vendors: [rippling, gusto],
     sources: [
       { label: 'Rippling pricing', url: 'https://www.rippling.com/pricing' },
+      { label: 'Rippling small-business pricing', url: 'https://www.rippling.com/solutions/small-businesses' },
       { label: 'Gusto pricing', url: 'https://gusto.com/product/pricing' },
     ],
   },
   'deel-vs-oyster': {
     slug: 'deel-vs-oyster',
     title: 'Deel vs Oyster',
-    sourceCheckedAt: '2026-11-14',
+    sourceCheckedAt: '2026-11-15',
     defaultWorkforce: { ...defaultWorkforce, usEmployees: 0 },
     vendors: [deel, oyster],
     sources: [
       { label: 'Deel pricing', url: 'https://www.deel.com/pricing/' },
+      { label: 'Deel exchange rates and fees', url: 'https://help.letsdeel.com/hc/en-gb/articles/4407745380241-About-Exchange-Rates-and-Fees' },
+      { label: 'Deel EOR deposit calculation', url: 'https://help.letsdeel.com/hc/en-gb/articles/15574494993297-About-EOR-Deposit-Calculations' },
       { label: 'Oyster pricing', url: 'https://www.oysterhr.com/pricing' },
       { label: 'Oyster annual EOR terms', url: 'https://support.oysterhr.com/hc/en-us/articles/13566621374353-How-Does-EOR-Annual-Work' },
+      { label: 'Oyster deposit requirements', url: 'https://support.oysterhr.com/hc/en-us/articles/34221683638289-Why-is-a-deposit-required' },
+      { label: 'Oyster customer terms', url: 'https://legal.oysterhr.com/legal/terms' },
     ],
   },
 };

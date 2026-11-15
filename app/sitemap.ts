@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { comparisons } from '@/lib/comparisons';
+import { indexableComparisons } from '@/lib/comparisons';
 import { SITE_URL } from '@/lib/site';
 import { guides } from '@/lib/guides';
 
@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    ...comparisons.map(({ href, dateModified }) => ({
+    ...indexableComparisons.map(({ href, dateModified }) => ({
       url: `${SITE_URL}${href}`,
       lastModified: dateModified,
       changeFrequency: 'monthly' as const,

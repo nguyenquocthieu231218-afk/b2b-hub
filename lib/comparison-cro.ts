@@ -103,6 +103,20 @@ const comparisonCro: Record<string, ComparisonCro> = {
       answer: 'That blanket claim is not supported by the vendors’ current disclosures. Remote says its EOR entities are 100% owned, and Deel says it owns more than 250 entities. Procurement should verify the exact legal employer and registration number for each hiring country instead of relying on a network-wide slogan.',
     },
   },
+  '/deel-vs-oyster': {
+    chooseA: 'Approve Deel only after the quote fixes the EOR fee, invoice and funding currencies, forward-rate timing, payment-method fees, and the refundable deposit for every country.',
+    chooseB: 'Approve Oyster annual only when the negotiated per-seat discount exceeds the value of flexibility you lose by prepaying a non-refundable year and the forecast can keep each seat occupied or backfilled.',
+    verdictBullets: [
+      'Do not call Oyster annual cheaper until the order form states the monthly-equivalent annual seat price. Oyster publishes $699 monthly and says annual is discounted, but it does not publish one universal annual rate.',
+      'Treat annual prepayment as utilization risk: Oyster annual is paid upfront and non-refundable, although an empty seat can be reused for a backfill. Compare the discount with expected vacant-seat months.',
+      'Keep FX and deposits outside the headline subscription comparison. Deel locks a banking-partner forward rate when the invoice is funded; Oyster charges conversion only when payment and contract currencies differ, and both vendors require refundable EOR security cash under their stated terms.',
+    ],
+    tableAnchor: 'pricing-model',
+    faq: {
+      question: 'How much cheaper is Oyster annual than month-to-month EOR?',
+      answer: 'Oyster does not publish one universal annual discount. Its Help Center says annual seats use a negotiated reduced rate, are prepaid for the full year, and are non-refundable. Calculate the saving from the signed annual seat price and subtract the cost of forecast vacant-seat months.',
+    },
+  },
   '/hubspot-vs-salesforce': {
     chooseA: 'Choose HubSpot if its free CRM limits or a specific Sales Hub package matches the small team and product scope you need now.',
     chooseB: 'Choose Salesforce if Starter Suite’s broader bundled scope or a Sales Cloud edition matches your workflow and total-cost estimate.',
@@ -191,6 +205,20 @@ const comparisonCro: Record<string, ComparisonCro> = {
     faq: {
       question: 'Does Pipedrive cost less than HubSpot?',
       answer: 'Not in every configuration. Pipedrive prices paid seats and several add-ons; HubSpot combines product editions, seat types, and marketing-contact tiers. Compare the same sales, marketing, automation, and contact requirements.',
+    },
+  },
+  '/rippling-vs-gusto': {
+    chooseA: 'Approve Rippling only when the order form itemizes the platform base fee, per-employee platform charge, every payroll or HR module, implementation, minimums, and renewal pricing for the same employee population.',
+    chooseB: 'Approve Gusto Simple when one-state US payroll is the actual scope and $49 per month plus $6 per paid person covers the workflow without Plus, Premium, or paid add-ons.',
+    verdictBullets: [
+      'For a one-state US payroll baseline, Gusto Simple publishes $49 per month plus $6 per paid person and allows month-to-month cancellation. Add every paid option before comparing it with a quote.',
+      'Rippling publishes only a starting point: $8 per employee per month plus a monthly base fee; its small-business page lists a $40 base. Require the quote to separate platform, payroll, HR, IT, implementation, support, and renewal lines.',
+      'Reject a savings claim that compares Gusto Simple with an unscoped Rippling starting price. Price the same active employees, paid contractors, states, payroll features, implementation period, and 24-month renewal case.',
+    ],
+    tableAnchor: 'pricing-model',
+    faq: {
+      question: 'Is Gusto cheaper than Rippling for US payroll?',
+      answer: 'Gusto Simple is easier to calculate from public pricing, but it is not automatically cheaper for every scope. Compare $49 plus $6 per paid person with a fully itemized Rippling quote covering the platform base fee, per-employee charge, payroll and required modules, implementation, support, and renewal terms.',
     },
   },
   '/shopify-vs-woocommerce': {

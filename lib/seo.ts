@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE_LOGO, SITE_NAME } from './site';
+import { getComparisonByPath } from './comparisons';
 
 type ComparisonDraftMetadataInput = {
   title: string;
@@ -32,11 +33,14 @@ export function comparisonDraftMetadata({ title, description, path }: Comparison
 
 
 export function sourceCheckedComparisonMetadata({ title, description, path }: ComparisonDraftMetadataInput): Metadata {
+  const comparison = getComparisonByPath(path);
+  const canIndex = comparison?.isAudited === true && comparison.hasCalculator === true;
+
   return {
     title,
     description,
     alternates: { canonical: path },
-    robots: { index: true, follow: true },
+    robots: { index: canIndex, follow: true },
     openGraph: {
       siteName: SITE_NAME,
       title,

@@ -110,9 +110,9 @@ function NumberField({
   suffix?: string;
 }) {
   return (
-    <label htmlFor={id} className="grid gap-2 text-sm text-slate-200">
+    <label htmlFor={id} className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2 text-sm text-slate-200">
       <span className="font-semibold">{label}</span>
-      <span className="flex min-h-11 items-center rounded-lg border border-slate-700 bg-slate-950 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-400/20">
+      <span className="flex min-h-11 min-w-0 items-center rounded-lg border border-slate-700 bg-slate-950 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-400/20">
         <input
           id={id}
           type="number"
@@ -197,7 +197,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
 
       <fieldset className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/40 p-5">
         <legend className="px-2 text-base font-bold text-white">Workforce and cash-flow assumptions</legend>
-        <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <NumberField id={`${config.slug}-us-employees`} label="US payroll employees" value={workforce.usEmployees} onChange={(value) => updateWorkforce('usEmployees', value)} />
           <NumberField id={`${config.slug}-eor-employees`} label="International EOR employees" value={workforce.eorEmployees} onChange={(value) => updateWorkforce('eorEmployees', value)} />
           <NumberField id={`${config.slug}-contractors`} label="Contractors" value={workforce.contractors} onChange={(value) => updateWorkforce('contractors', value)} />
@@ -215,7 +215,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
             <fieldset key={vendor.id} className={`min-w-0 rounded-xl border p-5 ${tint}`}>
               <legend className="px-2 text-base font-bold text-white">{vendor.name} rate inputs</legend>
               <p className="mt-2 text-sm leading-relaxed text-slate-400">{vendor.pricingBasis}</p>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
                 <NumberField id={`${config.slug}-${vendor.id}-us`} label="US payroll / employee / month" value={scenario.usPayrollPerEmployee} onChange={(value) => updateVendor(vendor.id, 'usPayrollPerEmployee', value)} suffix="USD" />
                 <NumberField id={`${config.slug}-${vendor.id}-eor`} label="EOR / employee / month" value={scenario.eorPerEmployee} onChange={(value) => updateVendor(vendor.id, 'eorPerEmployee', value)} suffix="USD" />
                 <NumberField id={`${config.slug}-${vendor.id}-contractor`} label="Contractor / month" value={scenario.contractorPerWorker} onChange={(value) => updateVendor(vendor.id, 'contractorPerWorker', value)} suffix="USD" />
