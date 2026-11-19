@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import AuditTooltip from '@/app/components/AuditTooltip';
 import type { TcoComparisonConfig, TcoHeadcountKey, TcoVendorConfig } from '@/lib/tco-configs';
 
 type WorkforceInputs = TcoComparisonConfig['defaultWorkforce'];
@@ -43,6 +44,23 @@ type CfoCostBreakdown = {
   fxSpread: number;
   additionalFees: number;
   totalOutlay: number;
+};
+
+type PinnedVendorSnapshot = {
+  id: string;
+  name: string;
+  fxSpreadPercent: number;
+  depositMonths: number;
+  totalOutlay: number;
+};
+
+type PinnedBaselineScenario = {
+  version: 1;
+  slug: string;
+  pinnedAt: string;
+  workforce: WorkforceInputs;
+  durationMonths: DurationMonths;
+  vendors: PinnedVendorSnapshot[];
 };
 const workforceParamNames: Record<keyof WorkforceInputs, string> = {
   usEmployees: 'us',
@@ -96,6 +114,60 @@ const teamPresets = [
   eorEmployees: number;
   durationMonths: DurationMonths;
 }[];
+
+function baselineStorageKey(slug: string) {
+  return `stackevalify:tco-baseline:${slug}`;
+}
+
+const baselineChangeEvent = 'stackevalify:baseline-change';
+const baselineServerSnapshot = '__stackevalify_baseline_loading__';
+
+function subscribePinnedBaseline(onStoreChange: () => void) {
+  window.addEventListener(baselineChangeEvent, onStoreChange);
+  window.addEventListener('storage', onStoreChange);
+  return () => {
+    window.removeEventListener(baselineChangeEvent, onStoreChange);
+    window.removeEventListener('storage', onStoreChange);
+  };
+}
+
+function isNonNegativeFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+}
+
+function parsePinnedBaseline(raw: string | null, config: TcoComparisonConfig): PinnedBaselineScenario | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<PinnedBaselineScenario>;
+    const workforce = parsed.workforce;
+    if (
+      parsed.version !== 1
+      || parsed.slug !== config.slug
+      || (parsed.durationMonths !== 12 && parsed.durationMonths !== 24)
+      || typeof parsed.pinnedAt !== 'string'
+      || !workforce
+      || !isNonNegativeFiniteNumber(workforce.usEmployees)
+      || !isNonNegativeFiniteNumber(workforce.eorEmployees)
+      || !isNonNegativeFiniteNumber(workforce.contractors)
+      || !isNonNegativeFiniteNumber(workforce.eorMonthlyGrossSalary)
+      || !isNonNegativeFiniteNumber(workforce.contractorAverageMonthlyInvoice)
+      || !Array.isArray(parsed.vendors)
+      || parsed.vendors.length !== config.vendors.length
+    ) return null;
+
+    const vendorsAreValid = parsed.vendors.every((snapshot, index) => {
+      const vendor = config.vendors[index];
+      return snapshot.id === vendor.id
+        && snapshot.name === vendor.name
+        && isNonNegativeFiniteNumber(snapshot.fxSpreadPercent)
+        && isNonNegativeFiniteNumber(snapshot.depositMonths)
+        && isNonNegativeFiniteNumber(snapshot.totalOutlay);
+    });
+    return vendorsAreValid ? parsed as PinnedBaselineScenario : null;
+  } catch {
+    return null;
+  }
+}
 
 function initialVendorScenarios(config: TcoComparisonConfig) {
   return Object.fromEntries(config.vendors.map((vendor) => [vendor.id, {
@@ -358,7 +430,7 @@ function StackedCostChart({
   const positions = [58, 214];
 
   return (
-    <figure className="mt-6 rounded-xl border border-slate-800 bg-slate-900/70 p-4 sm:p-6" data-stacked-tco-chart data-months={durationMonths}>
+    <figure className="mt-6 min-h-[36rem] rounded-xl border border-slate-800 bg-slate-900/70 p-4 sm:min-h-[34rem] sm:p-6" data-stacked-tco-chart data-chart-cls-guard data-months={durationMonths}>
       <figcaption>
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-rose-300">Cash exposure chart · {durationMonths} months</p>
         <h4 className="mt-2 text-lg font-bold text-white">Advertised base versus hidden outlay</h4>
@@ -505,7 +577,27 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
   const [copyStatus, setCopyStatus] = useState('');
   const [shareStatus, setShareStatus] = useState('');
   const [exportStatus, setExportStatus] = useState('');
+  const [baselineOverride, setBaselineOverride] = useState<{ slug: string; value: PinnedBaselineScenario | null }>();
+  const [baselineStatus, setBaselineStatus] = useState('');
   const shareStatusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const baselineKey = baselineStorageKey(config.slug);
+  const baselineRaw = useSyncExternalStore(
+    subscribePinnedBaseline,
+    () => {
+      try {
+        return window.sessionStorage.getItem(baselineKey) ?? '';
+      } catch {
+        return '';
+      }
+    },
+    () => baselineServerSnapshot,
+  );
+  const storedBaseline = useMemo(
+    () => baselineRaw === baselineServerSnapshot ? null : parsePinnedBaseline(baselineRaw, config),
+    [baselineRaw, config],
+  );
+  const baselineStateReady = baselineRaw !== baselineServerSnapshot;
+  const pinnedBaseline = baselineOverride?.slug === config.slug ? baselineOverride.value : storedBaseline;
 
   useEffect(() => {
     const applyUrlState = () => {
@@ -535,6 +627,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setCopyStatus('');
     setShareStatus('');
     setExportStatus('');
+    setBaselineStatus('');
   };
 
   const updateVendor = <K extends keyof VendorScenario>(vendorId: string, key: K, value: VendorScenario[K]) => {
@@ -545,6 +638,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setCopyStatus('');
     setShareStatus('');
     setExportStatus('');
+    setBaselineStatus('');
   };
 
   const updateDuration = (months: DurationMonths) => {
@@ -552,6 +646,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setCopyStatus('');
     setShareStatus('');
     setExportStatus('');
+    setBaselineStatus('');
   };
 
   const applyTeamPreset = (preset: (typeof teamPresets)[number]) => {
@@ -564,6 +659,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setCopyStatus('');
     setShareStatus('');
     setExportStatus('');
+    setBaselineStatus('');
     window.dispatchEvent(new CustomEvent('stackevalify:track', {
       detail: { event: 'calculator_team_preset', path: window.location.pathname, preset: preset.id },
     }));
@@ -583,8 +679,53 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
   const lowerOutlay = firstOutlay.totalOutlay <= secondOutlay.totalOutlay ? firstOutlay : secondOutlay;
   const higherOutlay = lowerOutlay === firstOutlay ? secondOutlay : firstOutlay;
   const outlayDelta = Math.abs(firstOutlay.totalOutlay - secondOutlay.totalOutlay);
+  const currentCombinedOutlay = outlayComparison.reduce((total, item) => total + item.totalOutlay, 0);
+  const pinnedCombinedOutlay = pinnedBaseline?.vendors.reduce((total, vendor) => total + vendor.totalOutlay, 0) ?? 0;
+  const pinnedOutlayDelta = currentCombinedOutlay - pinnedCombinedOutlay;
 
   const warnings = config.vendors.flatMap((vendor) => coverageWarnings(vendor, vendorScenarios[vendor.id], workforce));
+
+  const pinCurrentScenario = () => {
+    const snapshot: PinnedBaselineScenario = {
+      version: 1,
+      slug: config.slug,
+      pinnedAt: new Date().toISOString(),
+      workforce: { ...workforce },
+      durationMonths,
+      vendors: config.vendors.map((vendor) => ({
+        id: vendor.id,
+        name: vendor.name,
+        fxSpreadPercent: vendorScenarios[vendor.id].fxSpreadPercent,
+        depositMonths: vendorScenarios[vendor.id].depositMonths,
+        totalOutlay: cfoCostBreakdown(workforce, vendorScenarios[vendor.id], estimates[vendor.id], durationMonths).totalOutlay,
+      })),
+    };
+    setBaselineOverride({ slug: config.slug, value: snapshot });
+    setBaselineStatus('Current scenario pinned as the comparison baseline.');
+    try {
+      window.sessionStorage.setItem(baselineKey, JSON.stringify(snapshot));
+    } catch {
+      setBaselineStatus('Baseline pinned for this view. Session storage is unavailable.');
+    }
+    window.dispatchEvent(new Event(baselineChangeEvent));
+    window.dispatchEvent(new CustomEvent('stackevalify:track', {
+      detail: { event: 'calculator_pin_baseline', path: window.location.pathname, months: durationMonths },
+    }));
+  };
+
+  const clearPinnedBaseline = () => {
+    setBaselineOverride({ slug: config.slug, value: null });
+    setBaselineStatus('Pinned baseline cleared.');
+    try {
+      window.sessionStorage.removeItem(baselineKey);
+    } catch {
+      // State still clears when browser storage is unavailable.
+    }
+    window.dispatchEvent(new Event(baselineChangeEvent));
+    window.dispatchEvent(new CustomEvent('stackevalify:track', {
+      detail: { event: 'calculator_clear_baseline', path: window.location.pathname },
+    }));
+  };
 
   const copySlackSummary = async () => {
     const vendorLines = config.vendors.map((vendor) => {
@@ -680,16 +821,22 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     window.print();
   };
   return (
-    <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6" data-tco-calculator data-tco-slug={config.slug} data-url-state-sync={urlStateReady ? 'ready' : 'loading'}>
+    <div className="mt-6 grid min-h-[120rem] min-w-0 grid-cols-[minmax(0,1fr)] gap-6 sm:min-h-[96rem] lg:min-h-[88rem]" data-tco-calculator data-cls-guard data-tco-slug={config.slug} data-url-state-sync={urlStateReady ? 'ready' : 'loading'} aria-busy={!urlStateReady}>
       <aside className="rounded-xl border border-amber-400/25 bg-amber-400/5 p-5 text-sm leading-relaxed text-amber-100">
         <strong>Audit baseline:</strong> Public list prices and disclosed model assumptions are editable below. The 24-month invoice excludes wages, employer taxes, benefits, statutory severance, and country-specific pass-through costs. Refundable deposits are shown separately from vendor revenue.
       </aside>
 
-      {warnings.length > 0 && (
-        <aside className="rounded-xl border border-rose-400/25 bg-rose-400/5 p-5 text-sm leading-relaxed text-rose-100" aria-label="Coverage gaps">
-          <strong>Scope gap:</strong> {warnings.join(' ')} Enter the signed quote rate before using the total for approval.
-        </aside>
-      )}
+      <aside
+        className={`min-h-32 rounded-xl border p-5 text-sm leading-relaxed sm:min-h-24 ${warnings.length > 0 ? 'border-rose-400/25 bg-rose-400/5 text-rose-100' : 'border-emerald-400/25 bg-emerald-400/5 text-emerald-100'}`}
+        aria-label="Coverage status"
+        aria-live="polite"
+        data-coverage-cls-guard
+      >
+        <strong>{warnings.length > 0 ? 'Scope gap:' : 'Scope coverage:'}</strong>{' '}
+        {warnings.length > 0
+          ? `${warnings.join(' ')} Enter the signed quote rate before using the total for approval.`
+          : 'No zero-rate coverage gaps were detected for the current worker mix. The signed quote still controls final approval.'}
+      </aside>
 
       <fieldset className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/40 p-5">
         <legend className="px-2 text-base font-bold text-white">Workforce and cash-flow assumptions</legend>
@@ -747,7 +894,14 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
                 <fieldset key={vendor.id} className="min-w-0 rounded-lg border border-slate-700 bg-slate-950/80 p-4" data-negotiation-vendor={vendor.id}>
                   <legend className="px-2 text-sm font-bold text-white">{vendor.name}</legend>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-200">Security deposit waiver</p>
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      <p className="text-sm font-bold uppercase tracking-[0.12em] text-slate-200">Security Deposit / Reserve</p>
+                      <AuditTooltip
+                        term="Security Deposit / Reserve"
+                        definition="A refundable deposit or reserve is cash held to cover payroll or employment obligations. It raises near-term cash exposure but is not the same as a non-refundable service fee."
+                        align="right"
+                      />
+                    </div>
                     <div className="mt-2 grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label={`${vendor.name} security deposit options`}>
                       {depositChoices.map((choice) => {
                         const isSelected = scenario.depositMonths === choice.value
@@ -771,9 +925,16 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
 
                   <div className="mt-5 min-w-0">
                     <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-                      <label htmlFor={`${config.slug}-${vendor.id}-negotiated-fx`} className="text-xs font-bold uppercase tracking-[0.12em] text-slate-200">
-                        Custom FX spread
-                      </label>
+                      <span className="inline-flex min-w-0 items-center gap-2">
+                        <label htmlFor={`${config.slug}-${vendor.id}-negotiated-fx`} className="text-sm font-bold uppercase tracking-[0.12em] text-slate-200">
+                          FX Conversion Spread
+                        </label>
+                        <AuditTooltip
+                          term="FX Conversion Spread"
+                          definition="The conversion spread is the percentage markup embedded in currency conversion. It scales with the payment volume converted, not merely the software subscription."
+                          align="right"
+                        />
+                      </span>
                       <output htmlFor={`${config.slug}-${vendor.id}-negotiated-fx`} className="rounded-md border border-cyan-300/40 bg-cyan-300/10 px-2 py-1 text-sm font-black text-cyan-100">
                         {scenario.fxSpreadPercent.toFixed(1)}%
                       </output>
@@ -866,6 +1027,9 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
             <h3 id={`${config.slug}-tco-results`} className="mt-2 text-xl font-bold text-white">Advertised price versus normalized invoice</h3>
           </div>
           <div className="grid min-w-0 grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end" data-print-actions>
+            <button type="button" onClick={pinCurrentScenario} disabled={!urlStateReady} data-pin-baseline className="inline-flex min-h-11 items-center justify-center rounded-lg border border-cyan-300/50 bg-cyan-300/10 px-4 py-2.5 text-sm font-bold text-cyan-100 transition-colors hover:bg-cyan-300/20 focus:outline-none focus:ring-2 focus:ring-cyan-300 disabled:cursor-wait disabled:opacity-60">
+              Pin as Baseline
+            </button>
             <button type="button" onClick={copySlackSummary} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
               Copy Slack summary
             </button>
@@ -884,10 +1048,73 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
           {copyStatus && <p className="text-emerald-300">{copyStatus}</p>}
           {shareStatus && <p className="text-blue-200">{shareStatus}</p>}
           {exportStatus && <p className="text-emerald-300">{exportStatus}</p>}
+          {baselineStatus && <p className="text-cyan-200">{baselineStatus}</p>}
         </div>
 
+        <section
+          className="mt-4 min-h-[14rem] rounded-xl border border-cyan-300/25 bg-cyan-300/5 p-5"
+          data-pinned-baseline
+          data-baseline-state={baselineStateReady ? (pinnedBaseline ? 'pinned' : 'empty') : 'loading'}
+          aria-live="polite"
+        >
+          {!baselineStateReady ? (
+            <div className="animate-pulse" aria-label="Loading pinned baseline">
+              <div className="h-4 w-40 rounded bg-slate-700" />
+              <div className="mt-4 h-8 w-3/4 rounded bg-slate-800" />
+              <div className="mt-4 grid gap-3 sm:grid-cols-2"><div className="h-20 rounded bg-slate-800" /><div className="h-20 rounded bg-slate-800" /></div>
+            </div>
+          ) : pinnedBaseline ? (
+            <>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-200">Pinned baseline scenario</p>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                    {pinnedBaseline.workforce.usEmployees} US · {pinnedBaseline.workforce.eorEmployees} EOR · {pinnedBaseline.workforce.contractors} contractors · {pinnedBaseline.durationMonths} months
+                  </p>
+                  <p className="mt-2 text-lg font-black text-white" data-baseline-delta>
+                    {pinnedOutlayDelta === 0
+                      ? 'The current combined outlay matches the pinned baseline.'
+                      : `The current combined outlay is ${currency.format(Math.abs(pinnedOutlayDelta))} ${pinnedOutlayDelta < 0 ? 'cheaper' : 'more expensive'} than the pinned baseline.`}
+                  </p>
+                </div>
+                <button type="button" onClick={clearPinnedBaseline} data-clear-baseline className="min-h-11 shrink-0 rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-sm font-bold text-slate-100 transition-colors hover:border-rose-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-rose-300">
+                  Clear Baseline
+                </button>
+              </div>
+              <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
+                {pinnedBaseline.vendors.map((snapshot) => {
+                  const currentVendor = outlayComparison.find(({ vendor }) => vendor.id === snapshot.id);
+                  const vendorDelta = (currentVendor?.totalOutlay ?? 0) - snapshot.totalOutlay;
+                  return (
+                    <article key={snapshot.id} className="min-w-0 rounded-lg border border-slate-700 bg-slate-950/80 p-4">
+                      <h4 className="font-bold text-white">{snapshot.name}</h4>
+                      <p className="mt-1 text-sm text-slate-300">Pinned outlay: <strong className="text-white">{currency.format(snapshot.totalOutlay)}</strong></p>
+                      <p className="mt-1 text-sm text-slate-300">Deposit {snapshot.depositMonths} mo · FX {snapshot.fxSpreadPercent.toFixed(1)}%</p>
+                      <p className={`mt-2 text-sm font-bold ${vendorDelta <= 0 ? 'text-emerald-300' : 'text-amber-200'}`}>
+                        Current: {vendorDelta === 0 ? 'no change' : `${currency.format(Math.abs(vendorDelta))} ${vendorDelta < 0 ? 'lower' : 'higher'}`}
+                      </p>
+                    </article>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <div className="flex min-h-[10rem] flex-col justify-center">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-200">Pinned baseline scenario</p>
+              <h4 className="mt-2 text-lg font-bold text-white">No baseline pinned yet</h4>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">Adjust headcount, contract horizon, deposit, and FX assumptions, then choose “Pin as Baseline” to compare the next negotiation case against this snapshot.</p>
+            </div>
+          )}
+        </section>
+
         <aside className="mt-5 rounded-xl border border-amber-300/30 bg-gradient-to-br from-amber-300/10 via-slate-900 to-blue-400/10 p-5" data-cash-shock-callout aria-label={`${durationMonths}-month cost delta and month-one cash requirement`}>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-200">{durationMonths}-month delta &amp; month-1 cash shock</p>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-amber-200">{durationMonths}-month delta &amp; Month-1 Upfront Cash</p>
+            <AuditTooltip
+              term="Month-1 Upfront Cash"
+              definition="Month-1 upfront cash combines the first billing cycle with implementation charges and any refundable deposit or reserve. It measures liquidity required at launch, not just recognized expense."
+            />
+          </div>
           <p className="mt-3 text-lg font-bold leading-snug text-white" data-outlay-delta>
             {outlayDelta === 0
               ? `${firstOutlay.vendor.name} and ${secondOutlay.vendor.name} tie at ${currency.format(firstOutlay.totalOutlay)} total outlay.`
