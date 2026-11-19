@@ -162,8 +162,16 @@ for (const url of urls) {
     assert.match(html, /data-save-cfo-pdf/, `${url.pathname}: CFO PDF print control missing`);
     assert.match(html, /data-cfo-print-report/, `${url.pathname}: CFO print report missing`);
     assert(plainText(html).includes('Audited via StackEvalify.com — Independent B2B SaaS TCO Methodology'), `${url.pathname}: print methodology footer missing`);
+    assert.equal([...html.matchAll(/data-team-preset="/g)].length, 3, `${url.pathname}: expected three team presets`);
+    assert.match(html, /data-cash-shock-callout/, `${url.pathname}: month-one cash shock callout missing`);
+    assert.match(html, /data-outlay-delta/, `${url.pathname}: total-outlay delta summary missing`);
     assert.match(html, /data-stacked-tco-chart/, `${url.pathname}: stacked TCO chart missing`);
     assert(plainText(html).includes('12 months') && plainText(html).includes('24 months'), `${url.pathname}: calculation horizon controls missing`);
+    const application = jsonLd(html).find((data) => data['@type'] === 'WebApplication');
+    assert(application, `${url.pathname}: audited calculator WebApplication schema missing`);
+    assert.equal(application.applicationCategory, 'BusinessApplication', `${url.pathname}: WebApplication category mismatch`);
+    assert.equal(application.operatingSystem, 'Web', `${url.pathname}: WebApplication operating system mismatch`);
+    assert.equal(String(application.offers?.price), '0', `${url.pathname}: free calculator offer missing`);
     const faq = jsonLd(html).find((data) => data['@type'] === 'FAQPage');
     assert.equal(faq?.mainEntity?.length, 2, `${url.pathname}: FAQPage needs two visible questions`);
     const visibleText = plainText(html);
@@ -219,6 +227,8 @@ for (const path of allComparisonPaths) {
     assert.match(robotsMeta, /noindex/i, `${path}: unaudited comparison must be noindex`);
     assert.match(robotsMeta, /follow/i, `${path}: unaudited comparison must remain followable`);
     assert(!comparisonPaths.includes(path), `${path}: unaudited comparison leaked into sitemap`);
+    assert(!jsonLd(html).some((data) => data['@type'] === 'WebApplication'), `${path}: unaudited comparison must not expose WebApplication schema`);
+    assert(!jsonLd(html).some((data) => data['@type'] === 'BreadcrumbList'), `${path}: unaudited comparison must not expose calculator BreadcrumbList schema`);
   }
 }
 
@@ -233,6 +243,9 @@ assert(plainText(eorCalculator).includes('Copy Slack summary'), 'EOR calculator 
 const eorApplication = jsonLd(eorCalculator).find((data) => data['@type'] === 'WebApplication');
 assert.equal(eorApplication?.name, 'StackEvalify EOR Cost Calculator', 'EOR calculator WebApplication schema missing');
 assert.equal(eorApplication?.dateModified, '2026-11-15', 'EOR calculator schema date mismatch');
+assert.equal(eorApplication?.applicationCategory, 'BusinessApplication', 'EOR calculator application category mismatch');
+assert.equal(eorApplication?.operatingSystem, 'Web', 'EOR calculator operating system mismatch');
+assert.equal(String(eorApplication?.offers?.price), '0', 'EOR calculator free offer missing');
 const eorFaq = jsonLd(eorCalculator).find((data) => data['@type'] === 'FAQPage');
 assert.equal(eorFaq?.mainEntity?.length, 3, 'EOR calculator FAQPage needs three visible questions');
 for (const item of eorFaq.mainEntity) {

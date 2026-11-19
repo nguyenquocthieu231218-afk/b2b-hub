@@ -164,6 +164,7 @@ export default function ComparisonLayout({
     ? normalizeOutboundLinks(injectArticleSections(children, quickVerdict, faqSection))
     : normalizeOutboundLinks(children);
   const showEorCalculator = linksToEorCalculator(comparison?.href);
+  const isAuditedCalculator = comparison?.isAudited === true && comparison.hasCalculator === true;
 
   return (
     <>
@@ -190,8 +191,24 @@ export default function ComparisonLayout({
         }} />
       )}
       {!showDraftNotice && articleUrl && faqs.length > 0 && <JsonLd data={faqSchema(articleUrl, faqs)} />}
+      {isAuditedCalculator && articleUrl && (
+        <JsonLd data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          '@id': `${articleUrl}#calculator`,
+          name: `${pageTitle} TCO Calculator`,
+          description: articleContent.description || `${pageTitle} total-cost-of-ownership calculator for B2B software procurement.`,
+          url: articleUrl,
+          applicationCategory: 'BusinessApplication',
+          operatingSystem: 'Web',
+          isAccessibleForFree: true,
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          publisher: { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: SITE_NAME, url: `${SITE_URL}/` },
+          dateModified: comparison.dateModified,
+        }} />
+      )}
       <main id="main-content" className="mx-auto min-h-screen w-full min-w-0 max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
-        <Breadcrumbs items={[
+        <Breadcrumbs includeJsonLd={isAuditedCalculator} items={[
           { name: 'Home', href: '/' },
           { name: 'Software comparisons', href: '/category/saas' },
           { name: pageTitle },

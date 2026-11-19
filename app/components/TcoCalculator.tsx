@@ -85,6 +85,18 @@ const currency = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0,
 });
 
+const teamPresets = [
+  { id: 'seed', label: 'Seed (5 US + 2 EOR, 12m)', usEmployees: 5, eorEmployees: 2, durationMonths: 12 },
+  { id: 'series-a', label: 'Series A (15 US + 8 EOR, 24m)', usEmployees: 15, eorEmployees: 8, durationMonths: 24 },
+  { id: 'scale-up', label: 'Scale-up (40 US + 20 EOR, 24m)', usEmployees: 40, eorEmployees: 20, durationMonths: 24 },
+] as const satisfies readonly {
+  id: string;
+  label: string;
+  usEmployees: number;
+  eorEmployees: number;
+  durationMonths: DurationMonths;
+}[];
+
 function initialVendorScenarios(config: TcoComparisonConfig) {
   return Object.fromEntries(config.vendors.map((vendor) => [vendor.id, {
     usPayrollPerEmployee: vendor.rates.usPayrollPerEmployee,
@@ -259,6 +271,35 @@ function estimateVendor(
     cashFlowDeposit,
     peakCashRequirement: total24 + cashFlowDeposit,
   };
+}
+
+function monthOneCashRequired(
+  workforce: WorkforceInputs,
+  vendor: TcoVendorConfig,
+  scenario: VendorScenario,
+  estimate: VendorEstimate,
+) {
+  const workerServiceMonthly = (
+    workforce.usEmployees * scenario.usPayrollPerEmployee
+    + workforce.eorEmployees * scenario.eorPerEmployee
+    + workforce.contractors * scenario.contractorPerWorker
+  );
+  const coreMonthly = scopedHeadcount(workforce, vendor.rates.corePlatformScopes) * scenario.corePlatformPerEmployee;
+  const itMonthly = scopedHeadcount(workforce, vendor.rates.itManagementScopes) * scenario.itManagementPerEmployee;
+  const fxEligibleMonthly = (
+    workforce.eorEmployees * workforce.eorMonthlyGrossSalary
+    + workforce.contractors * workforce.contractorAverageMonthlyInvoice
+  );
+  const fxMonthly = fxEligibleMonthly * (scenario.fxSpreadPercent / 100);
+  const implementation = scenario.waiveImplementation ? 0 : scenario.implementationFee;
+
+  return workerServiceMonthly
+    + coreMonthly
+    + itMonthly
+    + scenario.basePlatformFee
+    + fxMonthly
+    + implementation
+    + estimate.cashFlowDeposit;
 }
 
 function NumberField({
@@ -507,10 +548,35 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setExportStatus('');
   };
 
+  const applyTeamPreset = (preset: (typeof teamPresets)[number]) => {
+    setWorkforce((current) => ({
+      ...current,
+      usEmployees: preset.usEmployees,
+      eorEmployees: preset.eorEmployees,
+    }));
+    setDurationMonths(preset.durationMonths);
+    setCopyStatus('');
+    setShareStatus('');
+    setExportStatus('');
+    window.dispatchEvent(new CustomEvent('stackevalify:track', {
+      detail: { event: 'calculator_team_preset', path: window.location.pathname, preset: preset.id },
+    }));
+  };
+
   const estimates = useMemo(() => Object.fromEntries(config.vendors.map((vendor) => [
     vendor.id,
     estimateVendor(workforce, vendor, vendorScenarios[vendor.id]),
   ])) as Record<string, VendorEstimate>, [config.vendors, vendorScenarios, workforce]);
+
+  const outlayComparison = config.vendors.map((vendor) => ({
+    vendor,
+    totalOutlay: cfoCostBreakdown(workforce, vendorScenarios[vendor.id], estimates[vendor.id], durationMonths).totalOutlay,
+    monthOneCash: monthOneCashRequired(workforce, vendor, vendorScenarios[vendor.id], estimates[vendor.id]),
+  }));
+  const [firstOutlay, secondOutlay] = outlayComparison;
+  const lowerOutlay = firstOutlay.totalOutlay <= secondOutlay.totalOutlay ? firstOutlay : secondOutlay;
+  const higherOutlay = lowerOutlay === firstOutlay ? secondOutlay : firstOutlay;
+  const outlayDelta = Math.abs(firstOutlay.totalOutlay - secondOutlay.totalOutlay);
 
   const warnings = config.vendors.flatMap((vendor) => coverageWarnings(vendor, vendorScenarios[vendor.id], workforce));
 
@@ -617,6 +683,29 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
 
       <fieldset className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/40 p-5">
         <legend className="px-2 text-base font-bold text-white">Workforce and cash-flow assumptions</legend>
+        <div className="mt-3" data-team-presets>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-300">1-click team presets</p>
+          <div className="mt-3 grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label="Team size presets">
+            {teamPresets.map((preset) => {
+              const isActive = workforce.usEmployees === preset.usEmployees
+                && workforce.eorEmployees === preset.eorEmployees
+                && durationMonths === preset.durationMonths;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  data-team-preset={preset.id}
+                  aria-pressed={isActive}
+                  onClick={() => applyTeamPreset(preset)}
+                  className={`min-h-11 min-w-0 rounded-lg border px-3 py-2.5 text-sm font-bold leading-snug transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${isActive ? 'border-blue-400 bg-blue-500 text-white' : 'border-slate-700 bg-slate-900 text-slate-200 hover:border-blue-400/70 hover:bg-slate-800'}`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">Presets update US headcount, EOR headcount, and the decision horizon. Contractor, salary, and vendor-rate assumptions stay unchanged.</p>
+        </div>
         <div className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <NumberField id={`${config.slug}-us-employees`} label="US payroll employees" value={workforce.usEmployees} onChange={(value) => updateWorkforce('usEmployees', value)} />
           <NumberField id={`${config.slug}-eor-employees`} label="International EOR employees" value={workforce.eorEmployees} onChange={(value) => updateWorkforce('eorEmployees', value)} />
@@ -706,6 +795,23 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
           {exportStatus && <p className="text-emerald-300">{exportStatus}</p>}
         </div>
 
+        <aside className="mt-5 rounded-xl border border-amber-300/30 bg-gradient-to-br from-amber-300/10 via-slate-900 to-blue-400/10 p-5" data-cash-shock-callout aria-label={`${durationMonths}-month cost delta and month-one cash requirement`}>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-200">{durationMonths}-month delta &amp; month-1 cash shock</p>
+          <p className="mt-3 text-lg font-bold leading-snug text-white" data-outlay-delta>
+            {outlayDelta === 0
+              ? `${firstOutlay.vendor.name} and ${secondOutlay.vendor.name} tie at ${currency.format(firstOutlay.totalOutlay)} total outlay.`
+              : `${lowerOutlay.vendor.name} is ${currency.format(outlayDelta)} lower than ${higherOutlay.vendor.name} in total outlay.`}
+          </p>
+          <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
+            {outlayComparison.map(({ vendor, monthOneCash }) => (
+              <div key={vendor.id} className="min-w-0 rounded-lg border border-slate-700 bg-slate-950/70 p-4">
+                <p className="text-sm font-semibold text-slate-300">{vendor.name} month-1 upfront cash</p>
+                <p className="mt-1 break-words text-2xl font-black text-white">{currency.format(monthOneCash)}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs leading-relaxed text-slate-400">Month-1 upfront cash required = first-month recurring, platform and FX charges + implementation fee (if applicable) + refundable security deposit or reserve.</p>
+        </aside>
         <StackedCostChart config={config} estimates={estimates} durationMonths={durationMonths} />
 
         <div className="mt-4 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
