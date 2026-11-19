@@ -61,7 +61,7 @@ export default function EorCostCalculatorPage() {
         description,
         url: canonicalUrl,
         applicationCategory: 'BusinessApplication',
-        operatingSystem: 'Any',
+        operatingSystem: 'Web',
         browserRequirements: 'Requires JavaScript',
         isAccessibleForFree: true,
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
