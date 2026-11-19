@@ -44,7 +44,6 @@ type CfoCostBreakdown = {
   additionalFees: number;
   totalOutlay: number;
 };
-
 const workforceParamNames: Record<keyof WorkforceInputs, string> = {
   usEmployees: 'us',
   eorEmployees: 'eor',
@@ -201,7 +200,6 @@ function csvCell(value: string | number) {
 function csvMoney(value: number) {
   return value.toFixed(2);
 }
-
 function scopedHeadcount(workforce: WorkforceInputs, scopes: readonly TcoHeadcountKey[]) {
   return scopes.reduce((total, scope) => total + workforce[scope], 0);
 }
@@ -503,7 +501,6 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
       detail: { event: 'calculator_export_csv', path: window.location.pathname, months: durationMonths },
     }));
   };
-
   return (
     <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6" data-tco-calculator data-tco-slug={config.slug} data-url-state-sync={urlStateReady ? 'ready' : 'loading'}>
       <aside className="rounded-xl border border-amber-400/25 bg-amber-400/5 p-5 text-sm leading-relaxed text-amber-100">
