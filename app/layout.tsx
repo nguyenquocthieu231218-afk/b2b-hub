@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
+import GoogleAnalytics from '@/app/components/GoogleAnalytics';
+import { GA_MEASUREMENT_ID } from '@/lib/analytics';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site';
 import './globals.css';
 
@@ -39,6 +42,8 @@ export default function RootLayout({
       </head>
       <body className="bg-slate-950 font-sans text-slate-100 antialiased">
         {children}
+        <Analytics />
+        <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
       </body>
     </html>
   );

@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         <header>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">StackEvalify</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-white">Privacy notice</h1>
-          <p className="mt-4 text-sm text-slate-400">Last updated: <time dateTime="2026-11-10">10 November 2026</time></p>
+          <p className="mt-4 text-sm text-slate-400">Last updated: <time dateTime="2026-11-19">19 November 2026</time></p>
           <p className="mt-5 text-lg leading-relaxed text-slate-300">
             This notice describes the current StackEvalify website: a public library of software comparisons, guides, and developer hardware field notes. It explains what happens when you browse, search the directory, follow vendor links, or email us.
           </p>
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
           <section aria-labelledby="site-features">
             <h2 id="site-features">Browsing and directory search</h2>
             <p>
-              The current application has no user accounts, contact forms, customer database, advertising network, or third-party analytics script. It does not operate a newsletter or use your browsing activity to build an advertising profile.
+              The current application has no user accounts, contact forms, customer database, advertising network, or newsletter. It uses Vercel Web Analytics for site traffic measurement and may load Google Analytics 4 when the production deployment is configured with a Google Analytics measurement ID. StackEvalify does not use these tools to operate an advertising profile.
             </p>
             <p>
               The comparison directory filters the existing page data in your browser. Search words and category selections stay in page memory; the search feature does not send them to StackEvalify or a search provider, add them to the page address, or save them in cookies or browser storage. All comparison links remain available without using search.
@@ -50,7 +50,10 @@ export default function PrivacyPage() {
               Comparison pages create first-party browser events when you follow a call-to-action or external source link, reach 25%, 50%, 75%, or 100% scroll depth, or interact with a comparison table. These events include the current page, event type, and the clicked link label or destination when relevant.
             </p>
             <p>
-              StackEvalify currently keeps up to 100 of these events only in page memory for the active tab and does not send them to an analytics endpoint, set a tracking cookie, or save them in browser storage. The events are exposed through the <code>stackevalify:track</code> browser event and a compatible in-page data layer so an analytics service can be connected later. This notice must be updated before such a service begins receiving data.
+              StackEvalify keeps up to 100 of these events in page memory for the active tab. When Google Analytics 4 is enabled through the <code>NEXT_PUBLIC_GA_ID</code> deployment setting, the same events are forwarded to Google Analytics with the event name, page path, and non-sensitive interface metadata such as the selected preset, vendor, calculator horizon, or negotiation lever. The site does not send calculator salary, headcount, or total-cost inputs with these events.
+            </p>
+            <p>
+              Vercel Web Analytics measures page visits and referral sources. Google Analytics 4 may use browser storage or identifiers according to the deployment configuration and Google’s policies. Calculator URL state remains in the address you choose to share; StackEvalify analytics events do not copy that full query string into the custom event payload.
             </p>
           </section>
 

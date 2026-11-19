@@ -1,23 +1,10 @@
 'use client';
 
 import { useEffect, useRef, type ReactNode } from 'react';
-
-type AnalyticsPayload = Record<string, string | number | boolean> & {
-  event: string;
-  path: string;
-};
-
-declare global {
-  interface Window {
-    dataLayer?: Array<Record<string, unknown>>;
-    stackEvalifyEvents?: AnalyticsPayload[];
-  }
-}
+import { trackAnalyticsEvent, type AnalyticsPayload } from '@/lib/analytics';
 
 function record(payload: AnalyticsPayload) {
-  window.stackEvalifyEvents = [...(window.stackEvalifyEvents ?? []), payload].slice(-100);
-  window.dispatchEvent(new CustomEvent('stackevalify:track', { detail: payload }));
-  window.dataLayer?.push({ ...payload, stackevalify_event: payload.event, event: 'stackevalify_event' });
+  trackAnalyticsEvent(payload);
 }
 
 export default function ComparisonAnalytics({ path, className, children }: { path: string; className: string; children: ReactNode }) {

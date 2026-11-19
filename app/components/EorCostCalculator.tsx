@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import type { EorCostCalculatorConfig, EorCostVendorConfig } from '@/lib/eor-cost-calculator';
 
 type CalculatorInputs = EorCostCalculatorConfig['defaultInputs'];
@@ -111,9 +112,7 @@ export default function EorCostCalculator({ config }: { config: EorCostCalculato
     try {
       await navigator.clipboard.writeText(summary);
       setCopyStatus('Slack summary copied.');
-      window.dispatchEvent(new CustomEvent('stackevalify:track', {
-        detail: { event: 'calculator_copy', path: '/eor-cost-calculator', format: 'slack' },
-      }));
+      trackAnalyticsEvent({ event: 'calculator_copy', path: '/eor-cost-calculator', format: 'slack' });
     } catch {
       setCopyStatus('Copy failed. Select the figures from the table instead.');
     }
