@@ -11,6 +11,10 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
+[data-cfo-print-report] {
+  display: none;
+}
+
 /* Reserve room for the sticky, wrapping navigation when following a section link. */
 :where(h2[id], h3[id], section[id]) {
   scroll-margin-top: 11rem;
@@ -19,6 +23,214 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 9mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  body *:not(:has([data-cfo-print-report])):not([data-cfo-print-report]):not([data-cfo-print-report] *) {
+    display: none !important;
+  }
+
+  body *:has([data-cfo-print-report]) {
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  [data-cfo-print-report],
+  [data-cfo-print-report] * {
+    visibility: visible !important;
+  }
+
+  [data-cfo-print-report] {
+    display: block !important;
+    position: static;
+    width: 100%;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9pt;
+    line-height: 1.35;
+  }
+
+  [data-cfo-print-report],
+  [data-cfo-print-report] :where(section, figure, div, header, footer, dl, table) {
+    box-shadow: none !important;
+  }
+
+  [data-cfo-print-report] * {
+    border-color: #cbd5e1 !important;
+  }
+
+  [data-cfo-print-header] {
+    border-bottom: 1px solid #94a3b8;
+    padding-bottom: 3mm;
+  }
+
+  [data-cfo-print-header] p:first-child {
+    margin: 0 0 1mm;
+    color: #334155 !important;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  [data-cfo-print-header] h2 {
+    margin: 0;
+    color: #020617 !important;
+    font-size: 20pt;
+    line-height: 1.1;
+  }
+
+  [data-cfo-print-header] p:last-child {
+    margin: 1.5mm 0 0;
+    color: #475569 !important;
+  }
+
+  [data-cfo-print-scenario] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2mm 4mm;
+    margin: 3mm 0;
+    padding: 3mm;
+    border: 1px solid #cbd5e1;
+    border-radius: 2mm;
+    break-inside: avoid;
+  }
+
+  [data-cfo-print-scenario] div {
+    min-width: 0;
+  }
+
+  [data-cfo-print-scenario] dt {
+    color: #64748b !important;
+    font-size: 7.5pt;
+  }
+
+  [data-cfo-print-scenario] dd {
+    margin: 0.5mm 0 0;
+    color: #0f172a !important;
+    font-weight: 700;
+  }
+
+  [data-cfo-print-grid] {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 5mm;
+    align-items: start;
+    break-inside: avoid;
+  }
+
+  [data-cfo-print-report] [data-stacked-tco-chart] {
+    margin: 0;
+    padding: 3mm;
+    border: 1px solid #cbd5e1;
+    border-radius: 2mm;
+    background: #ffffff !important;
+    break-inside: avoid;
+  }
+
+  [data-cfo-print-report] [data-stacked-tco-chart] figcaption p,
+  [data-cfo-print-report] [data-stacked-tco-chart] figcaption h4,
+  [data-cfo-print-report] [data-stacked-tco-chart] span,
+  [data-cfo-print-report] [data-stacked-tco-chart] strong {
+    color: #0f172a !important;
+  }
+
+  [data-cfo-print-report] [data-stacked-tco-chart] figcaption p:last-child,
+  [data-cfo-print-report] [data-stacked-tco-chart] > div,
+  [data-cfo-print-report] [data-stacked-tco-chart] > p:last-child {
+    display: none !important;
+  }
+
+  [data-cfo-print-report] [data-stacked-tco-chart] svg {
+    display: block;
+    width: 100%;
+    max-height: 68mm;
+    margin: 1mm auto 0;
+  }
+
+  [data-cfo-print-report] [data-stacked-tco-chart] svg text {
+    fill: #0f172a !important;
+  }
+
+  [data-cfo-print-costs] {
+    padding: 3mm;
+    border: 1px solid #cbd5e1;
+    border-radius: 2mm;
+    break-inside: avoid;
+  }
+
+  [data-cfo-print-costs] h2 {
+    margin: 0 0 2mm;
+    color: #020617 !important;
+    font-size: 13pt;
+  }
+
+  [data-cfo-print-costs] table {
+    width: 100%;
+    border-collapse: collapse;
+    break-inside: avoid;
+  }
+
+  [data-cfo-print-costs] th,
+  [data-cfo-print-costs] td {
+    padding: 2.4mm 2mm;
+    border: 1px solid #cbd5e1;
+    color: #0f172a !important;
+    text-align: right;
+  }
+
+  [data-cfo-print-costs] th:first-child {
+    text-align: left;
+  }
+
+  [data-cfo-print-costs] thead th {
+    background: #e2e8f0 !important;
+    font-weight: 700;
+  }
+
+  [data-cfo-print-costs] tbody tr:last-child {
+    background: #f1f5f9 !important;
+    font-weight: 700;
+  }
+
+  [data-cfo-print-costs] p {
+    margin: 2mm 0 0;
+    color: #475569 !important;
+    font-size: 7.5pt;
+  }
+
+  [data-cfo-print-footer] {
+    margin-top: 4mm;
+    padding-top: 2.5mm;
+    border-top: 1px solid #94a3b8;
+    color: #475569 !important;
+    font-size: 7.5pt;
+    break-inside: avoid;
+  }
+
+  [data-cfo-print-footer] p {
+    margin: 0.8mm 0;
+    overflow-wrap: anywhere;
   }
 }
 

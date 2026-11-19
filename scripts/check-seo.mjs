@@ -159,6 +159,9 @@ for (const url of urls) {
     assert.match(html, /data-url-state-sync="loading"/, `${url.pathname}: calculator URL state marker missing`);
     assert.match(html, /data-share-calculator-link/, `${url.pathname}: shareable calculator link control missing`);
     assert.match(html, /data-export-cfo-csv/, `${url.pathname}: CFO CSV export control missing`);
+    assert.match(html, /data-save-cfo-pdf/, `${url.pathname}: CFO PDF print control missing`);
+    assert.match(html, /data-cfo-print-report/, `${url.pathname}: CFO print report missing`);
+    assert(plainText(html).includes('Audited via StackEvalify.com — Independent B2B SaaS TCO Methodology'), `${url.pathname}: print methodology footer missing`);
     assert.match(html, /data-stacked-tco-chart/, `${url.pathname}: stacked TCO chart missing`);
     assert(plainText(html).includes('12 months') && plainText(html).includes('24 months'), `${url.pathname}: calculation horizon controls missing`);
     const faq = jsonLd(html).find((data) => data['@type'] === 'FAQPage');

@@ -132,13 +132,14 @@ function readUrlState(config: TcoComparisonConfig) {
   return { workforce, vendorScenarios, durationMonths };
 }
 
-function buildShareableUrl(
+function buildScenarioUrl(
+  baseUrl: string,
   config: TcoComparisonConfig,
   workforce: WorkforceInputs,
   vendorScenarios: Record<string, VendorScenario>,
   durationMonths: DurationMonths,
 ) {
-  const url = new URL(window.location.href);
+  const url = new URL(baseUrl);
   const defaultScenarios = initialVendorScenarios(config);
 
   for (const key of Object.keys(workforceParamNames) as (keyof WorkforceInputs)[]) {
@@ -162,6 +163,23 @@ function buildShareableUrl(
   return url;
 }
 
+function buildShareableUrl(
+  config: TcoComparisonConfig,
+  workforce: WorkforceInputs,
+  vendorScenarios: Record<string, VendorScenario>,
+  durationMonths: DurationMonths,
+) {
+  return buildScenarioUrl(window.location.href, config, workforce, vendorScenarios, durationMonths);
+}
+
+function buildPublicShareableUrl(
+  config: TcoComparisonConfig,
+  workforce: WorkforceInputs,
+  vendorScenarios: Record<string, VendorScenario>,
+  durationMonths: DurationMonths,
+) {
+  return buildScenarioUrl(`https://stackevalify.com/${config.slug}`, config, workforce, vendorScenarios, durationMonths);
+}
 function chartEstimate(estimate: VendorEstimate, durationMonths: DurationMonths): ChartEstimate {
   const advertised = estimate.advertised12 * (durationMonths / 12);
   const serviceInvoice = durationMonths === 12 ? estimate.yearOne : estimate.total24;
@@ -347,6 +365,83 @@ function StackedCostChart({
   );
 }
 
+function CfoPrintReport({
+  config,
+  workforce,
+  vendorScenarios,
+  estimates,
+  durationMonths,
+}: {
+  config: TcoComparisonConfig;
+  workforce: WorkforceInputs;
+  vendorScenarios: Record<string, VendorScenario>;
+  estimates: Record<string, VendorEstimate>;
+  durationMonths: DurationMonths;
+}) {
+  const [firstVendor, secondVendor] = config.vendors;
+  const breakdowns = Object.fromEntries(config.vendors.map((vendor) => [
+    vendor.id,
+    cfoCostBreakdown(workforce, vendorScenarios[vendor.id], estimates[vendor.id], durationMonths),
+  ])) as Record<string, CfoCostBreakdown>;
+  const publicShareableUrl = buildPublicShareableUrl(config, workforce, vendorScenarios, durationMonths).toString();
+  const costRows: { label: string; key: keyof CfoCostBreakdown }[] = [
+    { label: 'Advertised Base Fee', key: 'advertisedBaseFee' },
+    { label: 'Security Deposit / Reserve', key: 'securityDeposit' },
+    { label: 'FX Spread', key: 'fxSpread' },
+    { label: 'Additional Fees / Onboarding', key: 'additionalFees' },
+    { label: 'Total Outlay', key: 'totalOutlay' },
+  ];
+
+  return (
+    <section data-cfo-print-report aria-label={`${config.title} CFO TCO report`}>
+      <header data-cfo-print-header>
+        <p>StackEvalify CFO TCO Report</p>
+        <h2>{config.title}</h2>
+        <p>{durationMonths}-month decision horizon · USD · Source checked {config.sourceCheckedAt}</p>
+      </header>
+
+      <dl data-cfo-print-scenario>
+        <div><dt>US payroll employees</dt><dd>{workforce.usEmployees}</dd></div>
+        <div><dt>International EOR employees</dt><dd>{workforce.eorEmployees}</dd></div>
+        <div><dt>Contractors</dt><dd>{workforce.contractors}</dd></div>
+        <div><dt>Calculation horizon</dt><dd>{durationMonths} months</dd></div>
+        <div><dt>Average EOR gross salary</dt><dd>{currency.format(workforce.eorMonthlyGrossSalary)} / month</dd></div>
+        <div><dt>Average contractor invoice</dt><dd>{currency.format(workforce.contractorAverageMonthlyInvoice)} / month</dd></div>
+      </dl>
+
+      <div data-cfo-print-grid>
+        <StackedCostChart config={config} estimates={estimates} durationMonths={durationMonths} />
+        <section data-cfo-print-costs aria-labelledby={`${config.slug}-print-cost-table`}>
+          <h2 id={`${config.slug}-print-cost-table`}>Detailed cost comparison</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Cost line item</th>
+                <th scope="col">{firstVendor.name}</th>
+                <th scope="col">{secondVendor.name}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {costRows.map((row) => (
+                <tr key={row.key}>
+                  <th scope="row">{row.label}</th>
+                  <td>{currency.format(breakdowns[firstVendor.id][row.key])}</td>
+                  <td>{currency.format(breakdowns[secondVendor.id][row.key])}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p>Refundable deposits are included in Total Outlay as cash exposure, not vendor revenue.</p>
+        </section>
+      </div>
+
+      <footer data-cfo-print-footer>
+        <p>{publicShareableUrl}</p>
+        <p>Audited via StackEvalify.com — Independent B2B SaaS TCO Methodology</p>
+      </footer>
+    </section>
+  );
+}
 function coverageWarnings(vendor: TcoVendorConfig, scenario: VendorScenario, workforce: WorkforceInputs) {
   const warnings: string[] = [];
   if (workforce.usEmployees > 0 && scenario.usPayrollPerEmployee === 0) warnings.push('US payroll is outside this baseline.');
@@ -460,8 +555,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
   };
 
   const exportCfoCsv = () => {
-    const shareableUrl = buildShareableUrl(config, workforce, vendorScenarios, durationMonths);
-    const publicShareableUrl = new URL(`${shareableUrl.pathname}${shareableUrl.search}`, 'https://stackevalify.com');
+    const publicShareableUrl = buildPublicShareableUrl(config, workforce, vendorScenarios, durationMonths);
     const vendorBreakdowns = Object.fromEntries(config.vendors.map((vendor) => [
       vendor.id,
       cfoCostBreakdown(workforce, vendorScenarios[vendor.id], estimates[vendor.id], durationMonths),
@@ -500,6 +594,14 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     window.dispatchEvent(new CustomEvent('stackevalify:track', {
       detail: { event: 'calculator_export_csv', path: window.location.pathname, months: durationMonths },
     }));
+  };
+  const saveCfoPdf = () => {
+    const url = buildShareableUrl(config, workforce, vendorScenarios, durationMonths);
+    window.history.replaceState(window.history.state, '', url);
+    window.dispatchEvent(new CustomEvent('stackevalify:track', {
+      detail: { event: 'calculator_export_pdf', path: window.location.pathname, months: durationMonths },
+    }));
+    window.print();
   };
   return (
     <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6" data-tco-calculator data-tco-slug={config.slug} data-url-state-sync={urlStateReady ? 'ready' : 'loading'}>
@@ -583,7 +685,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">Normalized output</p>
             <h3 id={`${config.slug}-tco-results`} className="mt-2 text-xl font-bold text-white">Advertised price versus normalized invoice</h3>
           </div>
-          <div className="grid min-w-0 grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+          <div className="grid min-w-0 grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end" data-print-actions>
             <button type="button" onClick={copySlackSummary} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
               Copy Slack summary
             </button>
@@ -592,6 +694,9 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
             </button>
             <button type="button" onClick={exportCfoCsv} data-export-cfo-csv aria-label="Export CFO CSV" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-2.5 text-sm font-bold text-emerald-100 transition-colors hover:bg-emerald-400/20 focus:outline-none focus:ring-2 focus:ring-emerald-300">
               Export CSV
+            </button>
+            <button type="button" onClick={saveCfoPdf} data-save-cfo-pdf className="inline-flex min-h-11 items-center justify-center rounded-lg border border-amber-300/40 bg-amber-300/10 px-4 py-2.5 text-sm font-bold text-amber-100 transition-colors hover:bg-amber-300/20 focus:outline-none focus:ring-2 focus:ring-amber-200">
+              Save PDF
             </button>
           </div>
         </div>
@@ -659,6 +764,14 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
         </div>
         <p className="mt-4 text-xs leading-relaxed text-slate-400">Cash-flow deposits are excluded from the 24-month service invoice because they are modeled as refundable. Peak cash need adds the deposit to the service invoice without treating it as vendor revenue.</p>
       </section>
+
+      <CfoPrintReport
+        config={config}
+        workforce={workforce}
+        vendorScenarios={vendorScenarios}
+        estimates={estimates}
+        durationMonths={durationMonths}
+      />
     </div>
   );
 }
