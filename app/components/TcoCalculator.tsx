@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import AuditTooltip from '@/app/components/AuditTooltip';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import type { TcoComparisonConfig, TcoHeadcountKey, TcoVendorConfig } from '@/lib/tco-configs';
 
 type WorkforceInputs = TcoComparisonConfig['defaultWorkforce'];
@@ -639,6 +640,15 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setShareStatus('');
     setExportStatus('');
     setBaselineStatus('');
+    if (key === 'depositMonths' || key === 'fxSpreadPercent') {
+      trackAnalyticsEvent({
+        event: 'calculator_negotiation_change',
+        path: window.location.pathname,
+        vendor: vendorId,
+        lever: key,
+        value: typeof value === 'number' ? value : String(value),
+      });
+    }
   };
 
   const updateDuration = (months: DurationMonths) => {
@@ -660,9 +670,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setShareStatus('');
     setExportStatus('');
     setBaselineStatus('');
-    window.dispatchEvent(new CustomEvent('stackevalify:track', {
-      detail: { event: 'calculator_team_preset', path: window.location.pathname, preset: preset.id },
-    }));
+    trackAnalyticsEvent({ event: 'calculator_team_preset', path: window.location.pathname, preset: preset.id });
   };
 
   const estimates = useMemo(() => Object.fromEntries(config.vendors.map((vendor) => [
@@ -708,9 +716,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
       setBaselineStatus('Baseline pinned for this view. Session storage is unavailable.');
     }
     window.dispatchEvent(new Event(baselineChangeEvent));
-    window.dispatchEvent(new CustomEvent('stackevalify:track', {
-      detail: { event: 'calculator_pin_baseline', path: window.location.pathname, months: durationMonths },
-    }));
+    trackAnalyticsEvent({ event: 'calculator_pin_baseline', path: window.location.pathname, months: durationMonths });
   };
 
   const clearPinnedBaseline = () => {
@@ -722,9 +728,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
       // State still clears when browser storage is unavailable.
     }
     window.dispatchEvent(new Event(baselineChangeEvent));
-    window.dispatchEvent(new CustomEvent('stackevalify:track', {
-      detail: { event: 'calculator_clear_baseline', path: window.location.pathname },
-    }));
+    trackAnalyticsEvent({ event: 'calculator_clear_baseline', path: window.location.pathname });
   };
 
   const copySlackSummary = async () => {
@@ -759,9 +763,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
       setShareStatus('Link Copied!');
       if (shareStatusTimer.current) clearTimeout(shareStatusTimer.current);
       shareStatusTimer.current = setTimeout(() => setShareStatus(''), 2000);
-      window.dispatchEvent(new CustomEvent('stackevalify:track', {
-        detail: { event: 'calculator_share_link', path: window.location.pathname, months: durationMonths },
-      }));
+      trackAnalyticsEvent({ event: 'calculator_share_link', path: window.location.pathname, months: durationMonths });
     } catch {
       setShareStatus('Link copy failed. Copy the browser address instead.');
     }
@@ -808,16 +810,12 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     download.remove();
     window.setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
     setExportStatus('CFO CSV downloaded.');
-    window.dispatchEvent(new CustomEvent('stackevalify:track', {
-      detail: { event: 'calculator_export_csv', path: window.location.pathname, months: durationMonths },
-    }));
+    trackAnalyticsEvent({ event: 'calculator_export_csv', path: window.location.pathname, months: durationMonths });
   };
   const saveCfoPdf = () => {
     const url = buildShareableUrl(config, workforce, vendorScenarios, durationMonths);
     window.history.replaceState(window.history.state, '', url);
-    window.dispatchEvent(new CustomEvent('stackevalify:track', {
-      detail: { event: 'calculator_export_pdf', path: window.location.pathname, months: durationMonths },
-    }));
+    trackAnalyticsEvent({ event: 'calculator_export_pdf', path: window.location.pathname, months: durationMonths });
     window.print();
   };
   return (
