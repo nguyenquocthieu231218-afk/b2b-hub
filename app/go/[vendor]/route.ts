@@ -10,12 +10,17 @@ function normalizeSource(value: string | null) {
 
 export async function GET(request: Request, context: { params: Promise<{ vendor: string }> }) {
   const { vendor } = await context.params;
-  const config = getMeasuredAffiliateLink(vendor.toLowerCase());
+  const normalizedVendor = /^[a-z0-9-]{1,40}$/i.test(vendor) ? vendor.toLowerCase() : '';
+  const config = getMeasuredAffiliateLink(normalizedVendor);
 
   if (!config) {
-    return new Response('Unknown vendor.', {
-      status: 404,
-      headers: { ...robotsHeader, 'Content-Type': 'text/plain; charset=utf-8' },
+    return new Response(null, {
+      status: 302,
+      headers: {
+        ...robotsHeader,
+        'Cache-Control': 'private, no-store',
+        Location: new URL('/eor-cost-calculator', request.url).toString(),
+      },
     });
   }
 
