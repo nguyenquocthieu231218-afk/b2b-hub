@@ -89,12 +89,26 @@ const robots = await robotsResponse.text();
 assert.match(robots, /Allow: \/(?:\r?\n|$)/);
 assert.match(robots, /Sitemap: https:\/\/stackevalify\.com\/sitemap\.xml/);
 
+const llmsResponse = await request('/llms.txt');
+assert.equal(llmsResponse.status, 200, '/llms.txt must return 200');
+assert.match(llmsResponse.headers.get('content-type') ?? '', /^text\/plain;\s*charset=utf-8/i, '/llms.txt must be UTF-8 plain text');
+assert.match(llmsResponse.headers.get('cache-control') ?? '', /public/, '/llms.txt must be publicly cacheable');
+assert.match(llmsResponse.headers.get('cache-control') ?? '', /s-maxage=86400/, '/llms.txt CDN cache lifetime mismatch');
+const llms = await llmsResponse.text();
+assert.match(llms, /12- and 24-month total-cost-of-ownership scenarios/, '/llms.txt TCO method summary missing');
+assert.match(llms, /EOR security deposits or reserves/, '/llms.txt deposit treatment missing');
+assert.match(llms, /foreign-exchange spread sensitivity/, '/llms.txt FX treatment missing');
+assert.match(llms, /implementation and onboarding charges/, '/llms.txt add-on treatment missing');
+assert(llms.includes(`Full methodology: ${canonicalOrigin}/methodology`), '/llms.txt methodology canonical missing');
+assert(!llms.includes('/go/'), '/llms.txt must not expose measured redirect routes');
+
 const sitemapResponse = await request('/sitemap.xml');
 assert.equal(sitemapResponse.status, 200);
 const sitemap = await sitemapResponse.text();
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => new URL(value));
 assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains duplicate URLs');
 assert(!urls.some((url) => url.pathname.startsWith('/go/')), 'Measured redirect routes must stay out of the sitemap');
+assert(!urls.some((url) => url.pathname === '/llms.txt'), '/llms.txt must not change the indexable-page sitemap set');
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
 assert.equal(comparisonPaths.length, 4, 'Only four calculator-audited comparisons may enter the sitemap');
@@ -217,6 +231,12 @@ for (const path of allComparisonPaths) assert(directory.includes(`href="${path}"
 assert.match(directory, /type="search"/);
 assert.match(directory, /id="comparison-category"/);
 assert(plainText(directory).includes('Showing 27 of 27 comparisons'), 'All comparisons must be present before JavaScript runs');
+
+const llmsCanonicalPaths = [...llms.matchAll(/Canonical URL: https:\/\/stackevalify\.com(\/[^\s]+)/g)].map(([, path]) => path);
+assert.deepEqual([...llmsCanonicalPaths].sort(), [...auditedComparisonPaths, auditedToolPath].sort(), '/llms.txt must list exactly the five audited calculator routes');
+for (const path of allComparisonPaths.filter((path) => !auditedComparisonPaths.includes(path))) {
+  assert(!llms.includes(`${canonicalOrigin}${path}`), `${path}: noindex comparison leaked into /llms.txt`);
+}
 
 for (const path of allComparisonPaths) {
   if (!pages.has(path)) {
@@ -351,11 +371,31 @@ assert.equal(measuredLocation.searchParams.get('utm_medium'), 'referral');
 assert.equal(measuredLocation.searchParams.get('utm_campaign'), 'audited-tco');
 assert.equal(measuredLocation.searchParams.get('utm_content'), 'deel-vs-rippling');
 const unknownMeasuredRedirect = await request('/go/not-a-vendor', { redirect: 'manual' });
-assert.equal(unknownMeasuredRedirect.status, 404, 'Unknown measured vendor must not redirect');
+assert.equal(unknownMeasuredRedirect.status, 302, 'Unknown measured vendor must use a temporary safe fallback');
 assert.equal(unknownMeasuredRedirect.headers.get('x-robots-tag'), 'noindex, nofollow', 'Unknown measured vendor robots header missing');
+assert.equal(new URL(unknownMeasuredRedirect.headers.get('location'), preview).pathname, auditedToolPath, 'Unknown measured vendor fallback mismatch');
+const malformedMeasuredRedirect = await request('/go/%3Cinvalid%3E', { redirect: 'manual' });
+assert.equal(malformedMeasuredRedirect.status, 302, 'Malformed measured vendor must use a temporary safe fallback');
+assert.equal(malformedMeasuredRedirect.headers.get('x-robots-tag'), 'noindex, nofollow', 'Malformed measured vendor robots header missing');
+assert.equal(new URL(malformedMeasuredRedirect.headers.get('location'), preview).pathname, auditedToolPath, 'Malformed measured vendor fallback mismatch');
+const emptyMeasuredRedirect = await request('/go', { redirect: 'manual' });
+assert.equal(emptyMeasuredRedirect.status, 302, 'Empty measured vendor route must use a temporary safe fallback');
+assert.equal(emptyMeasuredRedirect.headers.get('x-robots-tag'), 'noindex, nofollow', 'Empty measured vendor route robots header missing');
+assert.equal(new URL(emptyMeasuredRedirect.headers.get('location'), preview).pathname, auditedToolPath, 'Empty measured vendor fallback mismatch');
 
-assert.equal((await request('/missing-seo-check-page')).status, 404, 'Missing pages must return HTTP 404');
+const missingResponse = await request('/missing-seo-check-page');
+assert.equal(missingResponse.status, 404, 'Missing pages must return HTTP 404');
+const missingHtml = await missingResponse.text();
+assert.match(meta(missingHtml, 'robots') ?? '', /noindex/i, '404 page must remain noindex');
+assert.equal([...missingHtml.matchAll(/<h1\b/g)].length, 1, '404 page needs one main heading');
+for (const path of [auditedToolPath, ...auditedComparisonPaths]) {
+  assert(missingHtml.includes(`href="${path}"`), `404 recovery navigation missing ${path}`);
+}
+const errorSource = await readFile(new URL('../app/error.tsx', import.meta.url), 'utf8');
+assert.match(errorSource, /^'use client';/, 'Root error boundary must remain a Client Component');
+assert.match(errorSource, /retry\(\)/, 'Root error boundary recovery action missing');
+assert.match(errorSource, /<RecoveryNavigation \/>/, 'Root error boundary audited navigation missing');
 const logoResponse = await request('/logo.png');
 assert.equal(logoResponse.status, 200);
 assert.deepEqual(Buffer.from(await logoResponse.arrayBuffer()), await readFile(new URL('../public/logo.png', import.meta.url)), 'Preview must serve the original logo bytes');
-console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} audited calculator comparisons, 1 audited EOR calculator, ${allComparisonPaths.length - comparisonPaths.length} comparison drafts noindex, dynamic OpenGraph images, measured vendor redirects, security headers, FAQ schema, tracked interactions, standardized outbound links, reciprocal HR links, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
+console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} audited calculator comparisons, 1 audited EOR calculator, ${allComparisonPaths.length - comparisonPaths.length} comparison drafts noindex, /llms.txt, branded 404 and error recovery, safe measured vendor fallbacks, dynamic OpenGraph images, security headers, FAQ schema, tracked interactions, standardized outbound links, reciprocal HR links, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
