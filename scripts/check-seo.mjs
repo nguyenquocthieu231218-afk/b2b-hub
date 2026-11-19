@@ -180,6 +180,11 @@ for (const url of urls) {
     assert.match(html, /data-cfo-print-report/, `${url.pathname}: CFO print report missing`);
     assert(plainText(html).includes('Audited via StackEvalify.com — Independent B2B SaaS TCO Methodology'), `${url.pathname}: print methodology footer missing`);
     assert.equal([...html.matchAll(/data-team-preset="/g)].length, 3, `${url.pathname}: expected three team presets`);
+    assert.equal([...html.matchAll(/data-team-preset="[^"]+" aria-pressed="(?:true|false)" aria-label="[^"]+"/g)].length, 3, `${url.pathname}: team presets need accessible names and pressed state`);
+    assert.match(html, /data-negotiation-levers/, `${url.pathname}: negotiation override panel missing`);
+    assert.equal([...html.matchAll(/data-negotiation-vendor="/g)].length, 2, `${url.pathname}: both vendors need negotiation controls`);
+    assert.equal([...html.matchAll(/data-fx-override="/g)].length, 2, `${url.pathname}: both vendors need FX override sliders`);
+    assert.equal([...html.matchAll(/data-deposit-override="/g)].length, 6, `${url.pathname}: both vendors need three deposit choices`);
     assert.match(html, /data-cash-shock-callout/, `${url.pathname}: month-one cash shock callout missing`);
     assert.match(html, /data-outlay-delta/, `${url.pathname}: total-outlay delta summary missing`);
     assert.match(html, /data-stacked-tco-chart/, `${url.pathname}: stacked TCO chart missing`);

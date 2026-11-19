@@ -133,7 +133,8 @@ function readUrlState(config: TcoComparisonConfig) {
     const defaults = defaultScenarios[vendor.id];
     const scenario = { ...defaults };
     for (const key of numericVendorScenarioKeys) {
-      scenario[key] = parseNonNegativeNumber(params, `${vendor.id}_${vendorParamSuffixes[key]}`, defaults[key]);
+      const value = parseNonNegativeNumber(params, `${vendor.id}_${vendorParamSuffixes[key]}`, defaults[key]);
+      scenario[key] = key === 'fxSpreadPercent' ? Math.min(3.5, value) : value;
     }
     const waiveParam = params.get(`${vendor.id}_${vendorParamSuffixes.waiveImplementation}`);
     if (waiveParam === '1' || waiveParam === '0') scenario.waiveImplementation = waiveParam === '1';
@@ -327,6 +328,7 @@ function NumberField({
           min="0"
           step={step}
           value={value}
+          aria-label={label}
           onChange={(event) => onChange(Math.max(0, Number(event.target.value) || 0))}
           className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-white outline-none"
         />
@@ -448,6 +450,10 @@ function CfoPrintReport({
         <div><dt>Calculation horizon</dt><dd>{durationMonths} months</dd></div>
         <div><dt>Average EOR gross salary</dt><dd>{currency.format(workforce.eorMonthlyGrossSalary)} / month</dd></div>
         <div><dt>Average contractor invoice</dt><dd>{currency.format(workforce.contractorAverageMonthlyInvoice)} / month</dd></div>
+        {config.vendors.flatMap((vendor) => [
+          <div key={`${vendor.id}-print-fx`}><dt>{vendor.name} negotiated FX spread</dt><dd>{vendorScenarios[vendor.id].fxSpreadPercent.toFixed(1)}%</dd></div>,
+          <div key={`${vendor.id}-print-deposit`}><dt>{vendor.name} security deposit</dt><dd>{vendorScenarios[vendor.id].depositMonths} salary months</dd></div>,
+        ])}
       </dl>
 
       <div data-cfo-print-grid>
@@ -635,6 +641,10 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
       ['International EOR Employees', workforce.eorEmployees, 'employees', 'Current calculator state'],
       ['Contractors', workforce.contractors, 'contractors', 'Current calculator state'],
       ['Calculation Horizon', durationMonths, 'months', 'Current calculator state'],
+      ...config.vendors.flatMap((vendor) => [
+        [`${vendor.name} Custom FX Spread`, vendorScenarios[vendor.id].fxSpreadPercent, '%', 'Negotiated scenario override'],
+        [`${vendor.name} Security Deposit`, vendorScenarios[vendor.id].depositMonths, 'salary months', 'Negotiated scenario override'],
+      ]),
       [],
       ['Cost Line Item', 'Currency', firstVendor.name, secondVendor.name],
       ['Advertised Base Fee', 'USD', csvMoney(vendorBreakdowns[firstVendor.id].advertisedBaseFee), csvMoney(vendorBreakdowns[secondVendor.id].advertisedBaseFee)],
@@ -696,6 +706,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
                   type="button"
                   data-team-preset={preset.id}
                   aria-pressed={isActive}
+                  aria-label={`Apply ${preset.label} team preset`}
                   onClick={() => applyTeamPreset(preset)}
                   className={`min-h-11 min-w-0 rounded-lg border px-3 py-2.5 text-sm font-bold leading-snug transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${isActive ? 'border-blue-400 bg-blue-500 text-white' : 'border-slate-700 bg-slate-900 text-slate-200 hover:border-blue-400/70 hover:bg-slate-800'}`}
                 >
@@ -714,6 +725,87 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
           <NumberField id={`${config.slug}-contractor-invoice`} label="Average contractor invoice / month" value={workforce.contractorAverageMonthlyInvoice} onChange={(value) => updateWorkforce('contractorAverageMonthlyInvoice', value)} suffix="USD" />
         </div>
         <p className="mt-4 text-xs leading-relaxed text-slate-400">FX cost is applied to modeled EOR gross salary plus contractor invoice volume. It is not applied to platform fees.</p>
+
+        <details className="mt-5 min-w-0 rounded-xl border border-cyan-300/30 bg-cyan-300/5 p-4 open:bg-slate-900/80" data-negotiation-levers>
+          <summary className="cursor-pointer text-sm font-bold text-cyan-100 marker:text-cyan-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300">
+            Negotiation Levers: Deposit &amp; FX Overrides
+          </summary>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Model the terms Sales puts into the order form. These overrides change cash exposure only; the audited vendor defaults remain unchanged.
+          </p>
+          <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-2">
+            {config.vendors.map((vendor) => {
+              const scenario = vendorScenarios[vendor.id];
+              const defaultDeposit = vendor.cashFlowDeposit.monthsOfEorGrossSalary;
+              const depositChoices = [
+                { id: 'default', label: `Vendor default (${defaultDeposit} mo)`, value: defaultDeposit },
+                { id: 'one-month', label: '1 month deposit', value: 1 },
+                { id: 'waived', label: '0 months · waived', value: 0 },
+              ] as const;
+
+              return (
+                <fieldset key={vendor.id} className="min-w-0 rounded-lg border border-slate-700 bg-slate-950/80 p-4" data-negotiation-vendor={vendor.id}>
+                  <legend className="px-2 text-sm font-bold text-white">{vendor.name}</legend>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-200">Security deposit waiver</p>
+                    <div className="mt-2 grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label={`${vendor.name} security deposit options`}>
+                      {depositChoices.map((choice) => {
+                        const isSelected = scenario.depositMonths === choice.value
+                          && (choice.id === 'default' || choice.value !== defaultDeposit);
+                        return (
+                          <button
+                            key={choice.id}
+                            type="button"
+                            data-deposit-override={choice.id}
+                            aria-label={`${vendor.name}: set security deposit to ${choice.label}`}
+                            aria-pressed={isSelected}
+                            onClick={() => updateVendor(vendor.id, 'depositMonths', choice.value)}
+                            className={`min-h-11 min-w-0 rounded-lg border px-3 py-2 text-xs font-bold leading-snug transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-300 ${isSelected ? 'border-cyan-300 bg-cyan-500 text-slate-950' : 'border-slate-600 bg-slate-900 text-slate-100 hover:border-cyan-300 hover:bg-slate-800'}`}
+                          >
+                            {choice.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-5 min-w-0">
+                    <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+                      <label htmlFor={`${config.slug}-${vendor.id}-negotiated-fx`} className="text-xs font-bold uppercase tracking-[0.12em] text-slate-200">
+                        Custom FX spread
+                      </label>
+                      <output htmlFor={`${config.slug}-${vendor.id}-negotiated-fx`} className="rounded-md border border-cyan-300/40 bg-cyan-300/10 px-2 py-1 text-sm font-black text-cyan-100">
+                        {scenario.fxSpreadPercent.toFixed(1)}%
+                      </output>
+                    </div>
+                    <input
+                      id={`${config.slug}-${vendor.id}-negotiated-fx`}
+                      type="range"
+                      min="0"
+                      max="3.5"
+                      step="0.1"
+                      value={scenario.fxSpreadPercent}
+                      data-fx-override={vendor.id}
+                      aria-label={`${vendor.name} custom FX spread`}
+                      aria-valuetext={`${scenario.fxSpreadPercent.toFixed(1)} percent`}
+                      onChange={(event) => updateVendor(vendor.id, 'fxSpreadPercent', Number(event.target.value))}
+                      className="mt-3 h-11 w-full cursor-pointer accent-cyan-400"
+                    />
+                    <div className="flex justify-between text-xs font-semibold text-slate-300" aria-hidden="true"><span>0.0%</span><span>3.5%</span></div>
+                    <button
+                      type="button"
+                      aria-label={`Reset ${vendor.name} FX spread to vendor default ${vendor.rates.fxSpreadPercent} percent`}
+                      onClick={() => updateVendor(vendor.id, 'fxSpreadPercent', vendor.rates.fxSpreadPercent)}
+                      className="mt-3 min-h-11 rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs font-bold text-slate-100 transition-colors hover:border-cyan-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-300"
+                    >
+                      Reset FX to default ({vendor.rates.fxSpreadPercent.toFixed(1)}%)
+                    </button>
+                  </div>
+                </fieldset>
+              );
+            })}
+          </div>
+        </details>
       </fieldset>
 
       <fieldset className="rounded-xl border border-slate-800 bg-slate-950/40 p-5">
@@ -725,6 +817,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
               key={months}
               type="button"
               aria-pressed={durationMonths === months}
+              aria-label={`Use a ${months}-month calculation horizon`}
               onClick={() => updateDuration(months)}
               className={`min-h-11 rounded-md px-4 py-2 text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${durationMonths === months ? 'bg-blue-500 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
             >
@@ -750,9 +843,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
                 <NumberField id={`${config.slug}-${vendor.id}-it`} label="IT management / employee / month" value={scenario.itManagementPerEmployee} onChange={(value) => updateVendor(vendor.id, 'itManagementPerEmployee', value)} suffix="USD" />
                 <NumberField id={`${config.slug}-${vendor.id}-base`} label="Base platform fee / month" value={scenario.basePlatformFee} onChange={(value) => updateVendor(vendor.id, 'basePlatformFee', value)} suffix="USD" />
                 <NumberField id={`${config.slug}-${vendor.id}-implementation`} label="Implementation fee" value={scenario.implementationFee} onChange={(value) => updateVendor(vendor.id, 'implementationFee', value)} suffix="USD" />
-                <NumberField id={`${config.slug}-${vendor.id}-fx`} label="FX spread" value={scenario.fxSpreadPercent} onChange={(value) => updateVendor(vendor.id, 'fxSpreadPercent', value)} step={0.1} suffix="%" />
                 <NumberField id={`${config.slug}-${vendor.id}-renewal`} label="Year-two renewal uplift" value={scenario.renewalUpliftPercent} onChange={(value) => updateVendor(vendor.id, 'renewalUpliftPercent', value)} step={0.1} suffix="%" />
-                <NumberField id={`${config.slug}-${vendor.id}-deposit`} label="Refundable deposit / EOR salary months" value={scenario.depositMonths} onChange={(value) => updateVendor(vendor.id, 'depositMonths', value)} step={0.1} suffix="months" />
               </div>
               {vendor.rates.implementationWaivableWithAnnualCommitment && (
                 <label className="mt-4 flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-slate-200">
