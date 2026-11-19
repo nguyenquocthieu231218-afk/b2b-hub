@@ -1,9 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { TcoComparisonConfig, TcoHeadcountKey, TcoVendorConfig } from '@/lib/tco-configs';
 
 type WorkforceInputs = TcoComparisonConfig['defaultWorkforce'];
+
+type DurationMonths = 12 | 24;
 
 type VendorScenario = {
   usPayrollPerEmployee: number;
@@ -29,6 +31,47 @@ type VendorEstimate = {
   peakCashRequirement: number;
 };
 
+type ChartEstimate = {
+  advertised: number;
+  hiddenOutlay: number;
+  totalCash: number;
+};
+
+const workforceParamNames: Record<keyof WorkforceInputs, string> = {
+  usEmployees: 'us',
+  eorEmployees: 'eor',
+  contractors: 'contractors',
+  eorMonthlyGrossSalary: 'salary',
+  contractorAverageMonthlyInvoice: 'contractorInvoice',
+};
+
+const vendorParamSuffixes: Record<keyof VendorScenario, string> = {
+  usPayrollPerEmployee: 'us_rate',
+  eorPerEmployee: 'eor_rate',
+  contractorPerWorker: 'contractor_rate',
+  corePlatformPerEmployee: 'core_rate',
+  itManagementPerEmployee: 'it_rate',
+  basePlatformFee: 'base_fee',
+  implementationFee: 'implementation',
+  waiveImplementation: 'waive_implementation',
+  fxSpreadPercent: 'fx',
+  renewalUpliftPercent: 'renewal',
+  depositMonths: 'deposit',
+};
+
+const numericVendorScenarioKeys = [
+  'usPayrollPerEmployee',
+  'eorPerEmployee',
+  'contractorPerWorker',
+  'corePlatformPerEmployee',
+  'itManagementPerEmployee',
+  'basePlatformFee',
+  'implementationFee',
+  'fxSpreadPercent',
+  'renewalUpliftPercent',
+  'depositMonths',
+] as const satisfies readonly (keyof VendorScenario)[];
+
 const currency = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -49,6 +92,74 @@ function initialVendorScenarios(config: TcoComparisonConfig) {
     renewalUpliftPercent: vendor.rates.renewalUpliftPercent,
     depositMonths: vendor.cashFlowDeposit.monthsOfEorGrossSalary,
   }])) as Record<string, VendorScenario>;
+}
+
+function parseNonNegativeNumber(params: URLSearchParams, key: string, fallback: number) {
+  const raw = params.get(key);
+  if (raw === null || raw.trim() === '') return fallback;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+function readUrlState(config: TcoComparisonConfig) {
+  const params = new URLSearchParams(window.location.search);
+  const defaultScenarios = initialVendorScenarios(config);
+  const workforce = Object.fromEntries(
+    (Object.keys(workforceParamNames) as (keyof WorkforceInputs)[]).map((key) => [
+      key,
+      parseNonNegativeNumber(params, workforceParamNames[key], config.defaultWorkforce[key]),
+    ]),
+  ) as WorkforceInputs;
+  const vendorScenarios = Object.fromEntries(config.vendors.map((vendor) => {
+    const defaults = defaultScenarios[vendor.id];
+    const scenario = { ...defaults };
+    for (const key of numericVendorScenarioKeys) {
+      scenario[key] = parseNonNegativeNumber(params, `${vendor.id}_${vendorParamSuffixes[key]}`, defaults[key]);
+    }
+    const waiveParam = params.get(`${vendor.id}_${vendorParamSuffixes.waiveImplementation}`);
+    if (waiveParam === '1' || waiveParam === '0') scenario.waiveImplementation = waiveParam === '1';
+    return [vendor.id, scenario];
+  })) as Record<string, VendorScenario>;
+  const durationMonths: DurationMonths = params.get('months') === '12' ? 12 : 24;
+
+  return { workforce, vendorScenarios, durationMonths };
+}
+
+function buildShareableUrl(
+  config: TcoComparisonConfig,
+  workforce: WorkforceInputs,
+  vendorScenarios: Record<string, VendorScenario>,
+  durationMonths: DurationMonths,
+) {
+  const url = new URL(window.location.href);
+  const defaultScenarios = initialVendorScenarios(config);
+
+  for (const key of Object.keys(workforceParamNames) as (keyof WorkforceInputs)[]) {
+    url.searchParams.set(workforceParamNames[key], String(workforce[key]));
+  }
+  url.searchParams.set('months', String(durationMonths));
+
+  for (const vendor of config.vendors) {
+    const scenario = vendorScenarios[vendor.id];
+    const defaults = defaultScenarios[vendor.id];
+    for (const key of numericVendorScenarioKeys) {
+      const param = `${vendor.id}_${vendorParamSuffixes[key]}`;
+      if (scenario[key] === defaults[key]) url.searchParams.delete(param);
+      else url.searchParams.set(param, String(scenario[key]));
+    }
+    const waiveParam = `${vendor.id}_${vendorParamSuffixes.waiveImplementation}`;
+    if (scenario.waiveImplementation === defaults.waiveImplementation) url.searchParams.delete(waiveParam);
+    else url.searchParams.set(waiveParam, scenario.waiveImplementation ? '1' : '0');
+  }
+
+  return url;
+}
+
+function chartEstimate(estimate: VendorEstimate, durationMonths: DurationMonths): ChartEstimate {
+  const advertised = estimate.advertised12 * (durationMonths / 12);
+  const serviceInvoice = durationMonths === 12 ? estimate.yearOne : estimate.total24;
+  const hiddenOutlay = Math.max(0, serviceInvoice - advertised) + estimate.cashFlowDeposit;
+  return { advertised, hiddenOutlay, totalCash: advertised + hiddenOutlay };
 }
 
 function scopedHeadcount(workforce: WorkforceInputs, scopes: readonly TcoHeadcountKey[]) {
@@ -128,6 +239,76 @@ function NumberField({
   );
 }
 
+function StackedCostChart({
+  config,
+  estimates,
+  durationMonths,
+}: {
+  config: TcoComparisonConfig;
+  estimates: Record<string, VendorEstimate>;
+  durationMonths: DurationMonths;
+}) {
+  const chartData = config.vendors.map((vendor) => ({
+    vendor,
+    ...chartEstimate(estimates[vendor.id], durationMonths),
+  }));
+  const maxTotal = Math.max(...chartData.map(({ totalCash }) => totalCash), 1);
+  const plotBottom = 285;
+  const plotHeight = 205;
+  const barWidth = 88;
+  const positions = [58, 214];
+
+  return (
+    <figure className="mt-6 rounded-xl border border-slate-800 bg-slate-900/70 p-4 sm:p-6" data-stacked-tco-chart data-months={durationMonths}>
+      <figcaption>
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-rose-300">Cash exposure chart · {durationMonths} months</p>
+        <h4 className="mt-2 text-lg font-bold text-white">Advertised base versus hidden outlay</h4>
+        <p className="mt-2 text-sm leading-relaxed text-slate-400">The warning segment combines deposits, FX, implementation, base-platform charges, add-ons, and renewal uplift not captured by the advertised recurring baseline.</p>
+      </figcaption>
+
+      <svg viewBox="0 0 360 345" role="img" aria-labelledby={`${config.slug}-chart-title ${config.slug}-chart-description`} className="mx-auto mt-5 h-auto w-full max-w-3xl overflow-visible">
+        <title id={`${config.slug}-chart-title`}>{config.title} advertised base fee and hidden cash outlay over {durationMonths} months</title>
+        <desc id={`${config.slug}-chart-description`}>Two stacked bars compare the advertised recurring baseline with deposits, foreign exchange costs, platform fees, add-ons, implementation, and renewal effects.</desc>
+        <line x1="30" x2="330" y1={plotBottom} y2={plotBottom} stroke="#334155" strokeWidth="1" />
+        {chartData.map(({ vendor, advertised, hiddenOutlay, totalCash }, index) => {
+          const totalHeight = (totalCash / maxTotal) * plotHeight;
+          const advertisedHeight = totalCash > 0 ? (advertised / totalCash) * totalHeight : 0;
+          const hiddenHeight = totalHeight - advertisedHeight;
+          const x = positions[index];
+          const totalLabelY = Math.max(28, plotBottom - totalHeight - 12);
+          return (
+            <g
+              key={vendor.id}
+              aria-label={`${vendor.name}: ${currency.format(advertised)} advertised, ${currency.format(hiddenOutlay)} hidden outlay, ${currency.format(totalCash)} total cash exposure`}
+              data-chart-vendor={vendor.id}
+              data-advertised={Math.round(advertised)}
+              data-hidden-outlay={Math.round(hiddenOutlay)}
+              data-total-cash={Math.round(totalCash)}
+            >
+              <text x={x + barWidth / 2} y={totalLabelY} textAnchor="middle" fill="#f8fafc" fontSize="13" fontWeight="700">{currency.format(totalCash)}</text>
+              <rect x={x} y={plotBottom - advertisedHeight} width={barWidth} height={advertisedHeight} fill="#64748b" />
+              <rect x={x} y={plotBottom - totalHeight} width={barWidth} height={hiddenHeight} rx="6" fill="#fb7185" />
+              <text x={x + barWidth / 2} y="313" textAnchor="middle" fill="#f8fafc" fontSize="14" fontWeight="700">{vendor.name}</text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <div className="mt-2 grid gap-3 text-sm sm:grid-cols-2">
+        <div className="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-950/70 p-3 text-slate-300">
+          <span className="mt-1 size-3 shrink-0 rounded-sm bg-slate-500" aria-hidden="true" />
+          <span><strong className="text-white">Advertised Base Fee</strong><br />Recurring worker, module, and platform rates presented as the list-price baseline.</span>
+        </div>
+        <div className="flex items-start gap-3 rounded-lg border border-rose-400/20 bg-rose-400/5 p-3 text-slate-300">
+          <span className="mt-1 size-3 shrink-0 rounded-sm bg-rose-400" aria-hidden="true" />
+          <span><strong className="text-rose-200">Hidden Outlay: Deposits, FX &amp; Add-ons</strong><br />Cash beyond the advertised baseline, including refundable security cash.</span>
+        </div>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-slate-400">Chart totals include the refundable deposit as cash exposure. The service-invoice table below continues to report refundable deposits separately from vendor revenue.</p>
+    </figure>
+  );
+}
+
 function coverageWarnings(vendor: TcoVendorConfig, scenario: VendorScenario, workforce: WorkforceInputs) {
   const warnings: string[] = [];
   if (workforce.usEmployees > 0 && scenario.usPayrollPerEmployee === 0) warnings.push('US payroll is outside this baseline.');
@@ -139,11 +320,39 @@ function coverageWarnings(vendor: TcoVendorConfig, scenario: VendorScenario, wor
 export default function TcoCalculator({ config }: { config: TcoComparisonConfig }) {
   const [workforce, setWorkforce] = useState<WorkforceInputs>(config.defaultWorkforce);
   const [vendorScenarios, setVendorScenarios] = useState<Record<string, VendorScenario>>(() => initialVendorScenarios(config));
+  const [durationMonths, setDurationMonths] = useState<DurationMonths>(24);
+  const [urlStateReady, setUrlStateReady] = useState(false);
   const [copyStatus, setCopyStatus] = useState('');
+  const [shareStatus, setShareStatus] = useState('');
+  const shareStatusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const applyUrlState = () => {
+      const state = readUrlState(config);
+      setWorkforce(state.workforce);
+      setVendorScenarios(state.vendorScenarios);
+      setDurationMonths(state.durationMonths);
+      setUrlStateReady(true);
+    };
+    applyUrlState();
+    window.addEventListener('popstate', applyUrlState);
+    return () => window.removeEventListener('popstate', applyUrlState);
+  }, [config]);
+
+  useEffect(() => {
+    if (!urlStateReady) return;
+    const url = buildShareableUrl(config, workforce, vendorScenarios, durationMonths);
+    window.history.replaceState(window.history.state, '', url);
+  }, [config, durationMonths, urlStateReady, vendorScenarios, workforce]);
+
+  useEffect(() => () => {
+    if (shareStatusTimer.current) clearTimeout(shareStatusTimer.current);
+  }, []);
 
   const updateWorkforce = (key: keyof WorkforceInputs, value: number) => {
     setWorkforce((current) => ({ ...current, [key]: value }));
     setCopyStatus('');
+    setShareStatus('');
   };
 
   const updateVendor = <K extends keyof VendorScenario>(vendorId: string, key: K, value: VendorScenario[K]) => {
@@ -152,6 +361,13 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
       [vendorId]: { ...current[vendorId], [key]: value },
     }));
     setCopyStatus('');
+    setShareStatus('');
+  };
+
+  const updateDuration = (months: DurationMonths) => {
+    setDurationMonths(months);
+    setCopyStatus('');
+    setShareStatus('');
   };
 
   const estimates = useMemo(() => Object.fromEntries(config.vendors.map((vendor) => [
@@ -164,10 +380,12 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
   const copySlackSummary = async () => {
     const vendorLines = config.vendors.map((vendor) => {
       const estimate = estimates[vendor.id];
-      return `${vendor.name}: advertised 12-month run rate ${currency.format(estimate.advertised12)} · 24-month service invoice ${currency.format(estimate.total24)} · refundable cash-flow deposit ${currency.format(estimate.cashFlowDeposit)}`;
+      const advertised = estimate.advertised12 * (durationMonths / 12);
+      const serviceInvoice = durationMonths === 12 ? estimate.yearOne : estimate.total24;
+      return `${vendor.name}: advertised ${durationMonths}-month baseline ${currency.format(advertised)} · ${durationMonths}-month service invoice ${currency.format(serviceInvoice)} · refundable cash-flow deposit ${currency.format(estimate.cashFlowDeposit)}`;
     });
     const summary = [
-      `*${config.title} — 24-month TCO baseline*`,
+      `*${config.title} — ${durationMonths}-month TCO baseline*`,
       `Scope: ${workforce.usEmployees} US payroll employees · ${workforce.eorEmployees} EOR employees · ${workforce.contractors} contractors`,
       ...vendorLines,
       `FX volume basis: ${currency.format(workforce.eorEmployees * workforce.eorMonthlyGrossSalary + workforce.contractors * workforce.contractorAverageMonthlyInvoice)} per month`,
@@ -183,8 +401,24 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     }
   };
 
+  const copyShareableLink = async () => {
+    const url = buildShareableUrl(config, workforce, vendorScenarios, durationMonths);
+    window.history.replaceState(window.history.state, '', url);
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setShareStatus('Link Copied!');
+      if (shareStatusTimer.current) clearTimeout(shareStatusTimer.current);
+      shareStatusTimer.current = setTimeout(() => setShareStatus(''), 2000);
+      window.dispatchEvent(new CustomEvent('stackevalify:track', {
+        detail: { event: 'calculator_share_link', path: window.location.pathname, months: durationMonths },
+      }));
+    } catch {
+      setShareStatus('Link copy failed. Copy the browser address instead.');
+    }
+  };
+
   return (
-    <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6" data-tco-calculator data-tco-slug={config.slug}>
+    <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6" data-tco-calculator data-tco-slug={config.slug} data-url-state-sync={urlStateReady ? 'ready' : 'loading'}>
       <aside className="rounded-xl border border-amber-400/25 bg-amber-400/5 p-5 text-sm leading-relaxed text-amber-100">
         <strong>Audit baseline:</strong> Public list prices and disclosed model assumptions are editable below. The 24-month invoice excludes wages, employer taxes, benefits, statutory severance, and country-specific pass-through costs. Refundable deposits are shown separately from vendor revenue.
       </aside>
@@ -205,6 +439,24 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
           <NumberField id={`${config.slug}-contractor-invoice`} label="Average contractor invoice / month" value={workforce.contractorAverageMonthlyInvoice} onChange={(value) => updateWorkforce('contractorAverageMonthlyInvoice', value)} suffix="USD" />
         </div>
         <p className="mt-4 text-xs leading-relaxed text-slate-400">FX cost is applied to modeled EOR gross salary plus contractor invoice volume. It is not applied to platform fees.</p>
+      </fieldset>
+
+      <fieldset className="rounded-xl border border-slate-800 bg-slate-950/40 p-5">
+        <legend className="px-2 text-base font-bold text-white">Decision horizon</legend>
+        <p className="mt-2 text-sm leading-relaxed text-slate-400">Choose the horizon used by the chart, Slack summary, and shareable URL. The detailed table continues to show both years.</p>
+        <div className="mt-4 inline-flex rounded-lg border border-slate-700 bg-slate-950 p-1" role="group" aria-label="Calculation period">
+          {([12, 24] as const).map((months) => (
+            <button
+              key={months}
+              type="button"
+              aria-pressed={durationMonths === months}
+              onClick={() => updateDuration(months)}
+              className={`min-h-11 rounded-md px-4 py-2 text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${durationMonths === months ? 'bg-blue-500 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
+            >
+              {months} months
+            </button>
+          ))}
+        </div>
       </fieldset>
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -245,13 +497,23 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">Normalized output</p>
-            <h3 id={`${config.slug}-tco-results`} className="mt-2 text-xl font-bold text-white">Advertised price versus 24-month invoice</h3>
+            <h3 id={`${config.slug}-tco-results`} className="mt-2 text-xl font-bold text-white">Advertised price versus normalized invoice</h3>
           </div>
-          <button type="button" onClick={copySlackSummary} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
-            Copy Slack summary
-          </button>
+          <div className="grid gap-2 sm:flex">
+            <button type="button" onClick={copySlackSummary} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+              Copy Slack summary
+            </button>
+            <button type="button" onClick={copyShareableLink} data-share-calculator-link className="inline-flex min-h-11 items-center justify-center rounded-lg border border-blue-400/40 bg-blue-400/10 px-4 py-2.5 text-sm font-bold text-blue-100 transition-colors hover:bg-blue-400/20 focus:outline-none focus:ring-2 focus:ring-blue-300">
+              Copy Shareable Link
+            </button>
+          </div>
         </div>
-        <p className="mt-3 min-h-5 text-sm text-emerald-300" aria-live="polite">{copyStatus}</p>
+        <div className="mt-3 grid min-h-5 gap-1 text-sm" aria-live="polite">
+          {copyStatus && <p className="text-emerald-300">{copyStatus}</p>}
+          {shareStatus && <p className="text-blue-200">{shareStatus}</p>}
+        </div>
+
+        <StackedCostChart config={config} estimates={estimates} durationMonths={durationMonths} />
 
         <div className="mt-4 hidden overflow-x-auto rounded-lg border border-slate-800 sm:block">
           <table className="w-full min-w-[68rem] border-collapse text-left text-sm" data-comparison-table>
