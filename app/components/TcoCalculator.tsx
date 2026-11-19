@@ -37,6 +37,13 @@ type ChartEstimate = {
   totalCash: number;
 };
 
+type CfoCostBreakdown = {
+  advertisedBaseFee: number;
+  securityDeposit: number;
+  fxSpread: number;
+  additionalFees: number;
+  totalOutlay: number;
+};
 const workforceParamNames: Record<keyof WorkforceInputs, string> = {
   usEmployees: 'us',
   eorEmployees: 'eor',
@@ -162,6 +169,37 @@ function chartEstimate(estimate: VendorEstimate, durationMonths: DurationMonths)
   return { advertised, hiddenOutlay, totalCash: advertised + hiddenOutlay };
 }
 
+function cfoCostBreakdown(
+  workforce: WorkforceInputs,
+  scenario: VendorScenario,
+  estimate: VendorEstimate,
+  durationMonths: DurationMonths,
+): CfoCostBreakdown {
+  const advertisedBaseFee = estimate.advertised12 * (durationMonths / 12);
+  const serviceInvoice = durationMonths === 12 ? estimate.yearOne : estimate.total24;
+  const fxEligibleMonthly = (
+    workforce.eorEmployees * workforce.eorMonthlyGrossSalary
+    + workforce.contractors * workforce.contractorAverageMonthlyInvoice
+  );
+  const fxSpread = fxEligibleMonthly * (scenario.fxSpreadPercent / 100) * durationMonths;
+  const additionalFees = Math.max(0, serviceInvoice - advertisedBaseFee - fxSpread);
+
+  return {
+    advertisedBaseFee,
+    securityDeposit: estimate.cashFlowDeposit,
+    fxSpread,
+    additionalFees,
+    totalOutlay: serviceInvoice + estimate.cashFlowDeposit,
+  };
+}
+
+function csvCell(value: string | number) {
+  return `"${String(value).replaceAll('"', '""')}"`;
+}
+
+function csvMoney(value: number) {
+  return value.toFixed(2);
+}
 function scopedHeadcount(workforce: WorkforceInputs, scopes: readonly TcoHeadcountKey[]) {
   return scopes.reduce((total, scope) => total + workforce[scope], 0);
 }
@@ -324,6 +362,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
   const [urlStateReady, setUrlStateReady] = useState(false);
   const [copyStatus, setCopyStatus] = useState('');
   const [shareStatus, setShareStatus] = useState('');
+  const [exportStatus, setExportStatus] = useState('');
   const shareStatusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -353,6 +392,7 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     setWorkforce((current) => ({ ...current, [key]: value }));
     setCopyStatus('');
     setShareStatus('');
+    setExportStatus('');
   };
 
   const updateVendor = <K extends keyof VendorScenario>(vendorId: string, key: K, value: VendorScenario[K]) => {
@@ -362,12 +402,14 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     }));
     setCopyStatus('');
     setShareStatus('');
+    setExportStatus('');
   };
 
   const updateDuration = (months: DurationMonths) => {
     setDurationMonths(months);
     setCopyStatus('');
     setShareStatus('');
+    setExportStatus('');
   };
 
   const estimates = useMemo(() => Object.fromEntries(config.vendors.map((vendor) => [
@@ -417,6 +459,48 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
     }
   };
 
+  const exportCfoCsv = () => {
+    const shareableUrl = buildShareableUrl(config, workforce, vendorScenarios, durationMonths);
+    const publicShareableUrl = new URL(`${shareableUrl.pathname}${shareableUrl.search}`, 'https://stackevalify.com');
+    const vendorBreakdowns = Object.fromEntries(config.vendors.map((vendor) => [
+      vendor.id,
+      cfoCostBreakdown(workforce, vendorScenarios[vendor.id], estimates[vendor.id], durationMonths),
+    ])) as Record<string, CfoCostBreakdown>;
+    const [firstVendor, secondVendor] = config.vendors;
+    const rows: (string | number)[][] = [
+      ['StackEvalify CFO TCO Export', config.title, `${durationMonths} months`, 'USD'],
+      [],
+      ['Scenario Input', 'Value', 'Unit', 'Notes'],
+      ['US Payroll Employees', workforce.usEmployees, 'employees', 'Current calculator state'],
+      ['International EOR Employees', workforce.eorEmployees, 'employees', 'Current calculator state'],
+      ['Contractors', workforce.contractors, 'contractors', 'Current calculator state'],
+      ['Calculation Horizon', durationMonths, 'months', 'Current calculator state'],
+      [],
+      ['Cost Line Item', 'Currency', firstVendor.name, secondVendor.name],
+      ['Advertised Base Fee', 'USD', csvMoney(vendorBreakdowns[firstVendor.id].advertisedBaseFee), csvMoney(vendorBreakdowns[secondVendor.id].advertisedBaseFee)],
+      ['Security Deposit / Reserve', 'USD', csvMoney(vendorBreakdowns[firstVendor.id].securityDeposit), csvMoney(vendorBreakdowns[secondVendor.id].securityDeposit)],
+      ['FX Spread', 'USD', csvMoney(vendorBreakdowns[firstVendor.id].fxSpread), csvMoney(vendorBreakdowns[secondVendor.id].fxSpread)],
+      ['Additional Fees / Onboarding', 'USD', csvMoney(vendorBreakdowns[firstVendor.id].additionalFees), csvMoney(vendorBreakdowns[secondVendor.id].additionalFees)],
+      ['Total Outlay', 'USD', csvMoney(vendorBreakdowns[firstVendor.id].totalOutlay), csvMoney(vendorBreakdowns[secondVendor.id].totalOutlay)],
+      [],
+      ['Source Note', 'Shareable Scenario URL', publicShareableUrl.toString(), ''],
+      ['Methodology Note', 'Audited via StackEvalify.com — Independent B2B SaaS TCO Methodology', '', ''],
+    ];
+    const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(',')).join('\r\n')}`;
+    const blobUrl = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const download = document.createElement('a');
+    download.href = blobUrl;
+    download.download = `stackevalify-${config.slug}-tco.csv`;
+    download.hidden = true;
+    document.body.appendChild(download);
+    download.click();
+    download.remove();
+    window.setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
+    setExportStatus('CFO CSV downloaded.');
+    window.dispatchEvent(new CustomEvent('stackevalify:track', {
+      detail: { event: 'calculator_export_csv', path: window.location.pathname, months: durationMonths },
+    }));
+  };
   return (
     <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6" data-tco-calculator data-tco-slug={config.slug} data-url-state-sync={urlStateReady ? 'ready' : 'loading'}>
       <aside className="rounded-xl border border-amber-400/25 bg-amber-400/5 p-5 text-sm leading-relaxed text-amber-100">
@@ -499,18 +583,22 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">Normalized output</p>
             <h3 id={`${config.slug}-tco-results`} className="mt-2 text-xl font-bold text-white">Advertised price versus normalized invoice</h3>
           </div>
-          <div className="grid gap-2 sm:flex">
+          <div className="grid min-w-0 grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end">
             <button type="button" onClick={copySlackSummary} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
               Copy Slack summary
             </button>
             <button type="button" onClick={copyShareableLink} data-share-calculator-link className="inline-flex min-h-11 items-center justify-center rounded-lg border border-blue-400/40 bg-blue-400/10 px-4 py-2.5 text-sm font-bold text-blue-100 transition-colors hover:bg-blue-400/20 focus:outline-none focus:ring-2 focus:ring-blue-300">
               Copy Shareable Link
             </button>
+            <button type="button" onClick={exportCfoCsv} data-export-cfo-csv aria-label="Export CFO CSV" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-2.5 text-sm font-bold text-emerald-100 transition-colors hover:bg-emerald-400/20 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+              Export CSV
+            </button>
           </div>
         </div>
         <div className="mt-3 grid min-h-5 gap-1 text-sm" aria-live="polite">
           {copyStatus && <p className="text-emerald-300">{copyStatus}</p>}
           {shareStatus && <p className="text-blue-200">{shareStatus}</p>}
+          {exportStatus && <p className="text-emerald-300">{exportStatus}</p>}
         </div>
 
         <StackedCostChart config={config} estimates={estimates} durationMonths={durationMonths} />
