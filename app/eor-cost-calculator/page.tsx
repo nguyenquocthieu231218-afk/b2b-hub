@@ -10,6 +10,7 @@ import { eorCostCalculatorConfig } from '@/lib/eor-cost-calculator';
 import { eorCalculatorComparisonPaths } from '@/lib/audited-tools';
 import { comparisons } from '@/lib/comparisons';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { getAffiliateCtaHref, getAffiliateLink } from '@/lib/affiliate-links';
 
 const path = '/eor-cost-calculator';
 const canonicalUrl = `${SITE_URL}${path}`;
@@ -48,6 +49,7 @@ const outboundProps = {
   rel: 'nofollow sponsored noopener noreferrer',
   'data-track': 'outbound-source',
 } as const;
+const eorVendorCtas = ['deel', 'remote', 'oyster'] as const;
 
 export default function EorCostCalculatorPage() {
   return (
@@ -117,6 +119,21 @@ export default function EorCostCalculatorPage() {
                   <h3 className="text-lg font-bold text-white">Oyster HR</h3>
                   <p className="mt-3 leading-relaxed text-slate-300">Lists $699 per EOR employee per month and $29 per contractor per month. Its normal deposit uses approximately one month of total cost of services and may exceed the lower-bound proxy shown here.</p>
                 </article>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3" aria-label="Vendor websites">
+                {eorVendorCtas.map((vendor) => (
+                  <a
+                    key={vendor}
+                    href={getAffiliateCtaHref(vendor, path, true)}
+                    target="_blank"
+                    rel="sponsored nofollow noopener"
+                    data-track="affiliate-cta"
+                    data-vendor={vendor}
+                    className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-slate-500 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  >
+                    Visit {getAffiliateLink(vendor)?.name} official site
+                  </a>
+                ))}
               </div>
             </section>
 

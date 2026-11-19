@@ -94,6 +94,7 @@ assert.equal(sitemapResponse.status, 200);
 const sitemap = await sitemapResponse.text();
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => new URL(value));
 assert.equal(urls.length, new Set(urls.map(String)).size, 'Sitemap contains duplicate URLs');
+assert(!urls.some((url) => url.pathname.startsWith('/go/')), 'Measured redirect routes must stay out of the sitemap');
 assert(urls.some((url) => url.pathname === '/category/saas'), 'SaaS directory missing from sitemap');
 const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/]+-vs-[^/]+$/.test(path));
 assert.equal(comparisonPaths.length, 4, 'Only four calculator-audited comparisons may enter the sitemap');
@@ -154,6 +155,8 @@ for (const url of urls) {
     assert(quickVerdictIndex >= 0 && firstTableIndex > quickVerdictIndex, `${url.pathname}: quick verdict must precede the detailed table`);
     assert.match(html, /data-track="quick-verdict-jump"/, `${url.pathname}: quick verdict CTA tracking missing`);
     assert.equal([...html.matchAll(/data-track="affiliate-cta"/g)].length, 2, `${url.pathname}: both vendor CTAs need tracking`);
+    assert.equal([...html.matchAll(/href="\/go\/(?:deel|rippling|remote|gusto|oyster)\?source=[^"]+"/g)].length, 2, `${url.pathname}: audited vendor CTAs must use measured redirect routes`);
+    assert.equal([...html.matchAll(/rel="sponsored nofollow noopener" data-track="affiliate-cta"/g)].length, 2, `${url.pathname}: measured CTA relationship tokens differ from policy`);
     assert(html.includes(`data-comparison-root="${url.pathname}"`), `${url.pathname}: comparison analytics root missing`);
     assert.match(html, /data-comparison-analytics="cta,scroll-depth,table-interaction"/, `${url.pathname}: analytics hydration marker missing`);
     assert.match(html, /data-url-state-sync="loading"/, `${url.pathname}: calculator URL state marker missing`);
@@ -172,6 +175,9 @@ for (const url of urls) {
     assert.equal(application.applicationCategory, 'BusinessApplication', `${url.pathname}: WebApplication category mismatch`);
     assert.equal(application.operatingSystem, 'Web', `${url.pathname}: WebApplication operating system mismatch`);
     assert.equal(String(application.offers?.price), '0', `${url.pathname}: free calculator offer missing`);
+    const openGraphImage = meta(html, 'og:image');
+    assert(openGraphImage, `${url.pathname}: dynamic OpenGraph image missing`);
+    assert(new URL(openGraphImage).pathname.startsWith(`${url.pathname}/opengraph-image`), `${url.pathname}: OpenGraph image is not route-specific`);
     const faq = jsonLd(html).find((data) => data['@type'] === 'FAQPage');
     assert.equal(faq?.mainEntity?.length, 2, `${url.pathname}: FAQPage needs two visible questions`);
     const visibleText = plainText(html);
@@ -239,6 +245,8 @@ assert.match(eorCalculator, /data-eor-cost-calculator/, 'EOR calculator hydratio
 assert.match(eorCalculator, /data-comparison-table/, 'EOR calculator comparison table missing');
 assert.match(eorCalculator, /data-comparison-root="\/eor-cost-calculator"/, 'EOR calculator analytics root missing');
 assert.match(eorCalculator, /data-comparison-analytics="cta,scroll-depth,table-interaction"/, 'EOR calculator analytics marker missing');
+assert.equal([...eorCalculator.matchAll(/href="\/go\/(?:deel|remote|oyster)\?source=eor-cost-calculator"/g)].length, 3, 'EOR calculator needs three measured vendor CTAs');
+assert.equal([...eorCalculator.matchAll(/rel="sponsored nofollow noopener" data-track="affiliate-cta"/g)].length, 3, 'EOR calculator measured CTA policy mismatch');
 assert(plainText(eorCalculator).includes('Copy Slack summary'), 'EOR calculator Slack control missing');
 const eorApplication = jsonLd(eorCalculator).find((data) => data['@type'] === 'WebApplication');
 assert.equal(eorApplication?.name, 'StackEvalify EOR Cost Calculator', 'EOR calculator WebApplication schema missing');
@@ -252,6 +260,16 @@ for (const item of eorFaq.mainEntity) {
   const visibleText = plainText(eorCalculator);
   assert(visibleText.includes(item.name), 'EOR calculator FAQ question is not visible');
   assert(visibleText.includes(item.acceptedAnswer.text), 'EOR calculator FAQ answer is not visible');
+}
+const eorOpenGraphImage = meta(eorCalculator, 'og:image');
+assert(eorOpenGraphImage, 'EOR calculator dynamic OpenGraph image missing');
+assert(new URL(eorOpenGraphImage).pathname.startsWith(`${auditedToolPath}/opengraph-image`), 'EOR calculator OpenGraph image is not route-specific');
+
+for (const path of [...auditedComparisonPaths, auditedToolPath]) {
+  const imageUrl = new URL(meta(pages.get(path), 'og:image'));
+  const imageResponse = await request(`${imageUrl.pathname}${imageUrl.search}`);
+  assert.equal(imageResponse.status, 200, `${path}: OpenGraph image must return 200`);
+  assert.match(imageResponse.headers.get('content-type') ?? '', /^image\/png/, `${path}: OpenGraph image must be PNG`);
 }
 for (const comparisonPath of auditedComparisonPaths) {
   assert(eorCalculator.includes(`href="${comparisonPath}"`), `${auditedToolPath}: missing link to ${comparisonPath}`);
@@ -314,8 +332,30 @@ for (const [path, target] of [
   assert.equal(response.status, 308, `${path}: must redirect permanently`);
   assert.equal(new URL(response.headers.get('location'), preview).pathname, target);
 }
+
+const securityResponse = await request('/');
+assert.equal(securityResponse.headers.get('x-content-type-options'), 'nosniff', 'Global nosniff header missing');
+assert.equal(securityResponse.headers.get('x-frame-options'), 'DENY', 'Global frame denial header missing');
+assert.equal(securityResponse.headers.get('referrer-policy'), 'strict-origin-when-cross-origin', 'Global referrer policy mismatch');
+assert.equal(securityResponse.headers.get('permissions-policy'), 'camera=(), microphone=(), geolocation=()', 'Global permissions policy mismatch');
+
+const measuredRedirect = await request('/go/deel?source=deel-vs-rippling', { redirect: 'manual' });
+assert.equal(measuredRedirect.status, 307, 'Measured affiliate redirect must remain temporary');
+assert.equal(measuredRedirect.headers.get('x-robots-tag'), 'noindex, nofollow', 'Measured redirect robots header missing');
+const measuredLocation = new URL(measuredRedirect.headers.get('location'));
+assert.equal(measuredLocation.hostname, 'www.deel.com', 'Measured redirect destination must come from the vendor registry');
+assert.equal(measuredLocation.searchParams.get('ref'), 'stackevalify');
+assert.equal(measuredLocation.searchParams.get('source'), 'deel-vs-rippling');
+assert.equal(measuredLocation.searchParams.get('utm_source'), 'stackevalify');
+assert.equal(measuredLocation.searchParams.get('utm_medium'), 'referral');
+assert.equal(measuredLocation.searchParams.get('utm_campaign'), 'audited-tco');
+assert.equal(measuredLocation.searchParams.get('utm_content'), 'deel-vs-rippling');
+const unknownMeasuredRedirect = await request('/go/not-a-vendor', { redirect: 'manual' });
+assert.equal(unknownMeasuredRedirect.status, 404, 'Unknown measured vendor must not redirect');
+assert.equal(unknownMeasuredRedirect.headers.get('x-robots-tag'), 'noindex, nofollow', 'Unknown measured vendor robots header missing');
+
 assert.equal((await request('/missing-seo-check-page')).status, 404, 'Missing pages must return HTTP 404');
 const logoResponse = await request('/logo.png');
 assert.equal(logoResponse.status, 200);
 assert.deepEqual(Buffer.from(await logoResponse.arrayBuffer()), await readFile(new URL('../public/logo.png', import.meta.url)), 'Preview must serve the original logo bytes');
-console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} audited calculator comparisons, 1 audited EOR calculator, ${allComparisonPaths.length - comparisonPaths.length} comparison drafts noindex, FAQ schema, tracked interactions, standardized outbound links, reciprocal HR links, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);
+console.log(`SEO checks passed: ${urls.length} indexable pages, ${comparisonPaths.length} audited calculator comparisons, 1 audited EOR calculator, ${allComparisonPaths.length - comparisonPaths.length} comparison drafts noindex, dynamic OpenGraph images, measured vendor redirects, security headers, FAQ schema, tracked interactions, standardized outbound links, reciprocal HR links, query canonicals, 4 held pages, 2 permanent redirects, visible original logo.`);

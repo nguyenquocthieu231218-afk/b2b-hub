@@ -1,55 +1,93 @@
-export type AffiliateLink = {
-  name: string;
-  href: string;
+export type AffiliateUtm = {
+  source: 'stackevalify';
+  medium: 'referral';
+  campaign: 'audited-tco';
 };
 
-// Central CTA destination registry. Replace an official URL here when an
-// approved affiliate destination is available; every comparison CTA updates
-// without changing article content or link-tracking attributes.
+export type AffiliateLink = {
+  name: string;
+  destinationUrl: string;
+  isPartnerActive: boolean;
+  utm: AffiliateUtm;
+};
+
+const standardUtm: AffiliateUtm = {
+  source: 'stackevalify',
+  medium: 'referral',
+  campaign: 'audited-tco',
+};
+
+function officialLink(name: string, destinationUrl: string): AffiliateLink {
+  return { name, destinationUrl, isPartnerActive: false, utm: standardUtm };
+}
+
+// The five HR/payroll vendors are eligible for the measured /go/[vendor]
+// redirect. Every legacy official destination remains centralized here.
 export const affiliateLinks = {
-  activecampaign: { name: 'ActiveCampaign', href: 'https://activecampaign.com' },
-  ahrefs: { name: 'Ahrefs', href: 'https://ahrefs.com' },
-  airtable: { name: 'Airtable', href: 'https://airtable.com' },
-  asana: { name: 'Asana', href: 'https://asana.com' },
-  chatgpt: { name: 'ChatGPT', href: 'https://chatgpt.com' },
-  claude: { name: 'Claude', href: 'https://claude.ai' },
-  clickup: { name: 'ClickUp', href: 'https://clickup.com' },
-  coda: { name: 'Superhuman Docs (formerly Coda)', href: 'https://docs.superhuman.com' },
-  convertkit: { name: 'Kit (formerly ConvertKit)', href: 'https://kit.com' },
-  deel: { name: 'Deel', href: 'https://www.deel.com' },
-  framer: { name: 'Framer', href: 'https://framer.com' },
-  freshdesk: { name: 'Freshdesk', href: 'https://freshworks.com/freshdesk' },
-  gusto: { name: 'Gusto', href: 'https://gusto.com' },
-  hubspot: { name: 'HubSpot', href: 'https://hubspot.com' },
-  intercom: { name: 'Intercom', href: 'https://www.intercom.com' },
-  jira: { name: 'Jira', href: 'https://atlassian.com/software/jira' },
-  klaviyo: { name: 'Klaviyo', href: 'https://klaviyo.com' },
-  linear: { name: 'Linear', href: 'https://linear.app' },
-  mailchimp: { name: 'Mailchimp', href: 'https://mailchimp.com' },
-  make: { name: 'Make', href: 'https://make.com' },
-  monday: { name: 'Monday.com', href: 'https://monday.com' },
-  notion: { name: 'Notion', href: 'https://notion.so' },
-  oyster: { name: 'Oyster', href: 'https://www.oysterhr.com' },
-  pipedrive: { name: 'Pipedrive', href: 'https://pipedrive.com' },
-  rippling: { name: 'Rippling', href: 'https://www.rippling.com' },
-  remote: { name: 'Remote', href: 'https://remote.com' },
-  salesforce: { name: 'Salesforce', href: 'https://salesforce.com' },
-  semrush: { name: 'Semrush', href: 'https://semrush.com' },
-  shopify: { name: 'Shopify', href: 'https://shopify.com' },
-  slack: { name: 'Slack', href: 'https://slack.com' },
-  squarespace: { name: 'Squarespace', href: 'https://squarespace.com' },
-  teams: { name: 'Microsoft Teams', href: 'https://teams.microsoft.com' },
-  trello: { name: 'Trello', href: 'https://trello.com' },
-  webflow: { name: 'Webflow', href: 'https://webflow.com' },
-  wix: { name: 'Wix', href: 'https://wix.com' },
-  woocommerce: { name: 'WooCommerce', href: 'https://woocommerce.com' },
-  zapier: { name: 'Zapier', href: 'https://zapier.com' },
-  zendesk: { name: 'Zendesk', href: 'https://zendesk.com' },
-  'zoho-crm': { name: 'Zoho CRM', href: 'https://www.zoho.com/crm/' },
+  activecampaign: officialLink('ActiveCampaign', 'https://activecampaign.com'),
+  ahrefs: officialLink('Ahrefs', 'https://ahrefs.com'),
+  airtable: officialLink('Airtable', 'https://airtable.com'),
+  asana: officialLink('Asana', 'https://asana.com'),
+  chatgpt: officialLink('ChatGPT', 'https://chatgpt.com'),
+  claude: officialLink('Claude', 'https://claude.ai'),
+  clickup: officialLink('ClickUp', 'https://clickup.com'),
+  coda: officialLink('Superhuman Docs (formerly Coda)', 'https://docs.superhuman.com'),
+  convertkit: officialLink('Kit (formerly ConvertKit)', 'https://kit.com'),
+  deel: officialLink('Deel', 'https://www.deel.com'),
+  framer: officialLink('Framer', 'https://framer.com'),
+  freshdesk: officialLink('Freshdesk', 'https://freshworks.com/freshdesk'),
+  gusto: officialLink('Gusto', 'https://gusto.com'),
+  hubspot: officialLink('HubSpot', 'https://hubspot.com'),
+  intercom: officialLink('Intercom', 'https://www.intercom.com'),
+  jira: officialLink('Jira', 'https://atlassian.com/software/jira'),
+  klaviyo: officialLink('Klaviyo', 'https://klaviyo.com'),
+  linear: officialLink('Linear', 'https://linear.app'),
+  mailchimp: officialLink('Mailchimp', 'https://mailchimp.com'),
+  make: officialLink('Make', 'https://make.com'),
+  monday: officialLink('Monday.com', 'https://monday.com'),
+  notion: officialLink('Notion', 'https://notion.so'),
+  oyster: officialLink('Oyster', 'https://www.oysterhr.com'),
+  pipedrive: officialLink('Pipedrive', 'https://pipedrive.com'),
+  rippling: officialLink('Rippling', 'https://www.rippling.com'),
+  remote: officialLink('Remote', 'https://remote.com'),
+  salesforce: officialLink('Salesforce', 'https://salesforce.com'),
+  semrush: officialLink('Semrush', 'https://semrush.com'),
+  shopify: officialLink('Shopify', 'https://shopify.com'),
+  slack: officialLink('Slack', 'https://slack.com'),
+  squarespace: officialLink('Squarespace', 'https://squarespace.com'),
+  teams: officialLink('Microsoft Teams', 'https://teams.microsoft.com'),
+  trello: officialLink('Trello', 'https://trello.com'),
+  webflow: officialLink('Webflow', 'https://webflow.com'),
+  wix: officialLink('Wix', 'https://wix.com'),
+  woocommerce: officialLink('WooCommerce', 'https://woocommerce.com'),
+  zapier: officialLink('Zapier', 'https://zapier.com'),
+  zendesk: officialLink('Zendesk', 'https://zendesk.com'),
+  'zoho-crm': officialLink('Zoho CRM', 'https://www.zoho.com/crm/'),
 } as const satisfies Record<string, AffiliateLink>;
+
+export type AffiliateVendor = keyof typeof affiliateLinks;
+
+export const measuredAffiliateVendors = ['deel', 'rippling', 'remote', 'gusto', 'oyster'] as const;
+export type MeasuredAffiliateVendor = (typeof measuredAffiliateVendors)[number];
+
+export function isMeasuredAffiliateVendor(key?: string): key is MeasuredAffiliateVendor {
+  return typeof key === 'string' && measuredAffiliateVendors.some((vendor) => vendor === key);
+}
 
 export function getAffiliateLink(key?: string): AffiliateLink | undefined {
   return key && key in affiliateLinks
-    ? affiliateLinks[key as keyof typeof affiliateLinks]
+    ? affiliateLinks[key as AffiliateVendor]
     : undefined;
+}
+
+export function getMeasuredAffiliateLink(key?: string): AffiliateLink | undefined {
+  return isMeasuredAffiliateVendor(key) ? affiliateLinks[key] : undefined;
+}
+
+export function getAffiliateCtaHref(key: string | undefined, sourcePath: string, useMeasuredRedirect: boolean) {
+  const link = getAffiliateLink(key);
+  if (!link) return undefined;
+  if (!useMeasuredRedirect || !isMeasuredAffiliateVendor(key)) return link.destinationUrl;
+  const source = sourcePath.replace(/^\/+/, '') || 'direct';
+  return `/go/${key}?source=${encodeURIComponent(source)}`;
 }
