@@ -185,6 +185,12 @@ for (const url of urls) {
     assert.equal([...html.matchAll(/data-negotiation-vendor="/g)].length, 2, `${url.pathname}: both vendors need negotiation controls`);
     assert.equal([...html.matchAll(/data-fx-override="/g)].length, 2, `${url.pathname}: both vendors need FX override sliders`);
     assert.equal([...html.matchAll(/data-deposit-override="/g)].length, 6, `${url.pathname}: both vendors need three deposit choices`);
+    assert.match(html, /data-pin-baseline/, `${url.pathname}: baseline pin control missing`);
+    assert.match(html, /data-pinned-baseline/, `${url.pathname}: pinned baseline comparison slot missing`);
+    assert.match(html, /data-cls-guard/, `${url.pathname}: calculator CLS guard missing`);
+    assert.match(html, /data-chart-cls-guard/, `${url.pathname}: chart CLS guard missing`);
+    assert.equal([...html.matchAll(/data-audit-tooltip="/g)].length, 5, `${url.pathname}: expected five accessible audit-term tooltip instances`);
+    assert.equal([...html.matchAll(/role="tooltip"/g)].length, 5, `${url.pathname}: audit tooltip roles missing`);
     assert.match(html, /data-cash-shock-callout/, `${url.pathname}: month-one cash shock callout missing`);
     assert.match(html, /data-outlay-delta/, `${url.pathname}: total-outlay delta summary missing`);
     assert.match(html, /data-stacked-tco-chart/, `${url.pathname}: stacked TCO chart missing`);
