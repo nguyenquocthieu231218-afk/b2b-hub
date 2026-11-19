@@ -51,8 +51,9 @@ export default function ComparisonAnalytics({ path, className, children }: { pat
       if (!target || !root.contains(target)) return;
       const tracking = target.dataset.track;
       if (!tracking && !/^https?:\/\//.test(target.href)) return;
+      const isMeasuredVendorClick = tracking === 'affiliate-cta' && target.pathname.startsWith('/go/');
       record({
-        event: tracking === 'affiliate-cta' ? 'cta_click' : tracking === 'quick-verdict-jump' ? 'quick_verdict_jump' : 'outbound_link_click',
+        event: isMeasuredVendorClick ? 'outbound_vendor_click' : tracking === 'affiliate-cta' ? 'cta_click' : tracking === 'quick-verdict-jump' ? 'quick_verdict_jump' : 'outbound_link_click',
         path,
         label: target.textContent?.trim().slice(0, 120) || 'link',
         destination: target.href,

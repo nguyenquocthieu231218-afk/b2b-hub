@@ -7,7 +7,7 @@ import ComparisonAnalytics from '../../components/ComparisonAnalytics';
 import JsonLd from '../../components/JsonLd';
 import TableOfContents from '../../components/TableOfContents';
 import { getArticleContent, getComparisonContext } from '@/lib/article-content';
-import { getAffiliateLink } from '@/lib/affiliate-links';
+import { getAffiliateCtaHref, getAffiliateLink } from '@/lib/affiliate-links';
 import { getComparisonCro, type ComparisonFaq } from '@/lib/comparison-cro';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { linksToEorCalculator } from '@/lib/audited-tools';
@@ -100,16 +100,19 @@ export default function ComparisonLayout({
   recommendationB,
   showDraftNotice = true,
 }: ComparisonLayoutProps) {
+  const { current: comparison, related: relatedComparisons } = getComparisonContext(tool1, tool2);
+  const isAuditedCalculator = comparison?.isAudited === true && comparison.hasCalculator === true;
+  const productALink = getAffiliateLink(tool1);
+  const productBLink = getAffiliateLink(tool2);
   const productA = toolAName
-    ? { name: toolAName, href: getAffiliateLink(tool1)?.href }
-    : getAffiliateLink(tool1);
+    ? { name: toolAName, href: getAffiliateCtaHref(tool1, comparison?.href ?? '', isAuditedCalculator) }
+    : productALink && { name: productALink.name, href: getAffiliateCtaHref(tool1, comparison?.href ?? '', isAuditedCalculator) };
   const productB = toolBName
-    ? { name: toolBName, href: getAffiliateLink(tool2)?.href }
-    : getAffiliateLink(tool2);
+    ? { name: toolBName, href: getAffiliateCtaHref(tool2, comparison?.href ?? '', isAuditedCalculator) }
+    : productBLink && { name: productBLink.name, href: getAffiliateCtaHref(tool2, comparison?.href ?? '', isAuditedCalculator) };
   const hasChildren = children !== undefined && children !== null;
   const pageTitle = title ?? `${productA?.name ?? 'Product A'} vs ${productB?.name ?? 'Product B'}`;
   const articleContent = getArticleContent(children);
-  const { current: comparison, related: relatedComparisons } = getComparisonContext(tool1, tool2);
   const articleUrl = comparison ? `${SITE_URL}${comparison.href}` : undefined;
   const cro = getComparisonCro(comparison?.href);
   const faqs: ComparisonFaq[] = cro && productA && productB ? [
@@ -164,7 +167,6 @@ export default function ComparisonLayout({
     ? normalizeOutboundLinks(injectArticleSections(children, quickVerdict, faqSection))
     : normalizeOutboundLinks(children);
   const showEorCalculator = linksToEorCalculator(comparison?.href);
-  const isAuditedCalculator = comparison?.isAudited === true && comparison.hasCalculator === true;
 
   return (
     <>
@@ -328,12 +330,12 @@ export default function ComparisonLayout({
 
           <div className="mt-8 grid gap-3 border-t border-slate-800 pt-6 sm:flex sm:flex-wrap">
             {productA?.href && (
-              <a href={productA.href} target="_blank" rel="nofollow sponsored noopener noreferrer" data-track="affiliate-cta" data-vendor={productA.name} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
+              <a href={productA.href} target="_blank" rel="sponsored nofollow noopener" data-track="affiliate-cta" data-vendor={tool1} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
                 Visit {productA.name} official site
               </a>
             )}
             {productB?.href && (
-              <a href={productB.href} target="_blank" rel="nofollow sponsored noopener noreferrer" data-track="affiliate-cta" data-vendor={productB.name} className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300">
+              <a href={productB.href} target="_blank" rel="sponsored nofollow noopener" data-track="affiliate-cta" data-vendor={tool2} className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300">
                 Visit {productB.name} official site
               </a>
             )}

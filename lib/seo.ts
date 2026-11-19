@@ -48,14 +48,16 @@ export function sourceCheckedComparisonMetadata({ title, description, path }: Co
       description,
       url: path,
       type: 'article',
-      images: [{
-        url: '/logo.png',
-        width: 2000,
-        height: 2000,
-        alt: 'StackEvalify logo',
-      }],
+      ...(!canIndex && {
+        images: [{
+          url: '/logo.png',
+          width: 2000,
+          height: 2000,
+          alt: 'StackEvalify logo',
+        }],
+      }),
     },
-    twitter: { card: 'summary', title, description, images: [SITE_LOGO] },
+    twitter: { card: canIndex ? 'summary_large_image' : 'summary', title, description, ...(!canIndex && { images: [SITE_LOGO] }) },
   };
 }
 
@@ -74,13 +76,15 @@ export function auditedToolMetadata({ title, description, path }: ComparisonDraf
       description,
       url: path,
       type: 'website',
-      images: [{
-        url: '/logo.png',
-        width: 2000,
-        height: 2000,
-        alt: 'StackEvalify logo',
-      }],
+      ...(!canIndex && {
+        images: [{
+          url: '/logo.png',
+          width: 2000,
+          height: 2000,
+          alt: 'StackEvalify logo',
+        }],
+      }),
     },
-    twitter: { card: 'summary', title, description, images: [SITE_LOGO] },
+    twitter: { card: canIndex ? 'summary_large_image' : 'summary', title, description, ...(!canIndex && { images: [SITE_LOGO] }) },
   };
 }
