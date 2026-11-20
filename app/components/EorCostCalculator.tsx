@@ -189,13 +189,13 @@ export default function EorCostCalculator({ config }: { config: EorCostCalculato
               <article key={vendor.id} className="min-w-0 rounded-lg border border-slate-800 bg-slate-950/70 p-4">
                 <h3 className="font-bold text-white">{vendor.name}</h3>
                 <dl className="mt-3 grid min-w-0 gap-2 text-sm text-slate-300">
-                  <div className="flex min-w-0 justify-between gap-4"><dt>Management · 12 mo</dt><dd className="shrink-0">{currency.format(estimate.management12)}</dd></div>
-                  <div className="flex min-w-0 justify-between gap-4"><dt>FX · 12 mo</dt><dd className="shrink-0">{currency.format(estimate.fx12)}</dd></div>
-                  <div className="flex min-w-0 justify-between gap-4 border-t border-slate-800 pt-2 font-bold text-white"><dt>Service total · 12 mo</dt><dd className="shrink-0">{currency.format(estimate.service12)}</dd></div>
-                  <div className="flex min-w-0 justify-between gap-4"><dt>Management · 24 mo</dt><dd className="shrink-0">{currency.format(estimate.management24)}</dd></div>
-                  <div className="flex min-w-0 justify-between gap-4"><dt>FX · 24 mo</dt><dd className="shrink-0">{currency.format(estimate.fx24)}</dd></div>
-                  <div className="flex min-w-0 justify-between gap-4 border-t border-slate-800 pt-2 font-bold text-white"><dt>Service total · 24 mo</dt><dd className="shrink-0">{currency.format(estimate.service24)}</dd></div>
-                  <div className="flex min-w-0 justify-between gap-4 text-blue-200"><dt>Refundable deposit</dt><dd className="shrink-0">{currency.format(estimate.refundableDeposit)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3"><dt className="min-w-0">Management · 12 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.management12)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3"><dt className="min-w-0">FX · 12 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.fx12)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3 border-t border-slate-800 pt-2 font-bold text-white"><dt className="min-w-0">Service total · 12 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.service12)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3"><dt className="min-w-0">Management · 24 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.management24)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3"><dt className="min-w-0">FX · 24 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.fx24)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3 border-t border-slate-800 pt-2 font-bold text-white"><dt className="min-w-0">Service total · 24 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.service24)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3 text-blue-200"><dt className="min-w-0">Refundable deposit</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.refundableDeposit)}</dd></div>
                 </dl>
               </article>
             );

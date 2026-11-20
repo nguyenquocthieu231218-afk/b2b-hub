@@ -9,7 +9,20 @@ export type ComparisonCro = {
   verdictBullets?: readonly [string, string, string];
   tableAnchor: string;
   faq: ComparisonFaq;
+  executiveVerdict?: {
+    bestOverall: string;
+    smallTeams: string;
+    watchOut: string;
+  };
+  buyerFaqs?: readonly ComparisonFaq[];
 };
+
+const eorBuyerFaqs: readonly ComparisonFaq[] = [
+  { question: 'Can we be locked into a long-term contract?', answer: 'Terms vary by product, country, and order form. Check the initial term, renewal, notice window, minimums, early-exit charges, and price changes in the signed schedule; an EOR service commitment can differ from the employee’s local employment contract.' },
+  { question: 'Should we budget an upfront security deposit?', answer: 'Yes, model any refundable reserve as a separate cash requirement. Ask for the amount and currency by country and worker, what it covers, when it is refunded or offset against the final invoice, and whether credit review can change it.' },
+  { question: 'How much will FX conversion markups add?', answer: 'There is no single spread that applies to every vendor, currency, or payment route. Confirm invoice and funding currencies, the rate source and any spread, when the rate is fixed, processor fees, and the refund currency; replace calculator sensitivities with the written quote.' },
+  { question: 'How difficult is it to switch providers?', answer: 'Plan a country-by-country transition with both providers. Confirm employee notice and consent, the new legal employer and agreement, payroll cutoffs, accrued pay and leave, local continuity or termination requirements, and the timing of deposit refunds before setting a go-live date.' },
+];
 
 const comparisonCro: Record<string, ComparisonCro> = {
   '/activecampaign-vs-convertkit': {
@@ -76,6 +89,8 @@ const comparisonCro: Record<string, ComparisonCro> = {
     },
   },
   '/deel-vs-rippling': {
+    executiveVerdict: { bestOverall: 'Scope-dependent: Deel for international EOR and contractor services; Rippling when US payroll, HRIS, and selected modules are all in scope.', smallTeams: 'Deel for a small team hiring internationally without a broader HRIS bundle.', watchOut: 'Rippling’s per-employee starting price excludes its monthly base fee and scoped modules; require a complete 24-month quote.' },
+    buyerFaqs: eorBuyerFaqs,
     chooseA: 'Use Deel as the budget baseline only when EOR plus contractor headcount is greater than zero and the purchase is limited to named worker services by country. Price every worker type for 12 and 24 months before approval.',
     chooseB: 'Use Rippling as the budget baseline only when US payroll headcount is greater than zero and the required scope includes HRIS plus at least one payroll, IT, or spend module. Require every module, base fee, minimum, implementation charge, and renewal term on the order form.',
     verdictBullets: [
@@ -90,6 +105,8 @@ const comparisonCro: Record<string, ComparisonCro> = {
     },
   },
   '/deel-vs-remote': {
+    executiveVerdict: { bestOverall: 'Country- and cash-flow-dependent: compare the named employer, reserve, invoice currency, and FX terms for each hire.', smallTeams: 'Choose by the country-specific service and written reserve terms; neither network-wide claim settles your actual employer or cash requirement.', watchOut: 'Remote pricing and support guidance describe reserve requirements differently; get the exact refundable amount or waiver in the signed country schedule.' },
+    buyerFaqs: eorBuyerFaqs,
     chooseA: 'Approve Deel only after the order form names the employing entity in every country and fixes the deposit basis, invoice currency, payment method, and FX timing for the actual worker population.',
     chooseB: 'Approve Remote only after the order form names the employing entity in every country and fixes the reserve requirement or waiver, invoice currency, annual commitment, and FX method for the actual worker population.',
     verdictBullets: [
@@ -104,6 +121,8 @@ const comparisonCro: Record<string, ComparisonCro> = {
     },
   },
   '/deel-vs-oyster': {
+    executiveVerdict: { bestOverall: 'Scope-dependent: compare country-level EOR terms, FX, and funding requirements before choosing on headline rates.', smallTeams: 'Favor monthly flexibility when hiring plans are uncertain; consider annual seats only when expected utilization justifies prepayment.', watchOut: 'Oyster annual seats are prepaid and non-refundable; budget EOR deposits and currency/payment costs separately.' },
+    buyerFaqs: eorBuyerFaqs,
     chooseA: 'Approve Deel only after the quote fixes the EOR fee, invoice and funding currencies, forward-rate timing, payment-method fees, and the refundable deposit for every country.',
     chooseB: 'Approve Oyster annual only when the negotiated per-seat discount exceeds the value of flexibility you lose by prepaying a non-refundable year and the forecast can keep each seat occupied or backfilled.',
     verdictBullets: [
@@ -208,6 +227,8 @@ const comparisonCro: Record<string, ComparisonCro> = {
     },
   },
   '/rippling-vs-gusto': {
+    executiveVerdict: { bestOverall: 'Scope-dependent: Gusto for straightforward US payroll; Rippling when HRIS and added modules earn their cost.', smallTeams: 'Gusto Simple for a small, single-state US payroll with a clear published base-plus-person price.', watchOut: 'Do not compare Gusto Simple with Rippling’s per-person starting price alone; include Rippling’s base fee, modules, and implementation.' },
+    buyerFaqs: eorBuyerFaqs,
     chooseA: 'Approve Rippling only when the order form itemizes the platform base fee, per-employee platform charge, every payroll or HR module, implementation, minimums, and renewal pricing for the same employee population.',
     chooseB: 'Approve Gusto Simple when one-state US payroll is the actual scope and $49 per month plus $6 per paid person covers the workflow without Plus, Premium, or paid add-ons.',
     verdictBullets: [

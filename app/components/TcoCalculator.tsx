@@ -1172,13 +1172,13 @@ export default function TcoCalculator({ config }: { config: TcoComparisonConfig 
               <article key={vendor.id} className="rounded-lg border border-slate-800 bg-slate-950/70 p-4">
                 <h4 className="font-bold text-white">{vendor.name}</h4>
                 <dl className="mt-3 grid gap-2 text-sm text-slate-300">
-                  <div className="flex justify-between gap-4"><dt>Advertised · 12 mo</dt><dd>{currency.format(estimate.advertised12)}</dd></div>
-                  <div className="flex justify-between gap-4"><dt>Normalized · year 1</dt><dd>{currency.format(estimate.yearOne)}</dd></div>
-                  <div className="flex justify-between gap-4"><dt>Normalized · year 2</dt><dd>{currency.format(estimate.yearTwo)}</dd></div>
-                  <div className="flex justify-between gap-4 border-t border-slate-800 pt-2 font-bold text-white"><dt>Service invoice · 24 mo</dt><dd>{currency.format(estimate.total24)}</dd></div>
-                  <div className="flex justify-between gap-4 text-amber-200"><dt>Delta vs list</dt><dd>{currency.format(estimate.delta24)}</dd></div>
-                  <div className="flex justify-between gap-4 text-blue-200"><dt>Refundable deposit</dt><dd>{currency.format(estimate.cashFlowDeposit)}</dd></div>
-                  <div className="flex justify-between gap-4 font-bold text-white"><dt>Peak cash need</dt><dd>{currency.format(estimate.peakCashRequirement)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3"><dt className="min-w-0">Advertised · 12 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.advertised12)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3"><dt className="min-w-0">Normalized · year 1</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.yearOne)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3"><dt className="min-w-0">Normalized · year 2</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.yearTwo)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3 border-t border-slate-800 pt-2 font-bold text-white"><dt className="min-w-0">Service invoice · 24 mo</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.total24)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3 text-amber-200"><dt className="min-w-0">Delta vs list</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.delta24)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3 text-blue-200"><dt className="min-w-0">Refundable deposit</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.cashFlowDeposit)}</dd></div>
+                  <div className="flex min-w-0 justify-between gap-3 font-bold text-white"><dt className="min-w-0">Peak cash need</dt><dd className="shrink-0 text-right tabular-nums">{currency.format(estimate.peakCashRequirement)}</dd></div>
                 </dl>
               </article>
             );

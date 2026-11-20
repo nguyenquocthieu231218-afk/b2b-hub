@@ -16,7 +16,7 @@ const { affiliateLinks } = await importTypeScript('../lib/affiliate-links.ts');
 const { normalizeSearch, searchComparisons, getSearchSuggestions } = await importTypeScript('../lib/search.ts');
 for (const comparison of comparisons) {
   for (const product of comparison.href.slice(1).split('-vs-')) {
-    assert(affiliateLinks[product]?.href, `${comparison.href}: missing centralized affiliate destination for ${product}`);
+    assert(affiliateLinks[product]?.destinationUrl, `${comparison.href}: missing centralized affiliate destination for ${product}`);
   }
 }
 assert.equal(searchComparisons(comparisons, '').length, 27);
