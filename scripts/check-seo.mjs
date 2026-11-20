@@ -30,10 +30,10 @@ function plainText(html) {
 }
 
 const comparisonModifiedDates = new Map([
-  ['/deel-vs-rippling', '2026-11-14'],
-  ['/deel-vs-remote', '2026-11-15'],
-  ['/rippling-vs-gusto', '2026-11-15'],
-  ['/deel-vs-oyster', '2026-11-15'],
+  ['/deel-vs-rippling', '2026-11-20'],
+  ['/deel-vs-remote', '2026-11-20'],
+  ['/rippling-vs-gusto', '2026-11-20'],
+  ['/deel-vs-oyster', '2026-11-20'],
 ]);
 
 const visibleSourceCheckDates = new Map([
@@ -114,7 +114,7 @@ const comparisonPaths = urls.map((url) => url.pathname).filter((path) => /^\/[^/
 assert.equal(comparisonPaths.length, 4, 'Only four calculator-audited comparisons may enter the sitemap');
 assert.deepEqual([...comparisonPaths].sort(), [...auditedComparisonPaths].sort(), 'Sitemap comparison set differs from the audited calculator set');
 assert(urls.some((url) => url.pathname === auditedToolPath), 'Audited EOR calculator missing from sitemap');
-assert.match(sitemap, new RegExp(`<loc>${canonicalOrigin}${auditedToolPath}</loc>\\s*<lastmod>2026-11-15</lastmod>`), 'EOR calculator audit date missing from sitemap');
+assert.match(sitemap, new RegExp(`<loc>${canonicalOrigin}${auditedToolPath}</loc>\\s*<lastmod>2026-11-20</lastmod>`), 'EOR calculator audit date missing from sitemap');
 for (const path of comparisonPaths) {
   assert.match(
     sitemap,
@@ -281,7 +281,7 @@ assert.equal([...eorCalculator.matchAll(/rel="sponsored nofollow noopener" data-
 assert(plainText(eorCalculator).includes('Copy Slack summary'), 'EOR calculator Slack control missing');
 const eorApplication = jsonLd(eorCalculator).find((data) => data['@type'] === 'WebApplication');
 assert.equal(eorApplication?.name, 'StackEvalify EOR Cost Calculator', 'EOR calculator WebApplication schema missing');
-assert.equal(eorApplication?.dateModified, '2026-11-15', 'EOR calculator schema date mismatch');
+assert.equal(eorApplication?.dateModified, '2026-11-20', 'EOR calculator schema date mismatch');
 assert.equal(eorApplication?.applicationCategory, 'BusinessApplication', 'EOR calculator application category mismatch');
 assert.equal(eorApplication?.operatingSystem, 'Web', 'EOR calculator operating system mismatch');
 assert.equal(String(eorApplication?.offers?.price), '0', 'EOR calculator free offer missing');

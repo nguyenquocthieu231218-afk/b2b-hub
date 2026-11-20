@@ -122,10 +122,27 @@ export default function ComparisonLayout({
       answer: `There is no universal winner. ${cro.chooseA} ${cro.chooseB} Validate the shortlist with the same representative workflow and current vendor documentation.`,
     },
   ] : [];
+  const visibleFaqs = cro?.buyerFaqs ? [...faqs, ...cro.buyerFaqs] : faqs;
   const quickVerdict = cro && productA && productB ? (
-    <section key="quick-verdict" aria-labelledby="quick-verdict" className="border-b border-slate-800 py-8">
+    <section key="quick-verdict" aria-labelledby="quick-verdict" className={`border-b border-slate-800 py-8 ${cro.executiveVerdict ? 'rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/10 via-slate-950/70 to-slate-950 p-5 shadow-lg shadow-emerald-950/20 sm:p-7' : ''}`}>
       <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">TL;DR / Quick verdict</p>
-      <h2 id="quick-verdict" className="mt-2 text-2xl font-bold text-white">Budget gates before approval</h2>
+      <h2 id="quick-verdict" className="mt-2 text-2xl font-bold text-white">{cro.executiveVerdict ? 'The 5-second buyer verdict' : 'Budget gates before approval'}</h2>
+      {cro.executiveVerdict && (
+        <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2">
+          <article className="min-w-0 rounded-xl border border-emerald-300/25 bg-slate-950/70 p-4 sm:p-5">
+            <h3 className="text-xs font-bold uppercase tracking-wide text-emerald-300">Best overall</h3>
+            <p className="mt-2 break-words font-semibold leading-relaxed text-white">{cro.executiveVerdict.bestOverall}</p>
+          </article>
+          <article className="min-w-0 rounded-xl border border-blue-300/25 bg-slate-950/70 p-4 sm:p-5">
+            <h3 className="text-xs font-bold uppercase tracking-wide text-blue-300">Best for small teams</h3>
+            <p className="mt-2 break-words leading-relaxed text-slate-200">{cro.executiveVerdict.smallTeams}</p>
+          </article>
+          <article className="min-w-0 rounded-xl border border-amber-300/25 bg-amber-300/5 p-4 sm:col-span-2 sm:p-5">
+            <h3 className="text-xs font-bold uppercase tracking-wide text-amber-200">#1 billing / contract watch-out</h3>
+            <p className="mt-2 break-words leading-relaxed text-amber-50">{cro.executiveVerdict.watchOut}</p>
+          </article>
+        </div>
+      )}
       {cro.verdictBullets ? (
         <ul className="mt-5 grid gap-3 text-slate-200">
           {cro.verdictBullets.map((bullet) => (
@@ -147,6 +164,16 @@ export default function ComparisonLayout({
       <a href={`#${cro.tableAnchor}`} data-track="quick-verdict-jump" className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-950 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
         {cro.verdictBullets ? 'Open the 12- and 24-month cost model' : 'Jump to the detailed comparison'} <span aria-hidden="true" className="ml-2">↓</span>
       </a>
+      {isAuditedCalculator && (
+        <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-2">
+          {[{ product: productA, vendor: tool1 }, { product: productB, vendor: tool2 }].map(({ product, vendor }, index) => product?.href && (
+            <a key={vendor} href={product.href} target="_blank" rel="sponsored nofollow noopener" data-track="affiliate-cta" data-vendor={vendor} className={`inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-sm font-bold text-white shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${index === 0 ? 'bg-blue-600 shadow-blue-950/30 hover:bg-blue-500' : 'border border-slate-600 bg-slate-800 hover:bg-slate-700'}`}>
+              <span className="break-words">Check {product.name} plans &amp; pricing <span aria-hidden="true">→</span></span>
+            </a>
+          ))}
+        </div>
+      )}
+      {isAuditedCalculator && <p className="mt-3 max-w-3xl text-xs leading-relaxed text-slate-400">Disclosure: These links open official vendor sites and use measured referral redirects. We currently have no active paid partner relationship for these vendors; commercial terms do not determine our findings.</p>}
     </section>
   ) : null;
   const faqSection = faqs.length > 0 ? (
@@ -154,9 +181,9 @@ export default function ComparisonLayout({
       <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-300">Common buying questions</p>
       <h2 id="faq" className="mt-2 text-2xl font-bold text-white">Frequently asked questions</h2>
       <div className="mt-5 grid gap-4">
-        {faqs.map((faq) => (
+        {visibleFaqs.map((faq) => (
           <details key={faq.question} className="group rounded-xl border border-slate-800 bg-slate-950/60 p-5 open:border-slate-700">
-            <summary className="cursor-pointer list-none pr-8 font-bold text-white marker:hidden">{faq.question}</summary>
+          <summary className="flex min-h-11 cursor-pointer list-none items-center pr-8 font-bold text-white marker:hidden">{faq.question}</summary>
             <p className="mt-3 leading-relaxed text-slate-300">{faq.answer}</p>
           </details>
         ))}
@@ -209,7 +236,7 @@ export default function ComparisonLayout({
           dateModified: comparison.dateModified,
         }} />
       )}
-      <main id="main-content" className="mx-auto min-h-screen w-full min-w-0 max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+      <main id="main-content" className="mx-auto min-h-screen w-full min-w-0 max-w-5xl px-4 py-10 pb-24 sm:px-6 sm:py-14 sm:pb-14">
         <Breadcrumbs includeJsonLd={isAuditedCalculator} items={[
           { name: 'Home', href: '/' },
           { name: 'Software comparisons', href: '/category/saas' },
@@ -328,7 +355,7 @@ export default function ComparisonLayout({
             </article>
           )}
 
-          <div className="mt-8 grid gap-3 border-t border-slate-800 pt-6 sm:flex sm:flex-wrap">
+          {!isAuditedCalculator && <div className="mt-8 grid gap-3 border-t border-slate-800 pt-6 sm:flex sm:flex-wrap">
             {productA?.href && (
               <a href={productA.href} target="_blank" rel="sponsored nofollow noopener" data-track="affiliate-cta" data-vendor={tool1} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300">
                 Visit {productA.name} official site
@@ -339,7 +366,7 @@ export default function ComparisonLayout({
                 Visit {productB.name} official site
               </a>
             )}
-          </div>
+          </div>}
         </ComparisonAnalytics>
 
         {showEorCalculator && (
@@ -382,6 +409,14 @@ export default function ComparisonLayout({
             Read the evaluation methodology <span aria-hidden="true">→</span>
           </Link>
         </nav>
+
+        {isAuditedCalculator && cro && (
+          <nav aria-label="Quick page navigation" className="fixed inset-x-3 bottom-0 z-40 grid grid-cols-3 gap-2 border-t border-slate-700 bg-slate-950/95 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(2,6,23,0.55)] backdrop-blur md:hidden">
+            <a href="#quick-verdict" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-xs font-bold text-slate-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300">Verdict</a>
+            <a href={`#${cro.tableAnchor}`} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-300 px-2 text-xs font-bold text-slate-950 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-200">Calculator</a>
+            <a href="#faq" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-xs font-bold text-slate-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300">FAQ</a>
+          </nav>
+        )}
       </main>
       <SiteFooter />
     </>

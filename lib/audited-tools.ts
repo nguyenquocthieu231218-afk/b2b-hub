@@ -10,7 +10,7 @@ export const auditedTools = [
     title: 'EOR Cost Calculator',
     href: '/eor-cost-calculator',
     description: 'Compare 12- and 24-month EOR management fees, FX exposure, contractor fees, and refundable deposit pressure across Deel, Remote, and Oyster.',
-    dateModified: '2026-11-15',
+    dateModified: '2026-11-20',
     isAudited: true,
     hasCalculator: true,
   },
